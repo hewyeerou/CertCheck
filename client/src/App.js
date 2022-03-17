@@ -12,17 +12,7 @@ function App() {
     const [accounts, setAccounts] = useState();
     const [contract, setContract] = useState();
 
-     useEffect(() => {
-      // delete this after testing
-      // var user = {
-      //   walletAddress: "1234asdlk",
-      //   name: "lolo",
-      //   email: "asd@gmail.com",
-      //   password: "asdasd",
-      //   type: "Subject",
-      //   img: ""
-      // }
-      // deleteUser(user);
+    useEffect(() => {
       const init = async () => {
           try {
               // Get network provider (typically MetaMask) and web3 instance
@@ -67,8 +57,9 @@ function App() {
               // Update state with the result
               setStorageValue (response);
           }
-          catch{
+          catch (error){
               alert('No contract deployed or account error; please check that MetaMask is on the correct network, reset the account and reload page');
+              console.error(error);
           }
       }
       if(typeof(web3) != 'undefined'
@@ -93,7 +84,7 @@ function App() {
           a stored value of 5 (by default).
         </p>
         <p>
-          Try changing the value stored on <strong>line 42</strong> of App.js.
+          Try changing the value stored on <strong>line 52</strong> of App.js.
         </p>
         <div>The stored value is: {storageValue}</div>
       </div>
