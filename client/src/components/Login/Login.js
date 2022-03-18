@@ -58,7 +58,7 @@ function Login() {
           <Button type="primary" htmlType="submit" className="submitBtn">
             Login
           </Button>
-          Or <a href=""> Register now!</a>
+          Or <a href="/register"> Register now!</a>
         </Form.Item>
       </Form>
     </Fragment>

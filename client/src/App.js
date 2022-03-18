@@ -1,10 +1,12 @@
 import React, { useState, useEffect } from "react";
+import { Route, BrowserRouter as Router, Routes } from "react-router-dom";
 // import SimpleStorageContract from "./contracts/SimpleStorage.json";
 // import getWeb3 from "./getWeb3";
 // import { addUser, getUserByAddress, updateUser, deleteUser } from "./models/User";z
 
 import "./App.css";
 import Login from "./components/Login/Login";
+import Register from "./components/Register/Register";
 
 function App() {
     // initialize the state variables of the application
@@ -76,9 +78,13 @@ function App() {
 
     // equivalent to the render function of older React frameworks
     return (
-      <div className="App">
-        <Login/>
-        {/* <h1>Good to Go!</h1>
+        <Router>
+          <Routes>
+            <Route path='/' element={<Login/>} /> 
+            <Route path="/register" element={<Register/>}/>
+          </Routes>
+        </Router>
+        /* <h1>Good to Go!</h1>
         <p>Your Truffle Box is installed and ready.</p>
         <h2>Smart Contract Example</h2>
         <p>
@@ -88,8 +94,7 @@ function App() {
         <p>
           Try changing the value stored on <strong>line 52</strong> of App.js.
         </p>
-        <div>The stored value is: {storageValue}</div> */}
-      </div>
+        <div>The stored value is: {storageValue}</div> */
     );
 
 }
