@@ -7,6 +7,7 @@ import {
   LockOutlined,
   UserSwitchOutlined,
 } from "@ant-design/icons";
+import { Link } from 'react-router-dom'
 
 function Login() {
   const { Option } = Select;
@@ -58,7 +59,7 @@ function Login() {
           <Button type="primary" htmlType="submit" className="submitBtn">
             Login
           </Button>
-          Or <a href="/register"> Register now!</a>
+          Or <Link to={"/register"} className="nav-link">Register!</Link>
         </Form.Item>
       </Form>
     </Fragment>

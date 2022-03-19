@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { Route, BrowserRouter as Router, Routes } from "react-router-dom";
 // import SimpleStorageContract from "./contracts/SimpleStorage.json";
 // import getWeb3 from "./getWeb3";
-// import { addUser, getUserByAddress, updateUser, deleteUser } from "./models/User";z
+// import { addUser, getUserByAddress, updateUser, deleteUser } from "./models/User";
 
 import "./App.css";
 import Login from "./components/Login/Login";
