@@ -1,7 +1,7 @@
 import { ref, set, get, child, update, remove } from "firebase/database";
 import { db } from "../firebase-config";
 
-export async function addUser(walletAddress, name, email, password, type, img) {
+export async function addUser(walletAddress, name, email, password, type) {
 
     set(ref(db, 'users/' + walletAddress), {
         walletAddress: walletAddress,
@@ -9,7 +9,7 @@ export async function addUser(walletAddress, name, email, password, type, img) {
         email: email,
         password: password,
         type: type,
-        img: img
+        // img: img
       }).catch((error) => {
           console.log(error);
       });
