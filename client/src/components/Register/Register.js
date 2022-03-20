@@ -1,43 +1,55 @@
 import React, { Fragment, useEffect, useState } from "react";
-import { Form, Select, Input, Button } from "antd";
+import { Form, Select, Input, Button, message } from "antd";
 import "antd/dist/antd.css";
 import "./Register.css";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import { addUser } from "../../models/User";
 
 //web3
-import getWeb3 from '../../getWeb3';
+import getWeb3 from "../../getWeb3";
 
 function Register() {
   const { Option } = Select;
+  const [form] = Form.useForm();
+  const navigate = useNavigate();
 
   // set up web3
   const [web3, setWeb3] = useState();
   const [accounts, setAccounts] = useState();
-  const [contract, setContract] = useState();
 
-  const loadWeb3 = async() => {
+  const loadWeb3 = async () => {
     try {
-        const web3 = await getWeb3();
-        console.log("********** web3: ", web3);
+      const web3 = await getWeb3();
+      console.log("********** web3: ", web3);
 
-        const accounts = await web3.eth.getAccounts();
-        console.log("********** accounts: ", accounts);
+      const accounts = await web3.eth.getAccounts();
+      console.log("********** accounts: ", accounts);
 
-        const networkId = await web3.eth.net.getId();
-        console.log("********** network id: ", networkId);
-
-        
-    } catch {
-        
+      setWeb3(web3);
+      setAccounts(accounts);
+    } catch (error) {
+      alert(`Failed to load web3.`);
+      console.error(error);
     }
-  }
+  };
 
   useEffect(() => {
-
+    loadWeb3();
   }, []);
 
+  useEffect(() => {
+    form.setFieldsValue({
+      walletAddress: accounts,
+    });
+  }, [web3, accounts]);
+
   const onSubmit = (values) => {
-    console.log("Success", values);
+    const { role, walletAddress, name, email, password } = values;
+
+    addUser(walletAddress[0], name, email, password, role).then(() => {
+      message.success("Account has been created!");
+      navigate("/");
+    });
   };
 
   return (
@@ -49,6 +61,7 @@ function Register() {
           labelAlign="left"
           labelCol={{ span: 8 }}
           onFinish={onSubmit}
+          form={form}
         >
           <h1>Register</h1>
           <Form.Item
@@ -68,9 +81,9 @@ function Register() {
             label="Wallet Address"
             name="walletAddress"
             className="walletAddress"
-            rules={[{ required: true, message: "Please enter wallet address" }]}
+            // rules={[{ required: true, message: "Please enter wallet address" }]}
           >
-            <Input type="text" placeholder="Wallet Address" />
+            <Input type="text" placeholder="Wallet Address"  disabled/>
           </Form.Item>
 
           <Form.Item
@@ -122,7 +135,10 @@ function Register() {
               }),
             ]}
           >
-              <Input type="password" placeholder="Please re-enter your password"/>
+            <Input
+              type="password"
+              placeholder="Please re-enter your password"
+            />
           </Form.Item>
 
           <Form.Item>

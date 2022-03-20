@@ -2,7 +2,6 @@ import React, { useState, useEffect } from "react";
 import { Route, BrowserRouter as Router, Routes } from "react-router-dom";
 // import SimpleStorageContract from "./contracts/SimpleStorage.json";
 // import getWeb3 from "./getWeb3";
- import { addUser, getUserByAddress, updateUser, deleteUser } from "./models/User";
 
 import "./App.css";
 import Login from "./components/Login/Login";
@@ -89,17 +88,6 @@ function App() {
             <Route path="/register" element={<Register/>}/>
           </Routes>
         </Router>
-        /* <h1>Good to Go!</h1>
-        <p>Your Truffle Box is installed and ready.</p>
-        <h2>Smart Contract Example</h2>
-        <p>
-          If your contracts compiled and migrated successfully, below will show
-          a stored value of 5 (by default).
-        </p>
-        <p>
-          Try changing the value stored on <strong>line 52</strong> of App.js.
-        </p>
-        <div>The stored value is: {storageValue}</div> */
     );
 
 }

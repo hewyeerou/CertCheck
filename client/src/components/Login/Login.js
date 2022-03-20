@@ -12,18 +12,22 @@ import { loginWithEmailAndPassword } from "../../models/User";
 
 function Login() {
   const { Option } = Select;
-  const [errorSubmitMsg, setErrorSubmitMsg] = useState(false);
+  const [errorSubmitCheck, setErrorSubmitCheck] = useState(false);
   const [ errorMsg, setErrorMsg ] = useState("");
 
   const loginSubmitHandler = (inputs) => {
-    setErrorSubmitMsg(false)
+    setErrorSubmitCheck(false);
     loginWithEmailAndPassword(inputs).then((user) => {
-      localStorage.setItem('user', user);
+      //Insert user into local storage
+      localStorage.setItem('loggedInUser', user);
+
+      //localStorage.getItem('Name');
+      //localStorage.removeItem('Name');
     }).catch((e) => {
-      console.log(e);
+      setErrorSubmitCheck(true);
+      setErrorMsg(e);
     })
   }
-  
 
   return (
     <Fragment>
@@ -75,6 +79,11 @@ function Login() {
           </Button>
           Or <Link to={"/register"} className="nav-link">Register!</Link>
         </Form.Item>
+
+        {errorSubmitCheck &&
+        <Form.Item>
+          <Alert message={errorMsg} type="error" /> 
+        </Form.Item>}
       </Form>
     </Fragment>
   );

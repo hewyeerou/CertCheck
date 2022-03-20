@@ -1,18 +1,18 @@
 import { ref, set, get, child, update, remove } from "firebase/database";
 import { db } from "../firebase-config";
 
-export async function addUser(walletAddress, name, email, password, role, img) {
+export async function addUser(walletAddress, name, email, password, type) {
 
-  set(ref(db, 'users/' + walletAddress), {
-    walletAddress: walletAddress,
-    name: name,
-    email: email,
-    password: password,
-    role: role,
-    img: img
-  }).catch((error) => {
-    console.log(error);
-  });
+    set(ref(db, 'users/' + walletAddress), {
+        walletAddress: walletAddress,
+        name: name,
+        email: email,
+        password: password,
+        type: type,
+        // img: img
+      }).catch((error) => {
+          console.log(error);
+      });
 
 }
 
@@ -50,18 +50,22 @@ export async function deleteUser(user) {
 
 export async function loginWithEmailAndPassword(loginDetails) {
   return get(child(ref(db), 'users')).then((snapshot) => {
+    // Find user in db
     if (snapshot.exists()) {
       var loggedInUser;
+      var ifExist = false;
       snapshot.forEach((user) => {
         if (loginDetails.email === user.val().email && loginDetails.password === user.val().password
-          && loginDetails.role === user.val().role) {
+          && loginDetails.role === user.val().type) {
           loggedInUser = user.val();
-          return true;
-        } else {
-          throw "User not available."
+          ifExist = true;
         }
       })
-      return loggedInUser;
+    // IF exist user in db
+      if(ifExist) {
+        return loggedInUser;
+      }
     }
+    throw "User not available";
   });
 }
