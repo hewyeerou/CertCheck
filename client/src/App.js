@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { Route, BrowserRouter as Router, Routes } from "react-router-dom";
 // import SimpleStorageContract from "./contracts/SimpleStorage.json";
 // import getWeb3 from "./getWeb3";
-// import { addUser, getUserByAddress, updateUser, deleteUser } from "./models/User";
+ import { addUser, getUserByAddress, updateUser, deleteUser } from "./models/User";
 
 import "./App.css";
 import Login from "./components/Login/Login";
@@ -14,6 +14,11 @@ function App() {
     const [web3, setWeb3] = useState();
     const [accounts, setAccounts] = useState();
     const [contract, setContract] = useState();
+    // useEffect(() => {
+
+    //   addUser('asdasd', 'asd', 'asd', 'asd', 'student', '');
+    
+    // })
 
     // useEffect(() => {
     //   const init = async () => {

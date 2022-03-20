@@ -1,22 +1,36 @@
-import React, { Fragment } from "react";
+import React, { Fragment, useState} from "react";
 import "antd/dist/antd.css";
 import "./Login.css";
-import { Form, Input, Button, Select } from "antd";
+import { Form, Input, Button, Select, Alert } from "antd";
 import {
   UserOutlined,
   LockOutlined,
   UserSwitchOutlined,
 } from "@ant-design/icons";
 import { Link } from 'react-router-dom'
+import { loginWithEmailAndPassword } from "../../models/User";
 
 function Login() {
   const { Option } = Select;
+  const [errorSubmitMsg, setErrorSubmitMsg] = useState(false);
+  const [ errorMsg, setErrorMsg ] = useState("");
+
+  const loginSubmitHandler = (inputs) => {
+    setErrorSubmitMsg(false)
+    loginWithEmailAndPassword(inputs).then((user) => {
+      localStorage.setItem('user', user);
+    }).catch((e) => {
+      console.log(e);
+    })
+  }
+  
 
   return (
     <Fragment>
       <Form
         name="loginForm"
         className="loginForm"
+        onFinish={loginSubmitHandler}
       >
         <img src="cc-logo.png" className="ccLogo"/>
         <Form.Item
