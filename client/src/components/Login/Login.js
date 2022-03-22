@@ -1,91 +1,106 @@
-import React, { Fragment, useState} from "react";
+import React, { Fragment, useState, useEffect } from "react";
 import "antd/dist/antd.css";
 import "./Login.css";
 import { Form, Input, Button, Select, Alert } from "antd";
+import getWeb3 from "../../getWeb3";
+import SimpleStorageContract from "../../contracts/SimpleStorage.json";
 import {
   UserOutlined,
   LockOutlined,
   UserSwitchOutlined,
 } from "@ant-design/icons";
-import { Link } from 'react-router-dom'
-import { loginWithEmailAndPassword } from "../../models/User";
+import { useNavigate } from 'react-router-dom'
+import { checkAddressExist } from "../../models/User";
 
 function Login() {
   const { Option } = Select;
-  const [errorSubmitCheck, setErrorSubmitCheck] = useState(false);
-  const [ errorMsg, setErrorMsg ] = useState("");
+  const [storageValue, setStorageValue] = useState(0);
+  const [web3, setWeb3] = useState();
+  const [accounts, setAccounts] = useState();
+  const [contract, setContract] = useState();
+  let navigate = useNavigate();
 
-  const loginSubmitHandler = (inputs) => {
-    setErrorSubmitCheck(false);
-    loginWithEmailAndPassword(inputs).then((user) => {
-      //Insert user into local storage
-      localStorage.setItem('loggedInUser', user);
+  useEffect(() => {
+    const init = async () => {
+      try {
+        // Get network provider (typically MetaMask) and web3 instance
+        const web3 = await getWeb3();
 
-      //localStorage.getItem('Name');
-      //localStorage.removeItem('Name');
-    }).catch((e) => {
-      setErrorSubmitCheck(true);
-      setErrorMsg(e);
-    })
+        // Use web3 to get the user's accounts from the provider (MetaMask)
+        const accounts = await web3.eth.getAccounts();
+
+        // Get the contract instance
+        const networkId = await web3.eth.net.getId();
+        const deployedNetwork = SimpleStorageContract.networks[networkId];
+        const instance = new web3.eth.Contract(
+          SimpleStorageContract.abi,
+          deployedNetwork && deployedNetwork.address,
+        );
+        // Set web3, accounts, contract to the state
+        setWeb3(web3);
+        setContract(instance);
+        setAccounts(accounts);
+
+        checkAddressExist(accounts[0]).then((result) => {
+          if(result) {
+            //Navigate to home page
+            console.log(result);
+          } else {
+            navigate("../Register", {
+              state: {
+                walletAddress: accounts[0]
+              }
+            });            
+          }
+        }).catch((err) => {
+          console.log(err);
+        })
+        
+      } catch (error) {
+        // Catch any errors for any of the above operations
+        alert(
+          `Failed to load web3, accounts, or contract. Did you migrate the contract or install MetaMask? Check console for details.`,
+        );
+        console.error(error);
+      }
+    };
+    init();
+  }, []);
+
+  // useEffect(() => {
+  //   const runExample = async () => {
+  //     // example of interaction with the smart contract
+  //     try {
+  //       // Stores a given value, 5 by default
+  //       await contract.methods.set(5).send({ from: accounts[0] });
+
+  //       // Get the value from the contract to prove it worked
+  //       const response = await contract.methods.get().call();
+
+  //       // Update state with the result
+  //       setStorageValue(response);
+  //     }
+  //     catch (error) {
+  //       alert('No contract deployed or account error; please check that MetaMask is on the correct network, reset the account and reload page');
+  //       console.error(error);
+  //     }
+  //   }
+  //   if (typeof (web3) != 'undefined'
+  //     && typeof (accounts) != 'undefined'
+  //     && typeof (contract) != 'undefined') {
+  //     runExample();
+  //   }
+  // }, [web3, accounts, contract]);
+
+  if (typeof (web3) === 'undefined') {
+    return <div className="App">Loading Web3, accounts, and contract... Reload page</div>;
   }
 
   return (
-    <Fragment>
-      <Form
-        name="loginForm"
-        className="loginForm"
-        onFinish={loginSubmitHandler}
-      >
-        <img src="cc-logo.png" className="ccLogo"/>
-        <Form.Item
-          name="email"
-          className="email"
-          rules={[{ required: true, message: "Please input your email" }]}
-        >
-          <Input
-            prefix={<UserOutlined className="site-form-item-icon" />}
-            placeholder="Email"
-          />
-        </Form.Item>
-        <Form.Item
-          name="password"
-          className="password"
-          rules={[{ required: true, message: "Please input your password!" }]}
-        >
-          <Input
-            prefix={<LockOutlined className="site-form-item-icon" />}
-            type="password"
-            placeholder="Password"
-          />
-        </Form.Item>
-        <Form.Item name="role" className="role">
-          <Select
-            placeholder={
-              <React.Fragment>
-                <UserSwitchOutlined/>
-                &nbsp; Please select a role
-              </React.Fragment>
-            }
-            // onChange={handleChange}
-          >
-            <Option value="student">Student</Option>
-            <Option value="institution">Institution</Option>
-            <Option value="employer">Employer</Option>
-          </Select>
-        </Form.Item>
-        <Form.Item>
-          <Button type="primary" htmlType="submit" className="submitBtn">
-            Login
-          </Button>
-          Or <Link to={"/register"} className="nav-link">Register!</Link>
-        </Form.Item>
-
-        {errorSubmitCheck &&
-        <Form.Item>
-          <Alert message={errorMsg} type="error" /> 
-        </Form.Item>}
-      </Form>
-    </Fragment>
+    <div className="container">
+      <h1>Hello, World!</h1>
+      {/* <p>Your account: {accounts[0]}</p> */}
+    </div>
   );
 }
 
