@@ -20,6 +20,7 @@ function Login() {
     loginWithEmailAndPassword(inputs).then((user) => {
       //Insert user into local storage
       localStorage.setItem('loggedInUser', user);
+      console.log(user);
 
       //localStorage.getItem('Name');
       //localStorage.removeItem('Name');

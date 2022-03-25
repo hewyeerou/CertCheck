@@ -28,7 +28,7 @@ function Register() {
       setWeb3(web3);
       setAccounts(accounts);
     } catch (error) {
-      alert(`Failed to load web3.`);
+      message(`Failed to load web3.`);
       console.error(error);
     }
   };
@@ -43,10 +43,12 @@ function Register() {
     });
   }, [web3, accounts]);
 
-  const onSubmit = (values) => {
-    const { role, walletAddress, name, email, password } = values;
+  const onSubmit = async(values) => {
+    // let acc = await loadWeb3();
 
-    addUser(walletAddress[0], name, email, password, role).then(() => {
+    const { role, name, email, password } = values;
+
+    addUser(accounts[0], name, email, password, role).then(() => {
       message.success("Account has been created!");
       navigate("/");
     });
@@ -83,7 +85,7 @@ function Register() {
             className="walletAddress"
             // rules={[{ required: true, message: "Please enter wallet address" }]}
           >
-            <Input type="text" placeholder="Wallet Address"  disabled/>
+            <Input type="text" placeholder="Wallet Address" disabled />
           </Form.Item>
 
           <Form.Item
