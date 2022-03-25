@@ -2,7 +2,7 @@ import React, { Fragment, useEffect, useState } from "react";
 import { Form, Select, Input, Button, message } from "antd";
 import "antd/dist/antd.css";
 import "./Register.css";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useLocation } from "react-router-dom";
 import { addUser } from "../../models/User";
 
 //web3
@@ -12,6 +12,7 @@ function Register() {
   const { Option } = Select;
   const [form] = Form.useForm();
   const navigate = useNavigate();
+  const location = useLocation();
 
   // set up web3
   const [web3, setWeb3] = useState();
@@ -34,6 +35,7 @@ function Register() {
   };
 
   useEffect(() => {
+    console.log(location.state.walletAddress);
     loadWeb3();
   }, []);
 

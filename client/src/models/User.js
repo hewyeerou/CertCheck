@@ -1,7 +1,7 @@
 import { ref, set, get, child, update, remove } from "firebase/database";
 import { db } from "../firebase-config";
 
-export async function addUser(walletAddress, name, email, password, type) {
+export async function addUser(walletAddress, name, email, password, type, img) {
 
     set(ref(db, 'users/' + walletAddress), {
         walletAddress: walletAddress,
@@ -9,7 +9,7 @@ export async function addUser(walletAddress, name, email, password, type) {
         email: email,
         password: password,
         type: type,
-        // img: img
+        img: img
       }).catch((error) => {
           console.log(error);
       });
@@ -18,7 +18,7 @@ export async function addUser(walletAddress, name, email, password, type) {
 
 export async function getUserByAddress(walletAddress) {
 
-  get(child(ref(db), 'users/${walletAddress}')).then((snapshot) => {
+  return get(child(ref(db), 'users/${walletAddress}')).then((snapshot) => {
     if (snapshot.exists()) {
       console.log(snapshot.val());
     } else {
@@ -67,5 +67,15 @@ export async function loginWithEmailAndPassword(loginDetails) {
       }
     }
     throw "User not available";
+  });
+}
+
+export async function checkAddressExist(walletAddress) {
+  return get(child(ref(db), 'users/' + walletAddress)).then((snapshot) => {
+    // Find user in db
+    if (snapshot.exists()) {
+      return snapshot.val();
+    }
+    return false;
   });
 }
