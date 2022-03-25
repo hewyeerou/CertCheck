@@ -52,7 +52,7 @@ contract Certificate {
         string createdOn;
     }
 
-    constructor(CertificateNetwork cn) {
+    constructor(CertificateNetwork cn) public {
         certNetwork = cn;
         totalCert = 0;
     }
@@ -107,117 +107,117 @@ contract Certificate {
     // 1. Student know school block addr
     // 2. Student belongs to the school and is legitamite.
     // 3. Student only needs to request from the sch once for a sch to send all the students cert.
-    function requestCert(address issuerAddr)
-        public
-        onlyValidRoles("Student")
-        userExist(issuerAddr, "Issuer")
-    {
-        require(
-            !certRequestMap[msg.sender].includes(issuerAddr),
-            "You have already requested for a cert."
-        );
-        certRequestMap[msg.sender].push(issuerAddr); // A student can send request to many issuer
-        certRequestMap[issuerAddr].push(msg.sender); // An issuer can have request from many student
-        // TODO: sort list after push for easier retrival?
+    // function requestCert(address issuerAddr)
+    //     public
+    //     onlyValidRoles("Student")
+    //     userExist(issuerAddr, "Issuer")
+    // {
+    //     require(
+    //         !certRequestMap[msg.sender].includes(issuerAddr),
+    //         "You have already requested for a cert."
+    //     );
+    //     certRequestMap[msg.sender].push(issuerAddr); // A student can send request to many issuer
+    //     certRequestMap[issuerAddr].push(msg.sender); // An issuer can have request from many student
+    //     // TODO: sort list after push for easier retrival?
 
-        emit RequestCertificate(msg.sender, issuerAddr); // Question: do we need date?
-    }
+    //     emit RequestCertificate(msg.sender, issuerAddr); // Question: do we need date?
+    // }
 
-    // TODO: Xie Ran
-    // Grant access to a verifier to viewing all student certs.(STUDENT -> VERIFIER)
-    function grantVerifier(address verifier)
-        public
-        userExist(verifier)
-        onlyValidRoles("Student")
-    {
-        require(
-            !certRequestMap[msg.sender].includes(verifier),
-            "Verifier has already been given access."
-        );
-        // TODO: approve all certs for viewing for verifier addr
-        // TODO: update mappings
+    // // TODO: Xie Ran
+    // // Grant access to a verifier to viewing all student certs.(STUDENT -> VERIFIER)
+    // function grantVerifier(address verifier)
+    //     public
+    //     userExist(verifier)
+    //     onlyValidRoles("Student")
+    // {
+    //     require(
+    //         !certRequestMap[msg.sender].includes(verifier),
+    //         "Verifier has already been given access."
+    //     );
+    //     // TODO: approve all certs for viewing for verifier addr
+    //     // TODO: update mappings
 
-        // TODO: emit event
-        emit giveAccessViewing(Cert, verifier);
-    }
+    //     // TODO: emit event
+    //     emit giveAccessViewing(Cert, verifier);
+    // }
 
-    // TODO:Xie Ran
-    // Deny access to a verifier to viewing all student certs.(STUDENT -> VERIFIER)
-    function denyVerifier(uint256 certId, address verifier)
-        public
-        userExist(verifier)
-        onlyValidRoles("Student")
-    {
-        require(
-            certRequestMap[msg.sender].includes(verifier),
-            "Verifier has already been denied access."
-        );
-        // TODO: remove verifier from mappings etc
-        // certsMap[cert].viewerList.pop(verifier); // add to viewing list
+    // // TODO:Xie Ran
+    // // Deny access to a verifier to viewing all student certs.(STUDENT -> VERIFIER)
+    // function denyVerifier(uint256 certId, address verifier)
+    //     public
+    //     userExist(verifier)
+    //     onlyValidRoles("Student")
+    // {
+    //     require(
+    //         certRequestMap[msg.sender].includes(verifier),
+    //         "Verifier has already been denied access."
+    //     );
+    //     // TODO: remove verifier from mappings etc
+    //     // certsMap[cert].viewerList.pop(verifier); // add to viewing list
 
-        // TODO: emit event
-        emit denyAccessViewing(Cert, verifier);
-    }
+    //     // TODO: emit event
+    //     emit denyAccessViewing(Cert, verifier);
+    // }
 
-    // TODO: ShiKai
-    function issueCertificate(
-        address studentAddr,
-        string memory _name,
-        string memory _nric,
-        string memory _matricNo,
-        string memory _title,
-        string memory _completionDate,
-        string memory _rollNumber,
-        string memory _issuerName
-    ) public onlyValidRoles("Issuer") returns (bool Status) {
-        require(
-            !certRequestMap[msg.sender].includes(issuerAddr),
-            "Student has not request for a new cert."
-        );
-        // new cert object before transfer to student
-        uint256 newCertId = totalCert++;
+    // // TODO: ShiKai
+    // function issueCertificate(
+    //     address studentAddr,
+    //     string memory _name,
+    //     string memory _nric,
+    //     string memory _matricNo,
+    //     string memory _title,
+    //     string memory _completionDate,
+    //     string memory _rollNumber,
+    //     string memory _issuerName
+    // ) public onlyValidRoles("Issuer") returns (bool Status) {
+    //     require(
+    //         !certRequestMap[msg.sender].includes(issuerAddr),
+    //         "Student has not request for a new cert."
+    //     );
+    //     // new cert object before transfer to student
+    //     uint256 newCertId = totalCert++;
 
-        Cert memory newCert = Cert(
-            msg.sender,
-            address, // issuer addr
-            _name,
-            _issuerName,
-            _nric,
-            _matricNo, // question: is this the same as roll number => no
-            _title,
-            _completionDate,
-            _rollNumber
-        );
+    //     Cert memory newCert = Cert(
+    //         msg.sender,
+    //         address, // issuer addr
+    //         _name,
+    //         _issuerName,
+    //         _nric,
+    //         _matricNo, // question: is this the same as roll number => no
+    //         _title,
+    //         _completionDate,
+    //         _rollNumber
+    //     );
 
-        certsMap[newCertId] = newCert; // add to cert mapping
-        certExistMap[newCertId] = true; // for cert exist modifier
-        studentToCertMap[msg.sender].push(newCert); //add to list of stud certs
+    //     certsMap[newCertId] = newCert; // add to cert mapping
+    //     certExistMap[newCertId] = true; // for cert exist modifier
+    //     studentToCertMap[msg.sender].push(newCert); //add to list of stud certs
 
-        emit IssuedCertificate(newCertId, msg.sender); // Log event
+    //     emit IssuedCertificate(newCertId, msg.sender); // Log event
 
-        return true;
-    }
+    //     return true;
+    // }
 
-    // TODO: JK
-    // Delete cert in case of wrong issue or revoked.
-    // Assumption:
-    // 1. we do not delete the cert block, but set the existence to false to indicate it was deleted
-    function revokeCert(uint256 certId)
-        public
-        onlyCertIssuer
-        certExist(certId)
-        validCertId(certId)
-    {
-        address studAddr = certsMap[certId].owner; // get owner of cert
-        certExistMap[certId] = false; // for cert exist modifier
+    // // TODO: JK
+    // // Delete cert in case of wrong issue or revoked.
+    // // Assumption:
+    // // 1. we do not delete the cert block, but set the existence to false to indicate it was deleted
+    // function revokeCert(uint256 certId)
+    //     public
+    //     onlyCertIssuer
+    //     certExist(certId)
+    //     validCertId(certId)
+    // {
+    //     address studAddr = certsMap[certId].owner; // get owner of cert
+    //     certExistMap[certId] = false; // for cert exist modifier
 
-        //TODO: Traverse through mapping list to delete cert from student list of certs, whats the best way?
-        //studentToCertMap[msg.sender].pop(newCert); //add to list of stud certs
+    //     //TODO: Traverse through mapping list to delete cert from student list of certs, whats the best way?
+    //     //studentToCertMap[msg.sender].pop(newCert); //add to list of stud certs
 
-        delete certsMap[certId]; // Remove from mapping
+    //     delete certsMap[certId]; // Remove from mapping
 
-        emit RevokeCertificate(msg.sender, certId);
-    }
+    //     emit RevokeCertificate(msg.sender, certId);
+    // }
 
     // TODO: SK -> Getter and setter for all the cert attributes.
     // TODO: JK,SK,XR -> include relevant Getters and setters for cert
