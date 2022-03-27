@@ -9,63 +9,44 @@ import {
   LockOutlined,
   UserSwitchOutlined,
 } from "@ant-design/icons";
-import { useNavigate } from 'react-router-dom'
+import { useNavigate } from "react-router-dom";
 import { checkAddressExist } from "../../models/User";
 
-function Login() {
+function Login({ web3, accounts }) {
   const { Option } = Select;
-  const [storageValue, setStorageValue] = useState(0);
-  const [web3, setWeb3] = useState();
-  const [accounts, setAccounts] = useState();
-  const [contract, setContract] = useState();
   let navigate = useNavigate();
 
   useEffect(() => {
     const init = async () => {
       try {
-        // Get network provider (typically MetaMask) and web3 instance
-        const web3 = await getWeb3();
-
-        // Use web3 to get the user's accounts from the provider (MetaMask)
-        const accounts = await web3.eth.getAccounts();
-
-        // Get the contract instance
-        const networkId = await web3.eth.net.getId();
-        const deployedNetwork = SimpleStorageContract.networks[networkId];
-        const instance = new web3.eth.Contract(
-          SimpleStorageContract.abi,
-          deployedNetwork && deployedNetwork.address,
-        );
-        // Set web3, accounts, contract to the state
-        setWeb3(web3);
-        setContract(instance);
-        setAccounts(accounts);
-
-        checkAddressExist(accounts[0]).then((result) => {
-          if(result) {
-            //Navigate to home page
-            console.log(result);
-          } else {
-            navigate("../Register", {
-              state: {
-                walletAddress: accounts[0]
+        if (accounts) {
+          checkAddressExist(accounts[0])
+            .then((result) => {
+              if (result) {
+                //Navigate to home page
+                console.log(result);
+              } else {
+                navigate("/register", {
+                  state: {
+                    walletAddress: accounts[0],
+                  },
+                });
               }
-            });            
-          }
-        }).catch((err) => {
-          console.log(err);
-        })
-        
+            })
+            .catch((err) => {
+              console.log(err);
+            });
+        }
       } catch (error) {
         // Catch any errors for any of the above operations
         alert(
-          `Failed to load web3, accounts, or contract. Did you migrate the contract or install MetaMask? Check console for details.`,
+          `Failed to load web3, accounts, or contract. Did you migrate the contract or install MetaMask? Check console for details.`
         );
         console.error(error);
       }
     };
     init();
-  }, []);
+  }, [accounts]);
 
   // useEffect(() => {
   //   const runExample = async () => {
@@ -92,8 +73,12 @@ function Login() {
   //   }
   // }, [web3, accounts, contract]);
 
-  if (typeof (web3) === 'undefined') {
-    return <div className="App">Loading Web3, accounts, and contract... Reload page</div>;
+  if (typeof web3 === "undefined") {
+    return (
+      <div className="App">
+        Loading Web3, accounts, and contract... Reload page
+      </div>
+    );
   }
 
   return (

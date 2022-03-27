@@ -115,9 +115,9 @@
       "type": "event"
     }
   ],
-  "metadata": "{\"compiler\":{\"version\":\"0.5.16+commit.9c3226ce\"},\"language\":\"Solidity\",\"output\":{\"abi\":[{\"inputs\":[{\"internalType\":\"contract CertificateNetwork\",\"name\":\"cn\",\"type\":\"address\"}],\"payable\":false,\"stateMutability\":\"nonpayable\",\"type\":\"constructor\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":false,\"internalType\":\"string\",\"name\":\"certId\",\"type\":\"string\"},{\"indexed\":false,\"internalType\":\"address\",\"name\":\"issuerAddr\",\"type\":\"address\"}],\"name\":\"IssuedCertificate\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":false,\"internalType\":\"address\",\"name\":\"studentAddr\",\"type\":\"address\"},{\"indexed\":false,\"internalType\":\"address\",\"name\":\"issuerAddr\",\"type\":\"address\"}],\"name\":\"RequestCertificate\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":false,\"internalType\":\"string\",\"name\":\"certId\",\"type\":\"string\"}],\"name\":\"RevokeCertificate\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"cert\",\"type\":\"uint256\"},{\"indexed\":false,\"internalType\":\"address\",\"name\":\"studentAddr\",\"type\":\"address\"},{\"indexed\":false,\"internalType\":\"address\",\"name\":\"verifierAddr\",\"type\":\"address\"}],\"name\":\"denyAccessViewing\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"cert\",\"type\":\"uint256\"},{\"indexed\":false,\"internalType\":\"address\",\"name\":\"studentAddr\",\"type\":\"address\"},{\"indexed\":false,\"internalType\":\"address\",\"name\":\"verifierAddr\",\"type\":\"address\"}],\"name\":\"giveAccessViewing\",\"type\":\"event\"}],\"devdoc\":{\"methods\":{}},\"userdoc\":{\"methods\":{}}},\"settings\":{\"compilationTarget\":{\"project:/contracts/Certificate.sol\":\"Certificate\"},\"evmVersion\":\"istanbul\",\"libraries\":{},\"optimizer\":{\"enabled\":false,\"runs\":200},\"remappings\":[]},\"sources\":{\"project:/contracts/Certificate.sol\":{\"keccak256\":\"0x7317aec80ca065bf83233c1fc421c110c65279c3b1aecf011537ae0b99e3f8ae\",\"urls\":[\"bzz-raw://2c3d462883911cc548bdd4989c2c55a60755e7f289f21632ba223f11c46d5772\",\"dweb:/ipfs/QmcoB37eRLCe7M5zgQUJzxexnLtrGLXjtHjA4vvk3ho1Ek\"]},\"project:/contracts/CertificateNetwork.sol\":{\"keccak256\":\"0x458f00b13445d5e38a2874f50c39b4e717142baec3b12b7c413435154df580d6\",\"urls\":[\"bzz-raw://df33f37861580501696658a8b58659538dd3c092a290016218f635daf837c645\",\"dweb:/ipfs/QmPWR99PqaacCvfA6woDqRJm5UTBkBnK2uDVRvF4cy3fbs\"]}},\"version\":1}",
-  "bytecode": "0x6080604052348015600f57600080fd5b5060405160d438038060d483398181016040526020811015602f57600080fd5b8101908080519060200190929190505050806000806101000a81548173ffffffffffffffffffffffffffffffffffffffff021916908373ffffffffffffffffffffffffffffffffffffffff160217905550600060018190555050603e8060966000396000f3fe6080604052600080fdfea265627a7a72315820aaad9e54cf19b38281984f6cd8a2ce1590958e8402235594ce8f934a1a78ada264736f6c63430005100032",
-  "deployedBytecode": "0x6080604052600080fdfea265627a7a72315820aaad9e54cf19b38281984f6cd8a2ce1590958e8402235594ce8f934a1a78ada264736f6c63430005100032",
+  "metadata": "{\"compiler\":{\"version\":\"0.5.16+commit.9c3226ce\"},\"language\":\"Solidity\",\"output\":{\"abi\":[{\"inputs\":[{\"internalType\":\"contract CertificateNetwork\",\"name\":\"cn\",\"type\":\"address\"}],\"payable\":false,\"stateMutability\":\"nonpayable\",\"type\":\"constructor\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":false,\"internalType\":\"string\",\"name\":\"certId\",\"type\":\"string\"},{\"indexed\":false,\"internalType\":\"address\",\"name\":\"issuerAddr\",\"type\":\"address\"}],\"name\":\"IssuedCertificate\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":false,\"internalType\":\"address\",\"name\":\"studentAddr\",\"type\":\"address\"},{\"indexed\":false,\"internalType\":\"address\",\"name\":\"issuerAddr\",\"type\":\"address\"}],\"name\":\"RequestCertificate\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":false,\"internalType\":\"string\",\"name\":\"certId\",\"type\":\"string\"}],\"name\":\"RevokeCertificate\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"cert\",\"type\":\"uint256\"},{\"indexed\":false,\"internalType\":\"address\",\"name\":\"studentAddr\",\"type\":\"address\"},{\"indexed\":false,\"internalType\":\"address\",\"name\":\"verifierAddr\",\"type\":\"address\"}],\"name\":\"denyAccessViewing\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"cert\",\"type\":\"uint256\"},{\"indexed\":false,\"internalType\":\"address\",\"name\":\"studentAddr\",\"type\":\"address\"},{\"indexed\":false,\"internalType\":\"address\",\"name\":\"verifierAddr\",\"type\":\"address\"}],\"name\":\"giveAccessViewing\",\"type\":\"event\"}],\"devdoc\":{\"methods\":{}},\"userdoc\":{\"methods\":{}}},\"settings\":{\"compilationTarget\":{\"project:/contracts/Certificate.sol\":\"Certificate\"},\"evmVersion\":\"istanbul\",\"libraries\":{},\"optimizer\":{\"enabled\":false,\"runs\":200},\"remappings\":[]},\"sources\":{\"project:/contracts/Certificate.sol\":{\"keccak256\":\"0x7317aec80ca065bf83233c1fc421c110c65279c3b1aecf011537ae0b99e3f8ae\",\"urls\":[\"bzz-raw://2c3d462883911cc548bdd4989c2c55a60755e7f289f21632ba223f11c46d5772\",\"dweb:/ipfs/QmcoB37eRLCe7M5zgQUJzxexnLtrGLXjtHjA4vvk3ho1Ek\"]},\"project:/contracts/CertificateNetwork.sol\":{\"keccak256\":\"0x6c5d2f62f3b5a58ac482764a2ba534a45c2ce1e6d63d31fc60b3f4a30e0633b6\",\"urls\":[\"bzz-raw://6756e95ad525bb948cefd485d98bd9482ed5779b5d0fbb68320928391681d368\",\"dweb:/ipfs/QmdXRWE8GJek5xLDnVPJiU3xW7y8cpdQHd3C2CjMKUHzMm\"]}},\"version\":1}",
+  "bytecode": "0x6080604052348015600f57600080fd5b5060405160d438038060d483398181016040526020811015602f57600080fd5b8101908080519060200190929190505050806000806101000a81548173ffffffffffffffffffffffffffffffffffffffff021916908373ffffffffffffffffffffffffffffffffffffffff160217905550600060018190555050603e8060966000396000f3fe6080604052600080fdfea265627a7a723158206067e531d6af9d276bf359d3d3ec88e7b32542ebe491a8fe22b6941cdcb322ff64736f6c63430005100032",
+  "deployedBytecode": "0x6080604052600080fdfea265627a7a723158206067e531d6af9d276bf359d3d3ec88e7b32542ebe491a8fe22b6941cdcb322ff64736f6c63430005100032",
   "sourceMap": "61:8047:0:-;;;2072:98;8:9:-1;5:2;;;30:1;27;20:12;5:2;2072:98:0;;;;;;;;;;;;;;;13:2:-1;8:3;5:11;2:2;;;29:1;26;19:12;2:2;2072:98:0;;;;;;;;;;;;;;;;2138:2;2124:11;;:16;;;;;;;;;;;;;;;;;;2162:1;2150:9;:13;;;;2072:98;61:8047;;;;;;",
   "deployedSourceMap": "61:8047:0:-;;;;;",
   "source": "pragma solidity >=0.5.0;\nimport \"./CertificateNetwork.sol\";\n\ncontract Certificate {\n    CertificateNetwork certNetwork;\n    uint256 internal totalCert; // Total Counter Added CertNo + track certId\n\n    mapping(uint256 => Cert) private certsMap; // all created certs\n    mapping(uint256 => bool) private certExistMap; // T - cert is valid , F - cert is revoked, got record means created before\n    mapping(address => uint256[]) private studentToCertMap; // map student to issued certs(by certId) by issuers\n\n    mapping(address => address[]) private certRequestMap; //S>I, request for cert\n    mapping(address => address[]) private studentToVerifierMap; // S>V, map student to all approved verifiers to view all certs\n\n    // TODO: JK,SK,XR -> feel free to add any mappings desirable\n    //mapping(address => address[]) private verifierToStudentMap;\n    //mapping(address => uint256) private verifierToCertMap;\n\n    // Events\n    event IssuedCertificate(string certId, address issuerAddr);\n    event RevokeCertificate(string certId);\n    event RequestCertificate(address studentAddr, address issuerAddr);\n    event giveAccessViewing(\n        uint256 cert,\n        address studentAddr,\n        address verifierAddr\n    );\n    event denyAccessViewing(\n        uint256 cert,\n        address studentAddr,\n        address verifierAddr\n    );\n\n    // Structs\n    struct Cert {\n        address owner; // issued by sch first then student owns the contract\n        address issuerAddr; // issuer address\n        string issuerName;\n        string creationDate; // cert creation date\n        string studName; // student name\n        string nric; // s9673333A\n        string matricNo; //student admin no, e.g A0200100X\n        string title; // cert title\n        string rollNumber;\n        string completionDate; // date student completed the cert requirements\n        string details; // modules taken, etc.\n    }\n\n    struct certViewingRecord {\n        // additional function if we want to see who seen our cert before\n        address requestedBy;\n        string createdOn;\n    }\n\n    constructor(CertificateNetwork cn) public {\n        certNetwork = cn;\n        totalCert = 0;\n    }\n\n    // Modifiers\n\n    // Used for functions with specific roles\n    modifier onlyValidRoles(string memory role) {\n        require(\n            certNetwork.checkUserExist(msg.sender, role),\n            \"This action can only be performed by authorized roles.\"\n        );\n        _;\n    }\n\n    // Used to check if a user exist, i.e. issue cert to student, check if that student exist in our system.\n    modifier userExist(address addr, string memory role) {\n        require(\n            certNetwork.checkUserExist(addr, role),\n            \"This action can only be performed by user in our network.\"\n        );\n        _;\n    }\n    modifier certExist(uint256 certId) {\n        require(certExistMap[certId], \"Cert ID number does not exist.\");\n        _;\n    }\n    // Used this for determining valid cert\n    modifier validCertId(uint256 certId) {\n        require(certId < totalCert);\n        _;\n    }\n    modifier onlyCertOwner(uint256 certId) {\n        require(\n            certsMap[certId].owner == msg.sender,\n            \"This action can only be performed by the certificate owner.\"\n        );\n        _;\n    }\n    modifier onlyCertIssuer(uint256 certId) {\n        require(\n            certsMap[certId].issuerAddr == msg.sender,\n            \"This action can only be performed by the certificate issuer.\"\n        );\n        _;\n    }\n\n    // TODO: JAOKUEAN\n    // Request cert from issuer. (STUDENT -> ISSUER)\n    // Issue: student can spam request for each issuer without being a student\n    // Assumptions:\n    // 1. Student know school block addr\n    // 2. Student belongs to the school and is legitamite.\n    // 3. Student only needs to request from the sch once for a sch to send all the students cert.\n    // function requestCert(address issuerAddr)\n    //     public\n    //     onlyValidRoles(\"Student\")\n    //     userExist(issuerAddr, \"Issuer\")\n    // {\n    //     require(\n    //         !certRequestMap[msg.sender].includes(issuerAddr),\n    //         \"You have already requested for a cert.\"\n    //     );\n    //     certRequestMap[msg.sender].push(issuerAddr); // A student can send request to many issuer\n    //     certRequestMap[issuerAddr].push(msg.sender); // An issuer can have request from many student\n    //     // TODO: sort list after push for easier retrival?\n\n    //     emit RequestCertificate(msg.sender, issuerAddr); // Question: do we need date?\n    // }\n\n    // // TODO: Xie Ran\n    // // Grant access to a verifier to viewing all student certs.(STUDENT -> VERIFIER)\n    // function grantVerifier(address verifier)\n    //     public\n    //     userExist(verifier)\n    //     onlyValidRoles(\"Student\")\n    // {\n    //     require(\n    //         !certRequestMap[msg.sender].includes(verifier),\n    //         \"Verifier has already been given access.\"\n    //     );\n    //     // TODO: approve all certs for viewing for verifier addr\n    //     // TODO: update mappings\n\n    //     // TODO: emit event\n    //     emit giveAccessViewing(Cert, verifier);\n    // }\n\n    // // TODO:Xie Ran\n    // // Deny access to a verifier to viewing all student certs.(STUDENT -> VERIFIER)\n    // function denyVerifier(uint256 certId, address verifier)\n    //     public\n    //     userExist(verifier)\n    //     onlyValidRoles(\"Student\")\n    // {\n    //     require(\n    //         certRequestMap[msg.sender].includes(verifier),\n    //         \"Verifier has already been denied access.\"\n    //     );\n    //     // TODO: remove verifier from mappings etc\n    //     // certsMap[cert].viewerList.pop(verifier); // add to viewing list\n\n    //     // TODO: emit event\n    //     emit denyAccessViewing(Cert, verifier);\n    // }\n\n    // // TODO: ShiKai\n    // function issueCertificate(\n    //     address studentAddr,\n    //     string memory _name,\n    //     string memory _nric,\n    //     string memory _matricNo,\n    //     string memory _title,\n    //     string memory _completionDate,\n    //     string memory _rollNumber,\n    //     string memory _issuerName\n    // ) public onlyValidRoles(\"Issuer\") returns (bool Status) {\n    //     require(\n    //         !certRequestMap[msg.sender].includes(issuerAddr),\n    //         \"Student has not request for a new cert.\"\n    //     );\n    //     // new cert object before transfer to student\n    //     uint256 newCertId = totalCert++;\n\n    //     Cert memory newCert = Cert(\n    //         msg.sender,\n    //         address, // issuer addr\n    //         _name,\n    //         _issuerName,\n    //         _nric,\n    //         _matricNo, // question: is this the same as roll number => no\n    //         _title,\n    //         _completionDate,\n    //         _rollNumber\n    //     );\n\n    //     certsMap[newCertId] = newCert; // add to cert mapping\n    //     certExistMap[newCertId] = true; // for cert exist modifier\n    //     studentToCertMap[msg.sender].push(newCert); //add to list of stud certs\n\n    //     emit IssuedCertificate(newCertId, msg.sender); // Log event\n\n    //     return true;\n    // }\n\n    // // TODO: JK\n    // // Delete cert in case of wrong issue or revoked.\n    // // Assumption:\n    // // 1. we do not delete the cert block, but set the existence to false to indicate it was deleted\n    // function revokeCert(uint256 certId)\n    //     public\n    //     onlyCertIssuer\n    //     certExist(certId)\n    //     validCertId(certId)\n    // {\n    //     address studAddr = certsMap[certId].owner; // get owner of cert\n    //     certExistMap[certId] = false; // for cert exist modifier\n\n    //     //TODO: Traverse through mapping list to delete cert from student list of certs, whats the best way?\n    //     //studentToCertMap[msg.sender].pop(newCert); //add to list of stud certs\n\n    //     delete certsMap[certId]; // Remove from mapping\n\n    //     emit RevokeCertificate(msg.sender, certId);\n    // }\n\n    // TODO: SK -> Getter and setter for all the cert attributes.\n    // TODO: JK,SK,XR -> include relevant Getters and setters for cert\n}\n",
@@ -149,7 +149,7 @@
         "id": 2,
         "nodeType": "ImportDirective",
         "scope": 197,
-        "sourceUnit": 458,
+        "sourceUnit": 446,
         "src": "25:34:0",
         "symbolAliases": [],
         "unitAlias": ""
@@ -177,7 +177,7 @@
             "stateVariable": true,
             "storageLocation": "default",
             "typeDescriptions": {
-              "typeIdentifier": "t_contract$_CertificateNetwork_$457",
+              "typeIdentifier": "t_contract$_CertificateNetwork_$445",
               "typeString": "contract CertificateNetwork"
             },
             "typeName": {
@@ -185,10 +185,10 @@
               "id": 3,
               "name": "CertificateNetwork",
               "nodeType": "UserDefinedTypeName",
-              "referencedDeclaration": 457,
+              "referencedDeclaration": 445,
               "src": "88:18:0",
               "typeDescriptions": {
-                "typeIdentifier": "t_contract$_CertificateNetwork_$457",
+                "typeIdentifier": "t_contract$_CertificateNetwork_$445",
                 "typeString": "contract CertificateNetwork"
               }
             },
@@ -1245,7 +1245,7 @@
                       "referencedDeclaration": 4,
                       "src": "2124:11:0",
                       "typeDescriptions": {
-                        "typeIdentifier": "t_contract$_CertificateNetwork_$457",
+                        "typeIdentifier": "t_contract$_CertificateNetwork_$445",
                         "typeString": "contract CertificateNetwork"
                       }
                     },
@@ -1260,13 +1260,13 @@
                       "referencedDeclaration": 91,
                       "src": "2138:2:0",
                       "typeDescriptions": {
-                        "typeIdentifier": "t_contract$_CertificateNetwork_$457",
+                        "typeIdentifier": "t_contract$_CertificateNetwork_$445",
                         "typeString": "contract CertificateNetwork"
                       }
                     },
                     "src": "2124:16:0",
                     "typeDescriptions": {
-                      "typeIdentifier": "t_contract$_CertificateNetwork_$457",
+                      "typeIdentifier": "t_contract$_CertificateNetwork_$445",
                       "typeString": "contract CertificateNetwork"
                     }
                   },
@@ -1348,7 +1348,7 @@
                   "stateVariable": false,
                   "storageLocation": "default",
                   "typeDescriptions": {
-                    "typeIdentifier": "t_contract$_CertificateNetwork_$457",
+                    "typeIdentifier": "t_contract$_CertificateNetwork_$445",
                     "typeString": "contract CertificateNetwork"
                   },
                   "typeName": {
@@ -1356,10 +1356,10 @@
                     "id": 90,
                     "name": "CertificateNetwork",
                     "nodeType": "UserDefinedTypeName",
-                    "referencedDeclaration": 457,
+                    "referencedDeclaration": 445,
                     "src": "2084:18:0",
                     "typeDescriptions": {
-                      "typeIdentifier": "t_contract$_CertificateNetwork_$457",
+                      "typeIdentifier": "t_contract$_CertificateNetwork_$445",
                       "typeString": "contract CertificateNetwork"
                     }
                   },
@@ -1402,7 +1402,7 @@
                               "name": "msg",
                               "nodeType": "Identifier",
                               "overloadedDeclarations": [],
-                              "referencedDeclaration": 532,
+                              "referencedDeclaration": 520,
                               "src": "2342:3:0",
                               "typeDescriptions": {
                                 "typeIdentifier": "t_magic_message",
@@ -1457,7 +1457,7 @@
                             "referencedDeclaration": 4,
                             "src": "2315:11:0",
                             "typeDescriptions": {
-                              "typeIdentifier": "t_contract$_CertificateNetwork_$457",
+                              "typeIdentifier": "t_contract$_CertificateNetwork_$445",
                               "typeString": "contract CertificateNetwork"
                             }
                           },
@@ -1468,7 +1468,7 @@
                           "lValueRequested": false,
                           "memberName": "checkUserExist",
                           "nodeType": "MemberAccess",
-                          "referencedDeclaration": 436,
+                          "referencedDeclaration": 424,
                           "src": "2315:26:0",
                           "typeDescriptions": {
                             "typeIdentifier": "t_function_external_view$_t_address_$_t_string_memory_ptr_$returns$_t_bool_$",
@@ -1523,10 +1523,10 @@
                       "name": "require",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [
-                        535,
-                        536
+                        523,
+                        524
                       ],
-                      "referencedDeclaration": 536,
+                      "referencedDeclaration": 524,
                       "src": "2294:7:0",
                       "typeDescriptions": {
                         "typeIdentifier": "t_function_require_pure$_t_bool_$_t_string_memory_ptr_$returns$__$",
@@ -1658,7 +1658,7 @@
                             "referencedDeclaration": 4,
                             "src": "2656:11:0",
                             "typeDescriptions": {
-                              "typeIdentifier": "t_contract$_CertificateNetwork_$457",
+                              "typeIdentifier": "t_contract$_CertificateNetwork_$445",
                               "typeString": "contract CertificateNetwork"
                             }
                           },
@@ -1669,7 +1669,7 @@
                           "lValueRequested": false,
                           "memberName": "checkUserExist",
                           "nodeType": "MemberAccess",
-                          "referencedDeclaration": 436,
+                          "referencedDeclaration": 424,
                           "src": "2656:26:0",
                           "typeDescriptions": {
                             "typeIdentifier": "t_function_external_view$_t_address_$_t_string_memory_ptr_$returns$_t_bool_$",
@@ -1724,10 +1724,10 @@
                       "name": "require",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [
-                        535,
-                        536
+                        523,
+                        524
                       ],
-                      "referencedDeclaration": 536,
+                      "referencedDeclaration": 524,
                       "src": "2635:7:0",
                       "typeDescriptions": {
                         "typeIdentifier": "t_function_require_pure$_t_bool_$_t_string_memory_ptr_$returns$__$",
@@ -1910,10 +1910,10 @@
                       "name": "require",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [
-                        535,
-                        536
+                        523,
+                        524
                       ],
-                      "referencedDeclaration": 536,
+                      "referencedDeclaration": 524,
                       "src": "2845:7:0",
                       "typeDescriptions": {
                         "typeIdentifier": "t_function_require_pure$_t_bool_$_t_string_memory_ptr_$returns$__$",
@@ -2052,10 +2052,10 @@
                       "name": "require",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [
-                        535,
-                        536
+                        523,
+                        524
                       ],
-                      "referencedDeclaration": 535,
+                      "referencedDeclaration": 523,
                       "src": "3022:7:0",
                       "typeDescriptions": {
                         "typeIdentifier": "t_function_require_pure$_t_bool_$returns$__$",
@@ -2214,7 +2214,7 @@
                             "name": "msg",
                             "nodeType": "Identifier",
                             "overloadedDeclarations": [],
-                            "referencedDeclaration": 532,
+                            "referencedDeclaration": 520,
                             "src": "3168:3:0",
                             "typeDescriptions": {
                               "typeIdentifier": "t_magic_message",
@@ -2275,10 +2275,10 @@
                       "name": "require",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [
-                        535,
-                        536
+                        523,
+                        524
                       ],
-                      "referencedDeclaration": 536,
+                      "referencedDeclaration": 524,
                       "src": "3121:7:0",
                       "typeDescriptions": {
                         "typeIdentifier": "t_function_require_pure$_t_bool_$_t_string_memory_ptr_$returns$__$",
@@ -2437,7 +2437,7 @@
                             "name": "msg",
                             "nodeType": "Identifier",
                             "overloadedDeclarations": [],
-                            "referencedDeclaration": 532,
+                            "referencedDeclaration": 520,
                             "src": "3388:3:0",
                             "typeDescriptions": {
                               "typeIdentifier": "t_magic_message",
@@ -2498,10 +2498,10 @@
                       "name": "require",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [
-                        535,
-                        536
+                        523,
+                        524
                       ],
-                      "referencedDeclaration": 536,
+                      "referencedDeclaration": 524,
                       "src": "3336:7:0",
                       "typeDescriptions": {
                         "typeIdentifier": "t_function_require_pure$_t_bool_$_t_string_memory_ptr_$returns$__$",
@@ -2605,7 +2605,7 @@
       },
       {
         "attributes": {
-          "SourceUnit": 458,
+          "SourceUnit": 446,
           "absolutePath": "project:/contracts/CertificateNetwork.sol",
           "file": "./CertificateNetwork.sol",
           "scope": 197,
@@ -2652,7 +2652,7 @@
                 "attributes": {
                   "contractScope": null,
                   "name": "CertificateNetwork",
-                  "referencedDeclaration": 457,
+                  "referencedDeclaration": 445,
                   "type": "contract CertificateNetwork"
                 },
                 "id": 3,
@@ -3752,7 +3752,7 @@
                         "attributes": {
                           "contractScope": null,
                           "name": "CertificateNetwork",
-                          "referencedDeclaration": 457,
+                          "referencedDeclaration": 445,
                           "type": "contract CertificateNetwork"
                         },
                         "id": 90,
@@ -3969,10 +3969,10 @@
                                 }
                               ],
                               "overloadedDeclarations": [
-                                535,
-                                536
+                                523,
+                                524
                               ],
-                              "referencedDeclaration": 536,
+                              "referencedDeclaration": 524,
                               "type": "function (bool,string memory) pure",
                               "value": "require"
                             },
@@ -4012,7 +4012,7 @@
                                   "isPure": false,
                                   "lValueRequested": false,
                                   "member_name": "checkUserExist",
-                                  "referencedDeclaration": 436,
+                                  "referencedDeclaration": 424,
                                   "type": "function (address,string memory) view external returns (bool)"
                                 },
                                 "children": [
@@ -4053,7 +4053,7 @@
                                       "overloadedDeclarations": [
                                         null
                                       ],
-                                      "referencedDeclaration": 532,
+                                      "referencedDeclaration": 520,
                                       "type": "msg",
                                       "value": "msg"
                                     },
@@ -4226,10 +4226,10 @@
                                 }
                               ],
                               "overloadedDeclarations": [
-                                535,
-                                536
+                                523,
+                                524
                               ],
-                              "referencedDeclaration": 536,
+                              "referencedDeclaration": 524,
                               "type": "function (bool,string memory) pure",
                               "value": "require"
                             },
@@ -4269,7 +4269,7 @@
                                   "isPure": false,
                                   "lValueRequested": false,
                                   "member_name": "checkUserExist",
-                                  "referencedDeclaration": 436,
+                                  "referencedDeclaration": 424,
                                   "type": "function (address,string memory) view external returns (bool)"
                                 },
                                 "children": [
@@ -4439,10 +4439,10 @@
                                 }
                               ],
                               "overloadedDeclarations": [
-                                535,
-                                536
+                                523,
+                                524
                               ],
-                              "referencedDeclaration": 536,
+                              "referencedDeclaration": 524,
                               "type": "function (bool,string memory) pure",
                               "value": "require"
                             },
@@ -4603,10 +4603,10 @@
                                 }
                               ],
                               "overloadedDeclarations": [
-                                535,
-                                536
+                                523,
+                                524
                               ],
-                              "referencedDeclaration": 535,
+                              "referencedDeclaration": 523,
                               "type": "function (bool) pure",
                               "value": "require"
                             },
@@ -4759,10 +4759,10 @@
                                 }
                               ],
                               "overloadedDeclarations": [
-                                535,
-                                536
+                                523,
+                                524
                               ],
-                              "referencedDeclaration": 536,
+                              "referencedDeclaration": 524,
                               "type": "function (bool,string memory) pure",
                               "value": "require"
                             },
@@ -4863,7 +4863,7 @@
                                       "overloadedDeclarations": [
                                         null
                                       ],
-                                      "referencedDeclaration": 532,
+                                      "referencedDeclaration": 520,
                                       "type": "msg",
                                       "value": "msg"
                                     },
@@ -4995,10 +4995,10 @@
                                 }
                               ],
                               "overloadedDeclarations": [
-                                535,
-                                536
+                                523,
+                                524
                               ],
-                              "referencedDeclaration": 536,
+                              "referencedDeclaration": 524,
                               "type": "function (bool,string memory) pure",
                               "value": "require"
                             },
@@ -5099,7 +5099,7 @@
                                       "overloadedDeclarations": [
                                         null
                                       ],
-                                      "referencedDeclaration": 532,
+                                      "referencedDeclaration": 520,
                                       "type": "msg",
                                       "value": "msg"
                                     },
@@ -5175,7 +5175,8 @@
   },
   "networks": {},
   "schemaVersion": "3.4.4",
-  "updatedAt": "2022-03-25T14:55:03.367Z",
+  "updatedAt": "2022-03-27T07:29:55.793Z",
+  "networkType": "ethereum",
   "devdoc": {
     "methods": {}
   },
