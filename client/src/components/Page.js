@@ -6,8 +6,11 @@ import ViewAllCertificates from './ViewAllCertificates';
 import PageFooter from './PageFooter';
 import PageSider from './PageSider';
 import ViewACertificate from './ViewACertificate';
+import Request from './Request/Request';
 
-const Page = () => {
+const Page = ({ pageType }) => {
+    const [page, setPage] = useState();
+
     const { Header, Footer, Sider, Content } = Layout;
     const certificates = [
         {
@@ -48,6 +51,14 @@ const Page = () => {
         },
     ];
 
+    useEffect(() => {
+        if(pageType === "viewCert") {
+            setPage(<ViewAllCertificates certificates={certificates} />)
+        } else if(pageType === "viewReq") {
+            setPage(<Request/>)
+        }
+    },[]);
+
     return (
         <Layout style={{ minHeight: '100vh' }}>
             <Header style={{ backgroundColor: '#2498a5' }}>
@@ -58,7 +69,8 @@ const Page = () => {
                     <PageSider />
                 </Sider>
                 <Content>
-                    <ViewAllCertificates certificates={certificates} />
+                    {page}
+                    {/* <ViewAllCertificates certificates={certificates} /> */}
                     {/* <ViewACertificate /> */}
                 </Content>
             </Layout>

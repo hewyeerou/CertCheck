@@ -35,7 +35,6 @@ function Register({ web3, accounts, certNetworkContract }) {
       });
 
       console.log("######## Response", res);
-      message.success("Account created successfully.");
     } catch (err) {
       let errorMessageInJson = JSON.parse(err.message.slice(58, err.message.length - 2) );
       let errorMessageToShow = errorMessageInJson.data.data[Object.keys(errorMessageInJson.data.data)[0]].reason;

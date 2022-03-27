@@ -86,7 +86,8 @@ function App() {
       <Routes>
         <Route path="/" element={<Login web3={web3} accounts={accounts}/>} />
         <Route path="/register" element={<Register web3={web3} accounts={accounts} certNetworkContract={certNetworkContract}/>} />
-        <Route path="/viewCert" element={<Page />} />
+        <Route path="/viewCert" element={<Page pageType={"viewCert"}/>} />
+        <Route path="/viewReq" element={<Page pageType={"viewReq"}/>} />
       </Routes>
     </Router>
   );
