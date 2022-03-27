@@ -5,8 +5,8 @@ import PageHeader from './PageHeader';
 import ViewAllCertificates from './ViewAllCertificates';
 import PageFooter from './PageFooter';
 import PageSider from './PageSider';
-import ViewACertificate from './ViewACertificate';
 import Request from './Request/Request';
+import Invitation from './Invitation/Invitation';
 
 const Page = ({ pageType }) => {
     const [page, setPage] = useState();
@@ -52,29 +52,27 @@ const Page = ({ pageType }) => {
     ];
 
     useEffect(() => {
-        if(pageType === "viewCert") {
-            setPage(<ViewAllCertificates certificates={certificates} />)
-        } else if(pageType === "viewReq") {
-            setPage(<Request/>)
+        if (pageType === 'viewCert') {
+            setPage(<ViewAllCertificates certificates={certificates} />);
+        } else if (pageType === 'viewReq') {
+            setPage(<Request />);
+        } else if (pageType === 'viewVer') {
+            setPage(<Invitation />);
         }
-    },[]);
+    }, []);
 
     return (
         <Layout style={{ minHeight: '100vh' }}>
-            <Header style={{ backgroundColor: '#2498a5' }}>
+            <Header style={{ backgroundColor: '#f0f8ff' }}>
                 <PageHeader />
             </Header>
             <Layout>
                 <Sider>
                     <PageSider />
                 </Sider>
-                <Content>
-                    {page}
-                    {/* <ViewAllCertificates certificates={certificates} /> */}
-                    {/* <ViewACertificate /> */}
-                </Content>
+                <Content>{page}</Content>
             </Layout>
-            <Footer style={{ backgroundColor: '#2498a5' }}>
+            <Footer style={{ backgroundColor: '#f0f8ff' }}>
                 <PageFooter />
             </Footer>
         </Layout>
