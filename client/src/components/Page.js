@@ -63,7 +63,7 @@ const Page = ({ pageType }) => {
 
     return (
         <Layout style={{ minHeight: '100vh' }}>
-            <Header style={{ backgroundColor: '#2498a5' }}>
+            <Header style={{ backgroundColor: '#f0f8ff' }}>
                 <PageHeader />
             </Header>
             <Layout>
@@ -72,7 +72,7 @@ const Page = ({ pageType }) => {
                 </Sider>
                 <Content>{page}</Content>
             </Layout>
-            <Footer style={{ backgroundColor: '#2498a5' }}>
+            <Footer style={{ backgroundColor: '#f0f8ff' }}>
                 <PageFooter />
             </Footer>
         </Layout>
