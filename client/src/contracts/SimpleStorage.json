@@ -38,7 +38,7 @@
   "sourceMap": "27:176:3:-;;;;8:9:-1;5:2;;;30:1;27;20:12;5:2;27:176:3;;;;;;;",
   "deployedSourceMap": "27:176:3:-;;;;8:9:-1;5:2;;;30:1;27;20:12;5:2;27:176:3;;;;;;;;;;;;;;;;;;;;;;;;74:53;;;;;;13:2:-1;8:3;5:11;2:2;;;29:1;26;19:12;2:2;74:53:3;;;;;;;;;;;;;;;;;:::i;:::-;;131:70;;;:::i;:::-;;;;;;;;;;;;;;;;;;;74:53;121:1;108:10;:14;;;;74:53;:::o;131:70::-;167:4;186:10;;179:17;;131:70;:::o",
   "source": "pragma solidity >= 0.5.0;\n\ncontract SimpleStorage {\n  uint storedData;\n\n  function set(uint x) public {\n    storedData = x;\n  }\n\n  function get() public view returns (uint) {\n    return storedData;\n  }\n}\n",
-  "sourcePath": "/Users/yeerouhew/Downloads/IS4302/IS4302_GrpProject/contracts/SimpleStorage.sol",
+  "sourcePath": "/Users/stellaang/Desktop/NUS/Y3S2/IS4302/Project/IS4302_Project/contracts/SimpleStorage.sol",
   "ast": {
     "absolutePath": "project:/contracts/SimpleStorage.sol",
     "exportedSymbols": {
@@ -591,17 +591,9 @@
     "name": "solc",
     "version": "0.5.16+commit.9c3226ce.Emscripten.clang"
   },
-  "networks": {
-    "5777": {
-      "events": {},
-      "links": {},
-      "address": "0x0747bEaA98C6b400D2708cE578aeE55310Fa36AA",
-      "transactionHash": "0x2685bd0b01f8e8a9dfaa1193e754f7522e4b4618f12b66e5764d7525efea985c"
-    }
-  },
+  "networks": {},
   "schemaVersion": "3.4.4",
-  "updatedAt": "2022-03-27T08:22:17.616Z",
-  "networkType": "ethereum",
+  "updatedAt": "2022-03-27T16:21:50.669Z",
   "devdoc": {
     "methods": {}
   },

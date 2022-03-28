@@ -26,7 +26,7 @@ function Register({ web3, accounts, certNetworkContract }) {
     console.log(accounts[0]);
     try {
       const res = await certNetworkContract.methods
-        .register(accounts[0], role)
+        .register(accounts[0], 'Issuer')
         .send({ from: accounts[0] });
 
       addUser(accounts[0], name, email, password, role, "").then(() => {

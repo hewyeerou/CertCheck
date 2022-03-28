@@ -24,6 +24,14 @@ function Login({ web3, accounts }) {
             .then((result) => {
               if (result) {
                 //Navigate to home page
+                localStorage.setItem('user', result);
+                if(result.type === 'Student') {
+                  navigate("/request");
+                } else if (result.type === 'Issuer') {
+                  //Navigate
+                } else {
+                  //Navigate
+                }
                 console.log(result);
               } else {
                 navigate("/register", {

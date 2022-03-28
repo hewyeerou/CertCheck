@@ -9,6 +9,7 @@ import Register from './components/Register/Register';
 import Page from './components/Page';
 
 import CertificateNetwork from './contracts/CertificateNetwork.json';
+import Issue from './components/Issue/Issue';
 
 function App() {
     // initialize the state variables of the application
@@ -92,6 +93,8 @@ function App() {
                 <Route path='/viewCert' element={<Page pageType={'viewCert'} />} />
                 <Route path='/viewReq' element={<Page pageType={'viewReq'} />} />
                 <Route path='/viewVer' element={<Page pageType={'viewVer'} />} />
+                {/* <Route path='/issue' component={Issue} /> */}
+                <Route path='/issue' component={Issue} />
             </Routes>
         </Router>
     );

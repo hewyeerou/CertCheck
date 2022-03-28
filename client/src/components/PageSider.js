@@ -2,6 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { Menu } from 'antd';
 
 const PageSider = () => {
+    const { type } = localStorage.getItem("user");
+
     return (
         <>
             <Menu theme='dark' mode='inline' defaultSelectedKeys={['1']}>

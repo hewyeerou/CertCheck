@@ -7,6 +7,7 @@ import PageFooter from './PageFooter';
 import PageSider from './PageSider';
 import Request from './Request/Request';
 import Invitation from './Invitation/Invitation';
+import Issue from './Issue/Issue';
 
 const Page = ({ pageType }) => {
     const [page, setPage] = useState();
