@@ -100,6 +100,8 @@ contract Certificate {
         _;
     }
 
+
+
     // TODO: JAOKUEAN
     // Request cert from issuer. (STUDENT -> ISSUER)
     // Issue: student can spam request for each issuer without being a student
@@ -171,7 +173,8 @@ contract Certificate {
         string memory _issuerName
     ) public onlyValidRoles("Issuer") returns (bool Status) {
         require(
-            !certRequestMap[msg.sender].includes(issuerAddr),
+            // check that student has requested a cert from sender
+            !certRequestMap[studentAddr].includes(msg.sender),
             "Student has not request for a new cert."
         );
         // new cert object before transfer to student
@@ -220,5 +223,22 @@ contract Certificate {
     }
 
     // TODO: SK -> Getter and setter for all the cert attributes.
+
+    /// @notice Function for verifier to view certs of a student
+    /// @dev Checks for approval of viewing right of validator then returns all certs of student
+    /// @param student address of student
+    function getCerts (address student) public returns (Cert[] memory) {
+        address verifierList = studentToVerifierMap[student];
+        bool granted = false;
+        for (uint256 i = 0; i < verifierList.length; i++) {
+            if(verifierList[i] == msg.sender) {
+                granted = true;
+                break;
+            }
+        }
+        require (granted, "Not granted access to view");
+        return studentToCertMap[student];
+    }
+
     // TODO: JK,SK,XR -> include relevant Getters and setters for cert
 }
