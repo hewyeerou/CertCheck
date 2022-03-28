@@ -71,8 +71,8 @@ function Register({ web3, accounts, certNetworkContract }) {
           >
             <Select placeholder="Please select a role">
               <Option value="Student">Student</Option>
-              <Option value="Institution">Institution</Option>
-              <Option value="Employer">Employer</Option>
+              <Option value="Issuer">Institution</Option>
+              <Option value="Verifier">Employer</Option>
             </Select>
           </Form.Item>
 

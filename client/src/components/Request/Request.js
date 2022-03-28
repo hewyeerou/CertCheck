@@ -22,30 +22,6 @@ const CertificateRequest = () => {
 
   const [form] = Form.useForm();
 
-  // let requests = [
-  //     { id: 1, institution: "NUS", status: "pending" },
-  //     { id: 2, institution: "NYP", status: "approved" },
-  //     { id: 3, institution: "SP", status: "approved" },
-  //   ];
-
-  //   const columns = [
-  //     {
-  //       title: "No",
-  //       dataIndex: "id",
-  //       key: "id",
-  //     },
-  //     {
-  //       title: "Institution",
-  //       dataIndex: "institution",
-  //       key: "institution",
-  //     },
-  //     {
-  //       title: "Status",
-  //       dataIndex: "status",
-  //       key: "status",
-  //     },
-  //   ];
-
   const certificateRequest = [
     {
       key: 1,
