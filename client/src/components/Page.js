@@ -7,7 +7,9 @@ import PageFooter from './PageFooter';
 import PageSider from './PageSider';
 import Request from './Request/Request';
 import Invitation from './Invitation/Invitation';
-import Issue from './Issue/Issue';
+import ViewRequests from './ViewRequests/ViewRequests';
+import ViewCertVer from './ViewCertVer/ViewCertVer';
+import ViewIssued from './ViewIssued/ViewIssued';
 
 const Page = ({ pageType }) => {
     const [page, setPage] = useState();
@@ -53,12 +55,18 @@ const Page = ({ pageType }) => {
     ];
 
     useEffect(() => {
-        if (pageType === 'viewCert') {
+        if (pageType === '/student/viewCert') {
             setPage(<ViewAllCertificates certificates={certificates} />);
-        } else if (pageType === 'viewReq') {
+        } else if (pageType === '/student/viewReq') {
             setPage(<Request />);
-        } else if (pageType === 'viewVer') {
+        } else if (pageType === '/student/viewVer') {
             setPage(<Invitation />);
+        } else if (pageType === '/verifier/viewStudentCert') {
+            setPage(<ViewCertVer/>);
+        } else if (pageType === "/issuer/viewRequests") {
+            setPage(<ViewRequests />);
+        } else if (pageType === "/issuer/viewIssued") {
+            setPage(<ViewIssued />);
         }
     }, []);
 
@@ -69,7 +77,7 @@ const Page = ({ pageType }) => {
             </Header>
             <Layout>
                 <Sider>
-                    <PageSider />
+                    <PageSider/>
                 </Sider>
                 <Content>{page}</Content>
             </Layout>

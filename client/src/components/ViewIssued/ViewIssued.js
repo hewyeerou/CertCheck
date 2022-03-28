@@ -4,7 +4,7 @@ import PageFooter from '../PageFooter';
 import PageSider from '../PageSider';
 import Page from '../Page';
 
-function Issue() {
+function ViewIssued() {
 
     const columns = [
         {
@@ -27,18 +27,9 @@ function Issue() {
             title: '',
             key: 'action',
             render: (text, record) =>
-                <Popconfirm title="Are you sure to issue certificate to this student?" onConfirm={() => issueCertificate(record)} okText="Yes"
+                <Popconfirm title="Do you want to revoke this certificate?" onConfirm={() => revokeCertificate(record)} okText="Yes"
                     cancelText="No">
-                    <a>Issue</a>
-                </Popconfirm>
-        },
-        {
-            title: '',
-            key: 'action',
-            render: (text, record) =>
-                <Popconfirm title="Are you sure this student is not applicable for the request?" onConfirm={() => issueCertificate(record)} okText="Yes"
-                    cancelText="No">
-                    <a>Not Applicable</a>
+                    <a>Revoke</a>
                 </Popconfirm>
         },
     ];
@@ -67,25 +58,19 @@ function Issue() {
         },
     ];
 
-    const issueCertificate = (record) => {
-        console.log(record);
-    }
-
-    const deleteRecord = (record) => {
+    const revokeCertificate = (record) => {
         console.log(record);
     }
 
     return (
         <>
-            <Page />
             <PageHeader
                 className="site-page-header"
-                title="Certificate Requests"
+                title="Issued Certificates"
             />
-            <Table columns={columns} dataSource={data} />
             <Table columns={columns} dataSource={data} />
         </>
     );
 }
 
-export default Issue;
+export default ViewIssued;

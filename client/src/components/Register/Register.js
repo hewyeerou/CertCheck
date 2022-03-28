@@ -14,6 +14,9 @@ function Register({ web3, accounts, certNetworkContract }) {
   const [walletAddress, setWalletAddress] = useState();
 
   useEffect(() => {
+    console.log(web3);
+    console.log(accounts);
+    console.log(certNetworkContract);
     setWalletAddress(location.state.walletAddress);
   }, []);
 
@@ -24,7 +27,7 @@ function Register({ web3, accounts, certNetworkContract }) {
     //   .checkUserExist(accounts[0], role)
     //   .call();
     console.log(accounts[0]);
-    try {
+    // try {
       const res = await certNetworkContract.methods
         .register(accounts[0], 'Issuer')
         .send({ from: accounts[0] });
@@ -35,12 +38,12 @@ function Register({ web3, accounts, certNetworkContract }) {
       });
 
       console.log("######## Response", res);
-    } catch (err) {
-      let errorMessageInJson = JSON.parse(err.message.slice(58, err.message.length - 2) );
-      let errorMessageToShow = errorMessageInJson.data.data[Object.keys(errorMessageInJson.data.data)[0]].reason;
+    // } catch (err) {
+    //   let errorMessageInJson = JSON.parse(err.message.slice(58, err.message.length - 2) );
+    //   let errorMessageToShow = errorMessageInJson.data.data[Object.keys(errorMessageInJson.data.data)[0]].reason;
 
-      message.error(errorMessageToShow);
-    }
+    //   message.error(errorMessageToShow);
+    // }
   };
 
   if (typeof web3 === "undefined") {
@@ -71,8 +74,8 @@ function Register({ web3, accounts, certNetworkContract }) {
           >
             <Select placeholder="Please select a role">
               <Option value="Student">Student</Option>
-              <Option value="Institution">Institution</Option>
-              <Option value="Employer">Employer</Option>
+              <Option value="Issuer">Institution</Option>
+              <Option value="Verifier">Employer</Option>
             </Select>
           </Form.Item>
 
