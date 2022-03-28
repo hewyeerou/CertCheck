@@ -164,7 +164,6 @@ contract Certificate {
         emit denyAccessViewing(msg.sender, verifier);
     }
 
-    /***
     // TODO: ShiKai
     function issueCertificate(
         address subjectAddr,
@@ -180,7 +179,7 @@ contract Certificate {
             !certRequestMap[msg.sender].includes(msg.sender),
             "Subject has not request for a new cert."
         );
-         new cert object before transfer to subject
+        // new cert object before transfer to subject
         uint256 newCertId = totalCert++;
 
         Cert memory newCert = Cert(
@@ -203,7 +202,7 @@ contract Certificate {
 
         return true;
     }
-    ***/
+    
 
     // TODO: JK
     // Delete cert in case of wrong issue or revoked.
@@ -232,7 +231,7 @@ contract Certificate {
     /// @dev Checks for approval of viewing right of validator then returns all certs of student
     /// @param student address of student
     function getCerts (address student) public returns (Cert[] memory) {
-        address verifierList = studentToVerifierMap[student];
+        mapping (address => bool) memory verifierList = subjectToVerifierMap[student];
         bool granted = false;
         for (uint256 i = 0; i < verifierList.length; i++) {
             if(verifierList[i] == msg.sender) {
@@ -241,7 +240,7 @@ contract Certificate {
             }
         }
         require (granted, "Not granted access to view");
-        return studentToCertMap[student];
+        return subjectToCertMap[student];
     }
 
     // TODO: JK,SK,XR -> include relevant Getters and setters for cert
