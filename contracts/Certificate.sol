@@ -15,11 +15,8 @@ contract Certificate {
     mapping(address => mapping(uint256 => bool)) private issuerToCertMap;
     mapping(address => mapping(address => bool)) private requestMap;
 
-    // TODO: JK,SK,XR -> feel free to add any mappings desirable
-    //
-    //mapping(address => mapping(address => bool)) private verifierToSubjectMap;
-    //V>(S>bool), map verifier to all subjects he/she can view certs
-    //mapping(address => uint256) private verifierToCertMap;
+    mapping(address => address[]) private reqListMap;
+    mapping(address => address[]) private grantListMap;
 
     // Events
     event IssuedCertificate(
@@ -29,11 +26,13 @@ contract Certificate {
     );
     event RevokeCertificate(address issuer, uint256 certId);
     event RequestCertificate(address subjectAddr, address issuerAddr);
-    event giveAccessViewing(address subjectAddr, address verifierAddr);
-    event denyAccessViewing(address subjectAddr, address verifierAddr);
-    event viewSubjectCerts(address verifierAddr, address subjectAddr);
-    event viewVerifierStatus(address subjectAddr, bool status);
-    event viewSubjectStatus(address verifierAddr, bool status);
+    event AcceptSubjectRequest(address issuerAddr, address subjectAddr);
+    event RejectSubjectRequest(address issuerAddr, address subjectAddr);
+    event GiveAccessViewing(address subjectAddr, address verifierAddr);
+    event DenyAccessViewing(address subjectAddr, address verifierAddr);
+    event ViewSubjectCerts(address verifierAddr, address subjectAddr);
+    event ViewVerifierStatus(address subjectAddr, bool status);
+    event ViewSubjectStatus(address verifierAddr, bool status);
 
     // Structs
     struct Cert {
@@ -113,9 +112,45 @@ contract Certificate {
             "You have already requested for a cert."
         );
 
-        requestMap[msg.sender][issuerAddr] = true;
+        requestMap[msg.sender][issuerAddr] = true; // subject request
+        requestMap[issuerAddr][msg.sender] = false; // issuer to approve
 
-        emit RequestCertificate(msg.sender, issuerAddr); // Question: do we need date?
+        reqListMap[msg.sender].push(issuerAddr);
+        reqListMap[issuerAddr].push(msg.sender);
+
+        emit RequestCertificate(msg.sender, issuerAddr);
+    }
+
+    // Approve student request before you can issue cert
+    function acceptRequest(address subjectAddr)
+        public
+        onlyValidRoles("Issuer")
+        userExist(subjectAddr, "Subject")
+    {
+        require(
+            requestMap[subjectAddr][msg.sender],
+            "Subject has not made a request."
+        );
+        require(
+            !requestMap[msg.sender][subjectAddr],
+            "Subject has already been approved."
+        );
+        requestMap[msg.sender][subjectAddr] = true;
+
+        emit AcceptSubjectRequest(msg.sender, subjectAddr);
+    }
+
+    function rejectRequest(address subjectAddr)
+        public
+        onlyValidRoles("Issuer")
+        userExist(subjectAddr, "Subject")
+    {
+        require(
+            requestMap[subjectAddr][msg.sender],
+            "Subject has not request for a new cert."
+        );
+        requestMap[msg.sender][subjectAddr] = false;
+        emit RejectSubjectRequest(msg.sender, subjectAddr);
     }
 
     // TODO: Xie Ran
@@ -131,8 +166,12 @@ contract Certificate {
         );
 
         subjectToVerifierMap[msg.sender][verifierAddr] = true;
+        subjectToVerifierMap[verifierAddr][msg.sender] = true;
 
-        emit giveAccessViewing(msg.sender, verifierAddr);
+        grantListMap[msg.sender].push(verifierAddr);
+        grantListMap[verifierAddr].push(msg.sender);
+
+        emit GiveAccessViewing(msg.sender, verifierAddr);
     }
 
     // TODO:Xie Ran
@@ -148,8 +187,9 @@ contract Certificate {
         );
 
         subjectToVerifierMap[msg.sender][verifierAddr] = false;
+        subjectToVerifierMap[verifierAddr][msg.sender] = false;
 
-        emit denyAccessViewing(msg.sender, verifierAddr);
+        emit DenyAccessViewing(msg.sender, verifierAddr);
     }
 
     // TODO: ShiKai
@@ -178,6 +218,10 @@ contract Certificate {
             requestMap[subjectAddr][msg.sender],
             "Subject has not request for a new cert."
         );
+        require(
+            requestMap[msg.sender][subjectAddr],
+            "Student has not been approve."
+        );
 
         uint256 newCertId = totalCert++; // new cert id before transfer to subject
         uint256 _creationDate = block.timestamp;
@@ -196,8 +240,10 @@ contract Certificate {
         //TODO: Check for duplicate cert details?
         certsMap[newCertId] = newCert; // add to cert mapping
         certExistMap[newCertId] = true; // for cert exist modifier
+
         subjectToCertListMap[subjectAddr].push(newCertId); // add to subject list of certs
         subjectToCertMap[subjectAddr][newCertId] = true;
+
         issuerToCertListMap[msg.sender].push(newCertId); // add to issuer list of certs
         issuerToCertMap[msg.sender][newCertId] = true;
 
@@ -225,7 +271,7 @@ contract Certificate {
         address subjectAddr = certsMap[certId].owner; // get owner of cert
         certExistMap[certId] = false; // for cert exist modifier
         subjectToCertMap[subjectAddr][certId] = false; // remove mapping
-        issuerToCertMap[subjectAddr][certId] = false; // remove mapping
+        issuerToCertMap[msg.sender][certId] = false; // remove mapping
 
         delete certsMap[certId]; // Remove from mapping, cert does not exist anymore
 
@@ -249,98 +295,52 @@ contract Certificate {
         );
         uint256[] memory certList = subjectToCertListMap[subjectAddr];
         uint256[] memory newList = new uint256[](certList.length);
-
         for (uint256 i = 0; i < certList.length; i++) {
             if (subjectToCertMap[subjectAddr][certList[i]]) {
                 // Get all viewable certs
                 newList[i] = certList[i];
                 // newList.push(certsMap[certList[i]]) // Push entire cert struct
-            } else {
-                newList[i] = 0;
             }
         }
-        //TODO: return emptyList if no data
         return newList;
     }
 
-    function getCertListSubjects(address subjectAddr)
+    function getCertListSubjects()
         public
         view
-        userExist(subjectAddr, "Subject")
+        onlyValidRoles("Subject")
         returns (uint256[] memory)
     {
-        // Redundant require since we already retriving from list belonging to addr.
-        require(
-            subjectAddr == certsMap[subjectToCertListMap[subjectAddr][0]].owner,
-            "Only certificate owner can perform this action."
-        );
-
-        uint256[] memory certList = subjectToCertListMap[subjectAddr];
+        uint256[] memory certList = subjectToCertListMap[msg.sender];
         uint256[] memory newList = new uint256[](certList.length);
-
         for (uint256 i = 0; i < certList.length; i++) {
-            if (subjectToCertMap[subjectAddr][certList[i]]) {
+            if (subjectToCertMap[msg.sender][certList[i]]) {
                 // Get all viewable certs
                 newList[i] = certList[i];
                 // newList.push(certsMap[certList[i]]) // Push entire cert struct
-            } else {
-                newList[i] = 0;
             }
         }
-        //TODO: return emptyList if no data
         return newList;
     }
 
-    function getCertListIssuers(address issuerAddr)
+    function getCertListIssuers()
         public
         view
-        userExist(issuerAddr, "Issuer")
+        onlyValidRoles("Issuer")
         returns (uint256[] memory)
     {
-        // Redundant require since we already retriving from list belonging to addr.
-        require(
-            issuerAddr ==
-                certsMap[issuerToCertListMap[issuerAddr][0]].issuerAddr,
-            "Only certificate issuer can perform this action."
-        );
-
-        uint256[] memory certList = issuerToCertListMap[issuerAddr];
+        uint256[] memory certList = issuerToCertListMap[msg.sender];
         uint256[] memory newList = new uint256[](certList.length);
 
         for (uint256 i = 0; i < certList.length; i++) {
-            if (issuerToCertMap[issuerAddr][certList[i]]) {
+            if (issuerToCertMap[msg.sender][certList[i]]) {
                 // Get all viewable certs
                 newList[i] = certList[i];
                 // newList.push(certsMap[certList[i]]) // Push entire cert struct
-            } else {
-                newList[i] = 0;
             }
         }
-
-        //TODO: return emptyList if no data
         return newList;
     }
-
-    // TODO: SK -> Getter and setter for all the cert attributes.
-    // @notice Function for verifier to view certs of a student
-    // @dev Checks for approval of viewing right of validator then returns all certs of student
-    // @param student address of student
-    // function getAllCerts(address subjectAddr)
-    //     public
-    //     userExist(subjectAddr, "Subject")
-    //     returns (uint256[] memory)
-    // {
-    //     address verifierList = studentToVerifierMap[student];
-    //     bool granted = false;
-    //     for (uint256 i = 0; i < verifierList.length; i++) {
-    //         if (verifierList[i] == msg.sender) {
-    //             granted = true;
-    //             break;
-    //         }
-    //     }
-    //     require(granted, "Not granted access to view");
-    //     return studentToCertMap[student];
-    // }
 
     // Getters and Setters
 
@@ -353,7 +353,7 @@ contract Certificate {
         returns (bool)
     {
         bool status = subjectToVerifierMap[msg.sender][verifier];
-        emit viewVerifierStatus(msg.sender, status);
+        emit ViewVerifierStatus(msg.sender, status);
         return status;
     }
 
@@ -367,31 +367,68 @@ contract Certificate {
         returns (bool)
     {
         bool status = subjectToVerifierMap[subject][msg.sender];
-        emit viewSubjectStatus(msg.sender, status);
+        emit ViewSubjectStatus(msg.sender, status);
         return status;
     }
 
     //Frontend[verifier]: loop thr all subject addresses to display the list of subjects viewable by the verifier.
 
-    //function for verifier to get the list of cert addresses under a subject
-    //only authorised verifiers can get this list to prevent privacy issues.
-    //THIS IS NOT FOR A SUBJECT TO VIEW HIS/HER OWN CERTS, IT'S FOR VERIFIERS ONLY.
-    // function getSubjectCerts(address subject)
-    //     public
-    //     onlyValidRoles("Verifier")
-    //     userExist(subject, "Subject")
-    //     returns (uint256[] memory)
-    // {
-    //     require(
-    //         subjectToVerifierMap[subject][msg.sender],
-    //         "You are not authorised to view this subject's certificates."
-    //     );
+    //function to check a request from a subject
+    function checkRequest(address issuerAddr)
+        public
+        view
+        onlyValidRoles("Subject")
+        userExist(issuerAddr, "Issuer")
+        returns (bool)
+    {
+        if (
+            requestMap[issuerAddr][msg.sender] &&
+            requestMap[msg.sender][issuerAddr]
+        ) {
+            return true;
+        }
+        return false;
+    }
 
-    //     emit viewSubjectCerts(msg.sender, subject);
-    //     return subjectToCertMap[subject]; //may need to change if jk modifies the mapping
-    // }
+    // function for subject/issuer to see all request to issuer/subject
+    function getApprovedReqList() public view returns (address[] memory) {
+        address[] memory reqList = reqListMap[msg.sender];
+        address[] memory newList = new address[](reqList.length);
 
-    //Frontend[verifier]: display all certs under the subject for the verifier.
+        for (uint256 i = 0; i < reqList.length; i++) {
+            // check if issuer approve subject and student make req to issuer
+            if (requestMap[msg.sender][reqList[i]]) {
+                // Get all viewable certs
+                newList[i] = reqList[i];
+            }
+        }
+        return newList;
+    }
+
+    // Subject request to Issuer list
+    // Issuer request from Subject List
+    function getReqList() public view returns (address[] memory) {
+        return reqListMap[msg.sender];
+    }
+
+    // function for subject/issuer to see all request to issuer/subject
+    function getGrantList() public view returns (address[] memory) {
+        // address[] memory grantList = grantListMap[msg.sender];
+        // address[] memory newList = new address[](grantList.length);
+
+        // for (uint256 i = 0; i < grantList.length; i++) {
+        //     // check if issuer approve subject and student make req to issuer
+        //     if (subjectToVerifierMap[msg.sender][grantList[i]]) {
+        //         // Get all viewable certs
+        //         newList[i] = grantList[i];
+        //     }
+        // }
+        return grantListMap[msg.sender];
+    }
+
+    function checkCertExist(uint256 certId) public view returns (bool) {
+        return certExistMap[certId];
+    }
 
     // For testing gasCost for any inefficiency
     function GasCost(function() internal returns (string memory) fun)
@@ -404,8 +441,6 @@ contract Certificate {
         uint256 diff = u0 - u1;
         return diff;
     }
-    //TODO: getOwnCerts() function for subjects to view his/her own certs.
-    //TODO: checkRequest(subjectAddr) function to check all request from a subject
-    //TODO: checkGrantList(subjectAddr) function to check all grants for subject
-    //TODO: checkGrantList(verifierAddr) function to check all grants for verifier
+
+    //TODO: getGrantList with actual grant
 }
