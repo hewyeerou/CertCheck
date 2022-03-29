@@ -59,7 +59,7 @@
   "sourceMap": "27:311:2:-;;;179:50;8:9:-1;5:2;;;30:1;27;20:12;5:2;179:50:2;214:10;206:5;;:18;;;;;;;;;;;;;;;;;;27:311;;;;;;",
   "deployedSourceMap": "27:311:2:-;;;;8:9:-1;5:2;;;30:1;27;20:12;5:2;27:311:2;;;;;;;;;;;;;;;;;;;;;;;;;;;;;75:36;;;:::i;:::-;;;;;;;;;;;;;;;;;;;51:20;;;:::i;:::-;;;;;;;;;;;;;;;;;;;;;;;233:103;;;;;;13:2:-1;8:3;5:11;2:2;;;29:1;26;19:12;2:2;233:103:2;;;;;;;;;;;;;;;;;:::i;:::-;;75:36;;;;:::o;51:20::-;;;;;;;;;;;;;:::o;233:103::-;162:5;;;;;;;;;;;148:19;;:10;:19;;;144:26;;;322:9;295:24;:36;;;;144:26;233:103;:::o",
   "source": "pragma solidity >= 0.5.0;\n\ncontract Migrations {\n  address public owner;\n  uint public last_completed_migration;\n\n  modifier restricted() {\n    if (msg.sender == owner) _;\n  }\n\n  constructor() public {\n    owner = msg.sender;\n  }\n\n  function setCompleted(uint completed) public restricted {\n    last_completed_migration = completed;\n  }\n}\n",
-  "sourcePath": "/Users/stellaang/Desktop/NUS/Y3S2/IS4302/Project/IS4302_Project/contracts/Migrations.sol",
+  "sourcePath": "/Users/yeerouhew/Downloads/IS4302/IS4302_GrpProject/contracts/Migrations.sol",
   "ast": {
     "absolutePath": "project:/contracts/Migrations.sol",
     "exportedSymbols": {
@@ -952,12 +952,12 @@
     "5777": {
       "events": {},
       "links": {},
-      "address": "0xD85099CC96422d6DeBaA1e740f6e1fe3f8386688",
-      "transactionHash": "0x0cbc66899f82e183976348a4619ba46128b59bdf4c3837533cdfb07ea75aad66"
+      "address": "0xB3A78c9A5ad501b4CC1bC152C331F52C2D4c61c2",
+      "transactionHash": "0xef4b2a392a769f0905f028d8f2b003063a53e74f115d217709f64bec67623b7d"
     }
   },
   "schemaVersion": "3.4.4",
-  "updatedAt": "2022-03-28T04:50:01.011Z",
+  "updatedAt": "2022-03-29T11:04:06.358Z",
   "networkType": "ethereum",
   "devdoc": {
     "methods": {}

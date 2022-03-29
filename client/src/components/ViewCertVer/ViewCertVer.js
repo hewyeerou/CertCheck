@@ -4,6 +4,7 @@ import ViewAllCertificates from "../ViewAllCertificates";
 
 function ViewCertVer() {
   const [isViewCertModalVisible, setIsViewCertModalVisible] = useState(false);
+  let user = JSON.parse(localStorage.getItem("user"));
 
   const studentList = [
     {
@@ -63,7 +64,7 @@ function ViewCertVer() {
         onCancel={handleCancel}
         footer={null}
       >
-        <ViewAllCertificates/>
+        <ViewAllCertificates user={user}/>
       </Modal>
       <Table columns={columns} dataSource={studentList}></Table>
     </>

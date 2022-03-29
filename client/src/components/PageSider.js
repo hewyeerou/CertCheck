@@ -5,8 +5,7 @@ import { useNavigate } from "react-router-dom";
 import Page from "./Page";
 
 const PageSider = () => {
-    const type = localStorage.getItem("user");
-    var user = JSON.parse(type);
+    let user = JSON.parse(localStorage.getItem("user"));
     let navigate = useNavigate();
 
     const handleClick = e => {
@@ -25,17 +24,28 @@ const PageSider = () => {
             )}
             {user.type === 'Issuer' && (
                 <Menu theme='dark' mode='inline' defaultSelectedKeys={['1']} onClick={handleClick}>
-                    <Menu.Item key='5'> 
+                    <Menu.Item key='1'> 
                         <a href="/issuer/viewRequests">
                             <span>View all Requests</span>
                         </a>             
                     </Menu.Item>
-                    <Menu.Item key='6' >
+                    <Menu.Item key='2' >
                     <a href="/issuer/viewIssued">
                             <span>View all Issued</span>
                         </a>    
                     </Menu.Item>
                     <Menu.Item key='4'>About Us</Menu.Item>
+                </Menu>
+            )}
+
+            {user.type === "Verifier" && (
+                <Menu theme='dark' mode='inline' defaultSelectedKeys={['1']} onClick={handleClick}>
+                    <Menu.Item key='1'> 
+                        <a href="/verifier/viewStudentCert">
+                            <span>View all Requests</span>
+                        </a>             
+                    </Menu.Item>
+                    <Menu.Item key='2'>About Us</Menu.Item>
                 </Menu>
             )}
         </>

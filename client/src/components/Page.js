@@ -14,6 +14,8 @@ import ViewIssued from './ViewIssued/ViewIssued';
 const Page = ({ pageType }) => {
     const [page, setPage] = useState();
 
+    let user = JSON.parse(localStorage.getItem("user"));
+
     const { Header, Footer, Sider, Content } = Layout;
     const certificates = [
         {
@@ -56,7 +58,7 @@ const Page = ({ pageType }) => {
 
     useEffect(() => {
         if (pageType === '/student/viewCert') {
-            setPage(<ViewAllCertificates certificates={certificates} />);
+            setPage(<ViewAllCertificates user={user}/>);
         } else if (pageType === '/student/viewReq') {
             setPage(<Request />);
         } else if (pageType === '/student/viewVer') {
