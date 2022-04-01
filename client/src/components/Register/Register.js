@@ -5,56 +5,50 @@ import "./Register.css";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import { addUser } from "../../models/User";
 
-//web3
-import getWeb3 from "../../getWeb3";
-
-function Register() {
+function Register({ web3, accounts, certNetworkContract }) {
   const { Option } = Select;
   const [form] = Form.useForm();
+
   const navigate = useNavigate();
   const location = useLocation();
+  const [walletAddress, setWalletAddress] = useState();
 
-  // set up web3
-  const [web3, setWeb3] = useState();
-  const [accounts, setAccounts] = useState();
+  useEffect(() => {
+    console.log(web3);
+    console.log(accounts);
+    console.log(certNetworkContract);
+    setWalletAddress(location.state.walletAddress);
+  }, []);
 
-  const loadWeb3 = async () => {
+  const onSubmit = async (values) => {
+    const { role, name, email, password } = values;
+
     try {
-      const web3 = await getWeb3();
-      console.log("********** web3: ", web3);
+      const res = await certNetworkContract.methods
+        .register(accounts[0], 'Issuer')
+        .send({ from: accounts[0] });
 
-      const accounts = await web3.eth.getAccounts();
-      console.log("********** accounts: ", accounts);
+      addUser(accounts[0], name, email, password, role, "").then(() => {
+        message.success("Account has been created!");
+        navigate("/");
+      });
 
-      setWeb3(web3);
-      setAccounts(accounts);
-    } catch (error) {
-      message(`Failed to load web3.`);
-      console.error(error);
+      console.log("######## Response", res);
+    } catch (err) {
+      let errorMessageInJson = JSON.parse(err.message.slice(58, err.message.length - 2) );
+      let errorMessageToShow = errorMessageInJson.data.data[Object.keys(errorMessageInJson.data.data)[0]].reason;
+
+      message.error(errorMessageToShow);
     }
   };
 
-  useEffect(() => {
-    console.log(location.state.walletAddress);
-    loadWeb3();
-  }, []);
-
-  useEffect(() => {
-    form.setFieldsValue({
-      walletAddress: accounts,
-    });
-  }, [web3, accounts]);
-
-  const onSubmit = async(values) => {
-    // let acc = await loadWeb3();
-
-    const { role, name, email, password } = values;
-
-    addUser(accounts[0], name, email, password, role).then(() => {
-      message.success("Account has been created!");
-      navigate("/");
-    });
-  };
+  if (typeof web3 === "undefined") {
+    return (
+      <div className="App">
+        Loading Web3, accounts, and contract... Reload page
+      </div>
+    );
+  }
 
   return (
     <Fragment>
@@ -75,20 +69,20 @@ function Register() {
             rules={[{ required: true, message: "Please select a role" }]}
           >
             <Select placeholder="Please select a role">
-              <Option value="student">Student</Option>
-              <Option value="institution">Institution</Option>
-              <Option value="employer">Employer</Option>
+              <Option value="Student">Student</Option>
+              <Option value="Issuer">Institution</Option>
+              <Option value="Verifier">Employer</Option>
             </Select>
           </Form.Item>
 
-          <Form.Item
+          {/* <Form.Item
             label="Wallet Address"
             name="walletAddress"
             className="walletAddress"
             // rules={[{ required: true, message: "Please enter wallet address" }]}
           >
             <Input type="text" placeholder="Wallet Address" disabled />
-          </Form.Item>
+          </Form.Item> */}
 
           <Form.Item
             label="Name"
