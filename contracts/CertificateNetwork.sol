@@ -18,22 +18,21 @@ contract CertificateNetwork {
     event Register(address newAddress, string role);
     event RoleRemoved(address addr, string role);
 
-    constructor(address deployer_Address) public {
-        deployerAddress = deployer_Address;
-    }
+    // constructor(address deployer_Address) public {
+    //     deployerAddress = deployer_Address;
+    // }
 
-    modifier onlyAdmin() {
-        // Assuming got new stakeholder join, we manually add them in.
-        require(
-            msg.sender == deployerAddress,
-            "Only deployer of this contract can perform the action."
-        );
-        _;
-    }
+    // modifier onlyAdmin() {
+    //     // Assuming got new stakeholder join, we manually add them in.
+    //     require(
+    //         msg.sender == deployerAddress,
+    //         "Only deployer of this contract can perform the action."
+    //     );
+    //     _;
+    // }
 
     function register(address newUserAddress, string memory newRole)
         public
-        onlyAdmin
     {
         require(
             !userExistMap[newUserAddress],
