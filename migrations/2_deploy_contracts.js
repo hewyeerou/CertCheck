@@ -1,11 +1,10 @@
-var SimpleStorage = artifacts.require("./SimpleStorage.sol");
-
 // to be replaced during development
 module.exports = function(deployer) {
     deployer.deploy(SimpleStorage);
 };
 
 // Sample deployment codes
+var SimpleStorage = artifacts.require("./SimpleStorage.sol");
 var CertificateNetwork = artifacts.require("./CertificateNetwork.sol");
 var Certificate = artifacts.require("./Certificate.sol");
 
