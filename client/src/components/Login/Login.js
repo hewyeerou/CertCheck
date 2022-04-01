@@ -10,9 +10,13 @@ import {
 } from "@ant-design/icons";
 import { useNavigate } from "react-router-dom";
 import { checkAddressExist } from "../../models/User";
+import { Spin } from 'antd';
+import { LoadingOutlined } from '@ant-design/icons';
+
 
 function Login({ web3, accounts }) {
   const { Option } = Select;
+  const antIcon = <LoadingOutlined style={{ fontSize: 24 }} spin />;
   let navigate = useNavigate();
 
   useEffect(() => {
@@ -58,7 +62,8 @@ function Login({ web3, accounts }) {
 
   return (
     <div className="container">
-      <h1>Hello, World!</h1>
+      <Spin indicator={antIcon} />
+      {/* <h1>Hello, World!</h1> */}
       {/* <p>Your account: {accounts[0]}</p> */}
     </div>
   );

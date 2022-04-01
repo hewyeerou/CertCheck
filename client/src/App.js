@@ -16,6 +16,9 @@ import Page from "./components/Page";
 import CertificateNetwork from './contracts/CertificateNetwork.json';
 import ViewRequests from './components/ViewRequests/ViewRequests';
 
+import { Spin } from 'antd';
+import { LoadingOutlined } from '@ant-design/icons';
+
 function App() {
   // initialize the state variables of the application
   const [storageValue, setStorageValue] = useState(0);
@@ -23,6 +26,8 @@ function App() {
   const [accounts, setAccounts] = useState();
   const [certNetworkContract, setCertNetworkContract] = useState();
   const [deployedCertNetwork, setDeployedCertNetwork] = useState();
+
+  const antIcon = <LoadingOutlined style={{ fontSize: 50, textAlign: "center", marginTop: "10px" }} spin />;
 
   const loadWeb3 = async () => {
     try {
@@ -85,7 +90,7 @@ function App() {
   if (typeof web3 === "undefined") {
     return (
       <div className="App">
-        Loading Web3, accounts, and contract... Reload page
+        <Spin indicator={antIcon} />
       </div>
     );
   }
