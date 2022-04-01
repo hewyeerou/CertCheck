@@ -3,10 +3,12 @@ pragma solidity >=0.5.0;
 // Ref: https://github.com/TruSet/bitmask-rbac
 
 contract CertificateNetwork {
-    address adminAddress;
+    address deployerAddress;
 
     struct user {
         string role;
+        // can add more variables
+        // name
     }
 
     mapping(address => user) private userMap;
@@ -16,13 +18,16 @@ contract CertificateNetwork {
     event Register(address newAddress, string role);
     event RoleRemoved(address addr, string role);
 
-    constructor(address admin_Address) {
-        adminAddress = admin_Address;
+    constructor(address deployer_Address) public {
+        deployerAddress = deployer_Address;
     }
 
     modifier onlyAdmin() {
         // Assuming got new stakeholder join, we manually add them in.
-        require(msg.sender == adminAddress, "This action requires admin");
+        require(
+            msg.sender == deployerAddress,
+            "Only deployer of this contract can perform the action."
+        );
         _;
     }
 
@@ -45,10 +50,10 @@ contract CertificateNetwork {
             userCountsByRole[newRole]++;
         } else if (
             keccak256(abi.encodePacked((newRole))) ==
-            keccak256(abi.encodePacked(("Student")))
+            keccak256(abi.encodePacked(("Subject")))
         ) {
-            newUser.role = "Student";
-            role = "Student";
+            newUser.role = "Subject";
+            role = "Subject";
             userCountsByRole[newRole]++;
         } else if (
             keccak256(abi.encodePacked((newRole))) ==
