@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Button, Row, Col, Typography, Modal, Table, Form, Select } from 'antd';
 
-const Invitation = () => {
+const Invitation = ({ certContract, accounts }) => {
     const [isModalVisible, setIsModalVisible] = useState(false);
     const [isRevokeModalVisible, setIsRevokeModalVisible] = useState(false);
     const [verifier, setVerifier] = useState();
@@ -10,34 +10,42 @@ const Invitation = () => {
 
     const [form] = Form.useForm();
 
-    const certificateViewingRight = [
-        {
-            key: 1,
-            verifier: 'DBS',
-            date: '21/7/2022',
-        },
-        {
-            key: 2,
-            verifier: 'CitiBank',
-            date: '21/7/2022',
-        },
-        {
-            key: 3,
-            verifier: 'UOB',
-            date: '11/3/2018',
-        },
-        {
-            key: 4,
-            verifier: 'Inknoe',
-            date: '11/7/2026',
-        },
-        { key: 5, verifier: 'GIC', date: '11/7/2020' },
-        {
-            key: 6,
-            verifier: 'NUH',
-            date: '11/1/2018',
-        },
-    ];
+    const [certificateViewingRight, setCertificateViewingRight] = useState();
+
+    const getVerifiers = async() => {
+        let verifiers = await certContract.methods.getGrantList().call({ from: accounts[0] })
+        verifiers = verifiers.map((r, index) => ({...r, key: index+1}));
+
+        setCertificateViewingRight(verifiers);
+    };
+
+    useEffect(() => {
+        console.log(certContract);
+        getVerifiers();
+    },[]);
+    // const certificateViewingRight = [
+    //     {
+    //         key: 1,
+    //         verifier: 'DBS',
+    //     },
+    //     {
+    //         key: 2,
+    //         verifier: 'CitiBank',
+    //     },
+    //     {
+    //         key: 3,
+    //         verifier: 'UOB',
+    //     },
+    //     {
+    //         key: 4,
+    //         verifier: 'Inknoe',
+    //     },
+    //     { key: 5, verifier: 'GIC', },
+    //     {
+    //         key: 6,
+    //         verifier: 'NUH',
+    //     },
+    // ];
 
     const verifierList = [
         { name: 'Singapore Airlines', value: 'Singapore Airlines' },
@@ -55,7 +63,6 @@ const Invitation = () => {
 
     const columns = [
         { title: 'Verifier', dataIndex: 'verifier', key: 'key' },
-        { title: 'Date', dataIndex: 'date', key: 'key' },
         {
             title: 'Action',
             key: 'action',

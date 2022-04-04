@@ -11,8 +11,11 @@ import ViewRequests from './ViewRequests/ViewRequests';
 import ViewCertVer from './ViewCertVer/ViewCertVer';
 import ViewIssued from './ViewIssued/ViewIssued';
 
-const Page = ({ pageType }) => {
+import { useLocation } from "react-router-dom";
+
+const Page = ({ pageType, certContract }) => {
     const [page, setPage] = useState();
+    const location = useLocation();
 
     let user = JSON.parse(localStorage.getItem("user"));
 
@@ -62,7 +65,7 @@ const Page = ({ pageType }) => {
         } else if (pageType === '/student/viewReq') {
             setPage(<Request />);
         } else if (pageType === '/student/viewVer') {
-            setPage(<Invitation />);
+            setPage(<Invitation certContract={certContract}/>);
         } else if (pageType === '/verifier/viewStudentCert') {
             setPage(<ViewCertVer/>);
         } else if (pageType === "/issuer/viewRequests") {
@@ -70,7 +73,7 @@ const Page = ({ pageType }) => {
         } else if (pageType === "/issuer/viewIssued") {
             setPage(<ViewIssued />);
         }
-    }, []);
+    }, [location.pathname]);
 
     return (
         <Layout style={{ minHeight: '100vh' }}>

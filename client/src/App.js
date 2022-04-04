@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import {
   Route,
-  BrowserRouter as Router,
+  BrowserRouter,
   Routes,
   Navigate,
 } from "react-router-dom";
@@ -14,7 +14,7 @@ import Register from "./components/Register/Register";
 import Page from "./components/Page";
 
 import CertificateNetwork from './contracts/CertificateNetwork.json';
-import ViewRequests from './components/ViewRequests/ViewRequests';
+import Certificate from './contracts/Certificate.json';
 
 import { Spin } from 'antd';
 import { LoadingOutlined } from '@ant-design/icons';
@@ -26,6 +26,7 @@ function App() {
   const [accounts, setAccounts] = useState();
   const [certNetworkContract, setCertNetworkContract] = useState();
   const [deployedCertNetwork, setDeployedCertNetwork] = useState();
+  const [certContract, setCertContract] = useState();
 
   const antIcon = <LoadingOutlined style={{ fontSize: 50, textAlign: "center", marginTop: "10px" }} spin />;
 
@@ -44,13 +45,23 @@ function App() {
         deployedCertNetwork && deployedCertNetwork.address
       );
 
+      const deployedCert = Certificate.networks[networkId];
+      const certInstance = new web3.eth.Contract(
+        Certificate.abi,
+        deployedCert && deployedCert.address
+      );
+
       console.log("######### deployedCertNetwork", deployedCertNetwork);
       console.log("######### certNetworkInstance", certNetworkInstance);
+
+      console.log("######### deployedCert", deployedCert);
+      console.log("######### certInstance", certInstance);
 
       setWeb3(web3);
       setAccounts(accounts);
       setCertNetworkContract(certNetworkInstance);
       setDeployedCertNetwork(deployedCertNetwork);
+      setCertContract(certInstance);
     } catch (error) {
       message.error(`Failed to load web3.`);
       console.error(error);
@@ -60,32 +71,6 @@ function App() {
   useEffect(() => {
     loadWeb3();
   }, []);
-
-  // // is called whenever there was any change in the state variables web3, accounts, contract
-  // useEffect(() => {
-  //   const runExample = async () => {
-  //       // example of interaction with the smart contract
-  //       try{
-  //           // Stores a given value, 5 by default
-  //           await contract.methods.set(5).send({ from: accounts[0] });
-
-  //           // Get the value from the contract to prove it worked
-  //           const response = await contract.methods.get().call();
-
-  //           // Update state with the result
-  //           setStorageValue (response);
-  //       }
-  //       catch (error){
-  //           alert('No contract deployed or account error; please check that MetaMask is on the correct network, reset the account and reload page');
-  //           console.error(error);
-  //       }
-  //   }
-  //   if(typeof(web3) != 'undefined'
-  //       && typeof(accounts) != 'undefined'
-  //       && typeof(contract) != 'undefined'){
-  //       runExample();
-  //   }
-  // }, [web3, accounts, contract]);
 
   if (typeof web3 === "undefined") {
     return (
@@ -97,9 +82,9 @@ function App() {
 
   // equivalent to the render function of older React frameworks
   return (
-    <Router>
+    <BrowserRouter>
       <Routes>
-        <Route path="/" element={<Login web3={web3} accounts={accounts} />} />
+        <Route index path="/" element={<Login web3={web3} accounts={accounts} />} />
         <Route
           path="/register"
           element={
@@ -112,31 +97,31 @@ function App() {
         />
         <Route
           path="/student/viewCert"
-          element={<Page pageType={"/student/viewCert"} />}
+          element={<Page pageType={"/student/viewCert"} certContract={certContract} />}
         />
         <Route
           path="/student/viewReq"
-          element={<Page pageType={"/student/viewReq"} />}
+          element={<Page pageType={"/student/viewReq"} certContract={certContract} />}
         />
         <Route
           path="/student/viewVer"
-          element={<Page pageType={"/student/viewVer"} />}
+          element={<Page pageType={"/student/viewVer"} certContract={certContract} accounts={accounts} />}
         />
 
         <Route
           path="/verifier/viewStudentCert"
-          element={<Page pageType={"/verifier/viewStudentCert"} />}
+          element={<Page pageType={"/verifier/viewStudentCert"} certContract={certContract} />}
         />
         <Route
           path="/issuer/viewRequests"
-          element={<Page pageType={"/issuer/viewRequests"} />}
+          element={<Page pageType={"/issuer/viewRequests"} certContract={certContract} />}
         />
         <Route
           path="/issuer/viewIssued"
-          element={<Page pageType={"/issuer/viewIssued"} />}
+          element={<Page pageType={"/issuer/viewIssued"} certContract={certContract} />}
         />
       </Routes>
-    </Router>
+    </BrowserRouter>
   );
 }
 
