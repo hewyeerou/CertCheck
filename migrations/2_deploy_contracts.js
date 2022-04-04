@@ -8,6 +8,7 @@ module.exports = function(deployer, network, accounts) {
   .then(() => SimpleStorage.deployed())
   .then(() => deployer.deploy(CertificateNetwork, { from: accounts[0] }))
   .then(() => CertificateNetwork.deployed())
+  .then(() => console.log("certificate network address", CertificateNetwork.address))
   .then(() => deployer.deploy(Certificate, CertificateNetwork.address))
   .then(() => Certificate.deployed())
 };

@@ -32,7 +32,7 @@ const PageSider = () => {
 
   return (
     <>
-      {user.type === "Student" && path && (
+      {user.type === "Subject" && path && (
         <Menu theme="dark" mode="inline" defaultSelectedKeys={[path]}>
           <Menu.Item key="1">
             <Link to="/student/viewCert">Digital Certificate</Link>

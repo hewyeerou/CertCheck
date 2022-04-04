@@ -7,6 +7,8 @@ import { useNavigate } from "react-router-dom";
 const PageHeader = () => {
   let navigate = useNavigate();
 
+  let user = JSON.parse(localStorage.getItem("user"));
+
   const onClickLogout = () => {
     localStorage.clear();
     navigate("")
@@ -31,7 +33,7 @@ const PageHeader = () => {
               </Avatar>
             </Col>
             <Col>
-              <Typography>User</Typography>
+              {user && <Typography>{user.name}</Typography>}
             </Col>
           </Row>
         </Col>

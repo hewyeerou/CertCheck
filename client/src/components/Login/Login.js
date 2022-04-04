@@ -30,7 +30,7 @@ function Login({ web3, accounts }) {
               if (result) {
                 localStorage.setItem("user", JSON.stringify(result));
                 
-                if(result.type === "Student") {
+                if(result.type === "Subject") {
                   navigate("/student/viewCert");
                 } else if (result.type === "Issuer") {
                   navigate("/issuer/viewRequests");

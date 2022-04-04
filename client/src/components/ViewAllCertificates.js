@@ -58,7 +58,7 @@ const ViewAllCertificates = ({ user }) => {
 
   return (
     <div>
-      {user.type === "Student" ? (
+      {user.type === "Subject" ? (
         <Typography.Title level={2} style={{ paddingLeft: 20, paddingTop: 20 }}>
           Digital Certificate
         </Typography.Title>
