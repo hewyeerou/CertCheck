@@ -1,10 +1,24 @@
 import React, { useState, useEffect } from 'react';
-import { Table, Tag, Space, Popconfirm, PageHeader} from 'antd';
-import PageFooter from '../PageFooter';
-import PageSider from '../PageSider';
-import Page from '../Page';
+import { Table, Popconfirm, PageHeader, Modal, Form, Input, DatePicker, Button, Divider } from 'antd';
+import "./ViewRequests.css";
 
-function ViewRequests() {
+function ViewRequests(web3, certContract) {
+    const [visible, setVisible] = useState(false);
+    const [selectedUser, setSelectedUser] = useState();
+    const [requestData, setRequestData] = useState();
+
+    useEffect(() => {
+        console.log(web3);
+        console.log(certContract);
+        setRequestData(data);
+        // const retrieveRequests = await certContract.methods.
+    }, []);
+
+    const currentUser = JSON.parse(localStorage.getItem('user'));
+
+    const tailLayout = {
+        wrapperCol: { offset: 8, span: 16 },
+    };
 
     const columns = [
         {
@@ -26,8 +40,8 @@ function ViewRequests() {
         {
             title: '',
             key: 'action',
-            render: (text, record) =>
-                <Popconfirm title="Are you sure to issue certificate to this student?" onConfirm={() => issueCertificate(record)} okText="Yes"
+            render: (text, record, x) =>
+                <Popconfirm title="Are you sure to issue certificate to this student?" onConfirm={() => issueCertificate(record, x)} okText="Yes"
                     cancelText="No">
                     <a>Issue</a>
                 </Popconfirm>
@@ -35,8 +49,8 @@ function ViewRequests() {
         {
             title: '',
             key: 'action',
-            render: (text, record) =>
-                <Popconfirm title="Are you sure this student is not applicable for the request?" onConfirm={() => issueCertificate(record)} okText="Yes"
+            render: (text, record, x) =>
+                <Popconfirm title="Are there no certificates applicable for this student?" onConfirm={() => deleteRequest(record, x)} okText="Yes"
                     cancelText="No">
                     <a>Not Applicable</a>
                 </Popconfirm>
@@ -67,12 +81,32 @@ function ViewRequests() {
         },
     ];
 
-    const issueCertificate = (record) => {
-        console.log(record);
+
+    const issueCertificate = (record, x) => {
+        setSelectedUser(record);
+        setVisible(true);
     }
 
-    const deleteRecord = (record) => {
-        console.log(record);
+    const onIssueSubmit = (values) => {
+        console.log(values);
+        console.log("## Check user: ", selectedUser);
+        //Do issue certificate to student
+        const res = certContract.methods.issueCertificate(
+            selectedUser.walletAddress, 
+            currentUser.name, 
+            values.studentNRIC, 
+            values.studentMatric, 
+            values.title, 
+            values.completionDate)
+            .send({ from: currentUser.walletAddress });
+    }
+
+    const deleteRequest = (record, x) => {
+        console.log(x);
+        data.splice(x, 1);
+        console.log(data);
+        setRequestData(data);
+        //Delete record from contract
     }
 
     return (
@@ -81,7 +115,85 @@ function ViewRequests() {
                 className="site-page-header"
                 title="Certificate Requests"
             />
-            <Table columns={columns} dataSource={data} />
+            <Table columns={columns} dataSource={requestData} />
+            <Modal
+                title="Issue Certificate"
+                centered
+                visible={visible}
+                onCancel={() => setVisible(false)}
+                width={1000}
+                footer={[
+
+                ]}
+            >
+                <Form
+                    name="basic"
+                    labelCol={{ span: 8 }}
+                    wrapperCol={{ span: 16 }}
+                    onFinish={onIssueSubmit}
+                    autoComplete="off"
+                >
+                    <PageHeader
+                        className="form-sub-header"
+                        title="Student Information"
+                    />
+                    <Form.Item
+                        label="Student Name"
+                        name="studentName"
+                        rules={[{ required: true, message: 'Please input student name!' }]}
+                    >
+                        <Input />
+                    </Form.Item>
+
+                    <Form.Item
+                        label="Student NRIC"
+                        name="studentNRIC"
+                        rules={[{ required: true, message: 'Please input student NRIC!' }]}
+                    >
+                        <Input />
+                    </Form.Item>
+
+                    <Form.Item
+                        label="Student Matric No."
+                        name="studentMatric"
+                        rules={[{ required: true, message: 'Please input student Matric No.!' }]}
+                    >
+                        <Input />
+                    </Form.Item>
+
+                    <PageHeader
+                        className="form-sub-header"
+                        title="Certificate Information"
+                    />
+                    <Form.Item
+                        label="Title"
+                        name="title"
+                        rules={[{ required: true, message: 'Please input certificate title!' }]}
+                    >
+                        <Input />
+                    </Form.Item>
+                    <Form.Item
+                        label="Completion Date"
+                        name="completionDate"
+                        rules={[{ required: true, message: 'Please input completion date!' }]}
+                    >
+                        <DatePicker />
+                    </Form.Item>
+                    <Form.Item
+                        label="Roll Number"
+                        name="rollNumber"
+                        rules={[{ required: true, message: 'Please input Roll Number!' }]}
+                    >
+                        <Input />
+                    </Form.Item>
+
+                    <Form.Item {...tailLayout}>
+                        <Button htmlType="submit" type="primary">
+                            Submit
+                        </Button>
+                    </Form.Item>
+                </Form>
+            </Modal>
         </>
     );
 }

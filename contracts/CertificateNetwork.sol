@@ -16,9 +16,9 @@ contract CertificateNetwork {
     event Register(address newAddress, string role);
     event RoleRemoved(address addr, string role);
 
-    // constructor(address admin_Address) public {
-    //     adminAddress = admin_Address;
-    // }
+    constructor(address admin_Address) public{
+        adminAddress = admin_Address;
+    }
 
     modifier onlyAdmin() {
         // Assuming got new stakeholder join, we manually add them in.
@@ -44,10 +44,10 @@ contract CertificateNetwork {
             userCountsByRole[newRole]++;
         } else if (
             keccak256(abi.encodePacked((newRole))) ==
-            keccak256(abi.encodePacked(("Student")))
+            keccak256(abi.encodePacked(("Subject")))
         ) {
-            newUser.role = "Student";
-            role = "Student";
+            newUser.role = "Subject";
+            role = "Subject";
             userCountsByRole[newRole]++;
         } else if (
             keccak256(abi.encodePacked((newRole))) ==

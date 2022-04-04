@@ -11,7 +11,7 @@ import ViewRequests from './ViewRequests/ViewRequests';
 import ViewCertVer from './ViewCertVer/ViewCertVer';
 import ViewIssued from './ViewIssued/ViewIssued';
 
-const Page = ({ pageType }) => {
+const Page = ({ pageType, web3, certContract }) => {
     const [page, setPage] = useState();
 
     const { Header, Footer, Sider, Content } = Layout;
@@ -64,7 +64,7 @@ const Page = ({ pageType }) => {
         } else if (pageType === '/verifier/viewStudentCert') {
             setPage(<ViewCertVer/>);
         } else if (pageType === "/issuer/viewRequests") {
-            setPage(<ViewRequests />);
+            setPage(<ViewRequests web3={web3} certContract= {certContract}/>);
         } else if (pageType === "/issuer/viewIssued") {
             setPage(<ViewIssued />);
         }

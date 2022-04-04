@@ -14,6 +14,7 @@ import Register from "./components/Register/Register";
 import Page from "./components/Page";
 
 import CertificateNetwork from './contracts/CertificateNetwork.json';
+import Certificate from './contracts/Certificate.json';
 import ViewRequests from './components/ViewRequests/ViewRequests';
 
 function App() {
@@ -23,6 +24,8 @@ function App() {
   const [accounts, setAccounts] = useState();
   const [certNetworkContract, setCertNetworkContract] = useState();
   const [deployedCertNetwork, setDeployedCertNetwork] = useState();
+  const [certContract, setCertContract] = useState();
+  const [deployedCert, setDeployedCert] = useState();
 
   const loadWeb3 = async () => {
     try {
@@ -33,7 +36,13 @@ function App() {
       console.log("********** accounts: ", accounts);
 
       const networkId = await web3.eth.net.getId();
+      console.log("********** networkId: ", networkId);
       const deployedCertNetwork = CertificateNetwork.networks[networkId];
+      const deployedCert = Certificate.networks[networkId];
+      const certInstance = new web3.eth.Contract(
+          Certificate.abi,
+          deployedCert && deployedCert.address
+        );
       const certNetworkInstance = new web3.eth.Contract(
         CertificateNetwork.abi,
         deployedCertNetwork && deployedCertNetwork.address
@@ -41,11 +50,15 @@ function App() {
 
       console.log("######### deployedCertNetwork", deployedCertNetwork);
       console.log("######### certNetworkInstance", certNetworkInstance);
+      console.log("######### deployedCert", deployedCert);
+      console.log("######### certInstance", certInstance);
 
       setWeb3(web3);
       setAccounts(accounts);
       setCertNetworkContract(certNetworkInstance);
       setDeployedCertNetwork(deployedCertNetwork);
+      setCertContract(certInstance);
+      setDeployedCert(deployedCert);
     } catch (error) {
       message.error(`Failed to load web3.`);
       console.error(error);
@@ -124,7 +137,7 @@ function App() {
         />
         <Route
           path="/issuer/viewRequests"
-          element={<Page pageType={"/issuer/viewRequests"} />}
+          element={<Page pageType={"/issuer/viewRequests"} web3={web3} certContract={certContract}/>}
         />
         <Route
           path="/issuer/viewIssued"

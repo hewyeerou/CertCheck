@@ -5,6 +5,7 @@ import { useNavigate } from "react-router-dom";
 import Page from "./Page";
 
 const PageSider = () => {
+
     const type = localStorage.getItem("user");
     var user = JSON.parse(type);
     let navigate = useNavigate();
@@ -24,7 +25,7 @@ const PageSider = () => {
                 </Menu>
             )}
             {user.type === 'Issuer' && (
-                <Menu theme='dark' mode='inline' defaultSelectedKeys={['1']} onClick={handleClick}>
+                <Menu theme='dark' mode='inline' defaultSelectedKeys={['5']} onClick={handleClick}>
                     <Menu.Item key='5'> 
                         <a href="/issuer/viewRequests">
                             <span>View all Requests</span>

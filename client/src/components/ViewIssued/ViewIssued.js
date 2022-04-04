@@ -24,10 +24,20 @@ function ViewIssued() {
             key: 'walletAddress',
         },
         {
+            title: 'Certificate Title',
+            dataIndex: 'certificateTitle',
+            key: 'certificateTitle',
+        },
+        {
+            title: 'Roll Number',
+            dataIndex: 'rollNumber',
+            key: 'rollNumber',
+        },
+        {
             title: '',
             key: 'action',
-            render: (text, record) =>
-                <Popconfirm title="Do you want to revoke this certificate?" onConfirm={() => revokeCertificate(record)} okText="Yes"
+            render: (text, record, x) =>
+                <Popconfirm title="Do you want to revoke this certificate?" onConfirm={() => revokeCertificate(record, x)} okText="Yes"
                     cancelText="No">
                     <a>Revoke</a>
                 </Popconfirm>
@@ -36,30 +46,34 @@ function ViewIssued() {
 
     const data = [
         {
-            key: '1',
+            certId: '1',
             name: 'John Brown',
             email: 32,
             walletAddress: 'New York No. 1 Lake Park',
-            tags: ['nice', 'developer'],
+            rollNumber: "123123",
+            certificateTitle: "Degree"
         },
         {
-            key: '2',
+            certId: '2',
             name: 'Jim Green',
             email: 42,
             walletAddress: 'London No. 1 Lake Park',
-            tags: ['loser'],
+            rollNumber: "123123",
+            certificateTitle: "Masters"
         },
         {
-            key: '3',
+            certId: '3',
             name: 'Joe Black',
             email: 32,
             walletAddress: 'Sidney No. 1 Lake Park',
-            tags: ['cool', 'teacher'],
+            rollNumber: "123123",
+            certificateTitle: "Degree"
         },
     ];
 
-    const revokeCertificate = (record) => {
-        console.log(record);
+    const revokeCertificate = (record, x) => {
+        console.log(record + " " + x);
+        //Do revokeCert method
     }
 
     return (
