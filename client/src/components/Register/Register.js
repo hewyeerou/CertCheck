@@ -23,11 +23,7 @@ function Register({ web3, accounts, certNetworkContract }) {
   const onSubmit = async (values) => {
     const { role, name, email, password } = values;
 
-    // const res = await certNetworkContract.methods
-    //   .checkUserExist(accounts[0], role)
-    //   .call();
-    console.log(accounts[0]);
-    // try {
+    try {
       const res = await certNetworkContract.methods
         .register(accounts[0], 'Issuer')
         .send({ from: accounts[0] });
@@ -38,12 +34,12 @@ function Register({ web3, accounts, certNetworkContract }) {
       });
 
       console.log("######## Response", res);
-    // } catch (err) {
-    //   let errorMessageInJson = JSON.parse(err.message.slice(58, err.message.length - 2) );
-    //   let errorMessageToShow = errorMessageInJson.data.data[Object.keys(errorMessageInJson.data.data)[0]].reason;
+    } catch (err) {
+      let errorMessageInJson = JSON.parse(err.message.slice(58, err.message.length - 2) );
+      let errorMessageToShow = errorMessageInJson.data.data[Object.keys(errorMessageInJson.data.data)[0]].reason;
 
-    //   message.error(errorMessageToShow);
-    // }
+      message.error(errorMessageToShow);
+    }
   };
 
   if (typeof web3 === "undefined") {

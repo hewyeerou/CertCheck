@@ -11,8 +11,13 @@ import ViewRequests from './ViewRequests/ViewRequests';
 import ViewCertVer from './ViewCertVer/ViewCertVer';
 import ViewIssued from './ViewIssued/ViewIssued';
 
-const Page = ({ pageType, web3, certContract }) => {
+import { useLocation } from "react-router-dom";
+
+const Page = ({ pageType, certContract, accounts }) => {
     const [page, setPage] = useState();
+    const location = useLocation();
+
+    let user = JSON.parse(localStorage.getItem("user"));
 
     const { Header, Footer, Sider, Content } = Layout;
     const certificates = [
@@ -56,11 +61,11 @@ const Page = ({ pageType, web3, certContract }) => {
 
     useEffect(() => {
         if (pageType === '/student/viewCert') {
-            setPage(<ViewAllCertificates certificates={certificates} />);
+            setPage(<ViewAllCertificates user={user}/>);
         } else if (pageType === '/student/viewReq') {
             setPage(<Request />);
         } else if (pageType === '/student/viewVer') {
-            setPage(<Invitation />);
+            setPage(<Invitation certContract={certContract} accounts={accounts}/>);
         } else if (pageType === '/verifier/viewStudentCert') {
             setPage(<ViewCertVer/>);
         } else if (pageType === "/issuer/viewRequests") {
@@ -68,7 +73,7 @@ const Page = ({ pageType, web3, certContract }) => {
         } else if (pageType === "/issuer/viewIssued") {
             setPage(<ViewIssued />);
         }
-    }, []);
+    }, [location.pathname]);
 
     return (
         <Layout style={{ minHeight: '100vh' }}>

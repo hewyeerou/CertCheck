@@ -8,6 +8,6 @@ module.exports = function(deployer, network, accounts) {
   .then(() => SimpleStorage.deployed())
   .then(() => deployer.deploy(CertificateNetwork, accounts[1], { from: accounts[0] }))
   .then(() => CertificateNetwork.deployed())
-  .then(() => deployer.deploy(Certificate, CertificateNetwork.address, { from: accounts[0] }))
+  .then(() => deployer.deploy(Certificate, CertificateNetwork.address))
   .then(() => Certificate.deployed())
 };
