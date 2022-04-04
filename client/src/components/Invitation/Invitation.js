@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Button, Row, Col, Typography, Modal, Table, Form, Select, message } from 'antd';
 import { getAllUsers, getUserByAddress } from "../../models/User";
 
-const Invitation = ({ user, certContract, accounts, certNetworkContract }) => {
+const Invitation = ({ user, certContract, accounts }) => {
     const [isModalVisible, setIsModalVisible] = useState(false);
     const [isRevokeModalVisible, setIsRevokeModalVisible] = useState(false);
     const [revokeVerifier, setRevokeVerifier] = useState();
@@ -79,6 +79,7 @@ const Invitation = ({ user, certContract, accounts, certNetworkContract }) => {
         getApprovedVerifiers();
     }, [isModalVisible, isRevokeModalVisible]);
 
+    /* revoke verifier */
     const confirmRevoke = async() => {
         const res = await certContract.methods.denyVerifier(revokeVerifier.walletAddress).send({ from: accounts[0] });
 
