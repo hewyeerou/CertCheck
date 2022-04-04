@@ -92,5 +92,5 @@ contract CertificateNetwork {
     {
         require(userExistMap[checkAddress], "User not registered in system.");
         return userMap[checkAddress].role;
-    }
+    } 
 }

@@ -79,3 +79,16 @@ export async function checkAddressExist(walletAddress) {
     return false;
   });
 }
+
+export async function getAllUsers() {
+  return get(child(ref(db), 'users')).then((snapshot) => {
+    if (snapshot.exists()) {
+      return snapshot.val();
+    } else {
+      console.log("User not available");
+    }
+  }).catch((error) => {
+    console.error(error);
+  });
+
+}

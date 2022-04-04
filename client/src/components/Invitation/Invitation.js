@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Button, Row, Col, Typography, Modal, Table, Form, Select } from 'antd';
+import { getAllUsers } from "../../models/User";
 
 const Invitation = ({ certContract, accounts }) => {
     const [isModalVisible, setIsModalVisible] = useState(false);
@@ -11,56 +12,9 @@ const Invitation = ({ certContract, accounts }) => {
     const [form] = Form.useForm();
 
     const [certificateViewingRight, setCertificateViewingRight] = useState();
+    const [verifierList, setVerifierList] = useState();
 
-    const getVerifiers = async() => {
-        let verifiers = await certContract.methods.getGrantList().call({ from: accounts[0] })
-        verifiers = verifiers.map((r, index) => ({...r, key: index+1}));
-
-        setCertificateViewingRight(verifiers);
-    };
-
-    useEffect(() => {
-        console.log(certContract);
-        getVerifiers();
-    },[]);
-    // const certificateViewingRight = [
-    //     {
-    //         key: 1,
-    //         verifier: 'DBS',
-    //     },
-    //     {
-    //         key: 2,
-    //         verifier: 'CitiBank',
-    //     },
-    //     {
-    //         key: 3,
-    //         verifier: 'UOB',
-    //     },
-    //     {
-    //         key: 4,
-    //         verifier: 'Inknoe',
-    //     },
-    //     { key: 5, verifier: 'GIC', },
-    //     {
-    //         key: 6,
-    //         verifier: 'NUH',
-    //     },
-    // ];
-
-    const verifierList = [
-        { name: 'Singapore Airlines', value: 'Singapore Airlines' },
-        { name: 'The Development Bank of Singapore Limited (DBS)', value: 'DBS' },
-        { name: 'United Overseas Bank Limited (UOB)', value: 'UOB' },
-        { name: 'Google', value: 'Google' },
-        { name: 'Shopee', value: 'Shopee' },
-        { name: 'Amazon', value: 'Amazon' },
-        { name: 'Government of Singapore Investment Corporation (GIC)', value: 'GIC' },
-        { name: 'Ninja Van', value: 'Ninja Van' },
-        { name: 'Tik Tok', value: 'Tik Tok' },
-        { name: 'Asus', value: 'Asus' },
-        { name: 'Dyson', value: 'Dyson' },
-    ];
-
+    /* datatable columns */
     const columns = [
         { title: 'Verifier', dataIndex: 'verifier', key: 'key' },
         {
@@ -79,6 +33,36 @@ const Invitation = ({ certContract, accounts }) => {
             ),
         },
     ];
+
+    /* Get all verifiers and display on table */
+    const getApprovedVerifiers = async() => {
+        let verifiers = await certContract.methods.getGrantList().call({ from: accounts[0] })
+        verifiers = verifiers.map((r, index) => ({...r, key: index+1}));
+
+        setCertificateViewingRight(verifiers);
+    };
+
+    /* get all verifiers from db */
+    const getVerifiers = async() => {
+        let verifiersList = [];
+
+        //get all users from db and filter
+        await getAllUsers().then((users) => {
+            for(let address in users) {
+                if(users[address].type === "Verifier") {
+                    verifiersList.push(users[address].name);
+                }
+            }
+        });
+
+        verifiersList = verifiersList.map((verifier) => ({name: verifier, value: verifier}));
+        setVerifierList(verifiersList);
+    };
+
+    useEffect(() => {
+        getApprovedVerifiers();
+        getVerifiers();
+    },[]);
 
     const confirmRevoke = () => {
         setRevoke(true);
@@ -142,7 +126,7 @@ const Invitation = ({ certContract, accounts }) => {
                     <Form form={form} onFinish={onFinish}>
                         <Form.Item name='verifier' label='Verifier' rules={[{ required: true }]}>
                             <Select placeholder='Select a verifier' allowClear>
-                                {verifierList.map((verifier) => (
+                                {verifierList && verifierList.map((verifier) => (
                                     <Select.Option value={verifier.value}>{verifier.name}</Select.Option>
                                 ))}
                             </Select>
