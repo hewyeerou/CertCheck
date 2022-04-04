@@ -2,19 +2,19 @@ import React, { useState, useEffect } from 'react';
 import { Table, Popconfirm, PageHeader, Modal, Form, Input, DatePicker, Button, Divider } from 'antd';
 import "./ViewRequests.css";
 
-function ViewRequests(web3, certContract) {
+function ViewRequests(certContract) {
     const [visible, setVisible] = useState(false);
     const [selectedUser, setSelectedUser] = useState();
     const [requestData, setRequestData] = useState();
 
+    const currentUser = JSON.parse(localStorage.getItem('user'));
+
     useEffect(() => {
-        console.log(web3);
         console.log(certContract);
         setRequestData(data);
-        // const retrieveRequests = await certContract.methods.
+        //const retrieveRequests = certContract.methods.getReqList(currentUser.walletAddress).send({ from: currentUser.walletAddress });;
+        //console.log(retrieveRequests);
     }, []);
-
-    const currentUser = JSON.parse(localStorage.getItem('user'));
 
     const tailLayout = {
         wrapperCol: { offset: 8, span: 16 },

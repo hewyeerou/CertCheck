@@ -15,7 +15,6 @@ import Page from "./components/Page";
 
 import CertificateNetwork from './contracts/CertificateNetwork.json';
 import Certificate from './contracts/Certificate.json';
-import ViewRequests from './components/ViewRequests/ViewRequests';
 
 import { Spin } from 'antd';
 import { LoadingOutlined } from '@ant-design/icons';
@@ -40,13 +39,7 @@ function App() {
       console.log("********** accounts: ", accounts);
 
       const networkId = await web3.eth.net.getId();
-      console.log("********** networkId: ", networkId);
       const deployedCertNetwork = CertificateNetwork.networks[networkId];
-      const deployedCert = Certificate.networks[networkId];
-      const certInstance = new web3.eth.Contract(
-          Certificate.abi,
-          deployedCert && deployedCert.address
-        );
       const certNetworkInstance = new web3.eth.Contract(
         CertificateNetwork.abi,
         deployedCertNetwork && deployedCertNetwork.address
@@ -60,8 +53,6 @@ function App() {
 
       console.log("######### deployedCertNetwork", deployedCertNetwork);
       console.log("######### certNetworkInstance", certNetworkInstance);
-      console.log("######### deployedCert", deployedCert);
-      console.log("######### certInstance", certInstance);
 
       console.log("######### deployedCert", deployedCert);
       console.log("######### certInstance", certInstance);
@@ -71,6 +62,7 @@ function App() {
       setCertNetworkContract(certNetworkInstance);
       setDeployedCertNetwork(deployedCertNetwork);
       setCertContract(certInstance);
+      console.log(certContract);
     } catch (error) {
       message.error(`Failed to load web3.`);
       console.error(error);
