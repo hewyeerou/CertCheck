@@ -44,11 +44,12 @@ function ViewCertVer({ user, certContract, accounts }) {
     setCertificateViewingRight(studentsDetail);
   };
 
-
   /* NOT COMPLETE */
   const getStudentCerts = async (student) => {
     let certIdsList = await certContract.methods.getCertListVerifiers(student.walletAddress).call({ from: accounts[0] });
-
+    // make sure solidity has a method to return all cert
+    // loop through each of the certid to find
+    // and display
   };
 
   useEffect(() => {
