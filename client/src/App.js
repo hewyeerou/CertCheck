@@ -62,6 +62,7 @@ function App() {
       setCertNetworkContract(certNetworkInstance);
       setDeployedCertNetwork(deployedCertNetwork);
       setCertContract(certInstance);
+      console.log(certContract);
     } catch (error) {
       message.error(`Failed to load web3.`);
       console.error(error);

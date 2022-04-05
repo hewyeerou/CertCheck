@@ -61,7 +61,7 @@ const Page = ({ pageType, certContract, accounts }) => {
 
     useEffect(() => {
         if (pageType === '/student/viewCert') {
-            setPage(<ViewAllCertificates user={user}/>);
+            setPage(<ViewAllCertificates certContract={certContract} user={user} accounts={accounts}/>);
         } else if (pageType === '/student/viewReq') {
             setPage(<Request />);
         } else if (pageType === '/student/viewVer') {
@@ -69,9 +69,9 @@ const Page = ({ pageType, certContract, accounts }) => {
         } else if (pageType === '/verifier/viewStudentCert') {
             setPage(<ViewCertVer user={user} certContract={certContract} accounts={accounts}/>);
         } else if (pageType === "/issuer/viewRequests") {
-            setPage(<ViewRequests />);
+            setPage(<ViewRequests certContract={certContract} />);
         } else if (pageType === "/issuer/viewIssued") {
-            setPage(<ViewIssued />);
+            setPage(<ViewIssued certContract={certContract} />);
         }
     }, [location.pathname]);
 

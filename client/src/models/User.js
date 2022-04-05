@@ -22,7 +22,7 @@ export async function getUserByAddress(walletAddress) {
     if (snapshot.exists()) {
       return snapshot.val();
     } else {
-      console.log("User not available");
+      return false
     }
   }).catch((error) => {
     console.error(error);

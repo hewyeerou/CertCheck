@@ -1,5 +1,6 @@
 pragma solidity >=0.5.0;
 import "./CertificateNetwork.sol";
+pragma experimental ABIEncoderV2;
 
 contract Certificate {
     CertificateNetwork certNetwork;
@@ -36,12 +37,13 @@ contract Certificate {
 
     // Structs
     struct Cert {
+        uint256 certId; //Get CertId
         address owner; // Subject address
         address issuerAddr; // Issuer address
         string issuerName; // (NUS,NTU,Coursera,LinkedIn)
         uint256 creationDate; // cert creation date
         string nric; // s9673333A
-        string matricNo; //subject admin no, e.g A0200100X, Question- same as rollNumber?
+        string serialNo; //https://www.ibm.com/docs/en/ibm-mq/7.5?topic=certificates-what-is-in-digital-certificate
         string title; // cert title
         string completionDate; // date which subject completed the cert requirements
         // remove variables:
@@ -113,8 +115,9 @@ contract Certificate {
         );
 
         requestMap[msg.sender][issuerAddr] = true; // subject request
-        requestMap[issuerAddr][msg.sender] = false; // issuer to approve
+        requestMap[issuerAddr][msg.sender] = true; // issuer to approve
 
+        
         reqListMap[msg.sender].push(issuerAddr);
         reqListMap[issuerAddr].push(msg.sender);
 
@@ -149,7 +152,9 @@ contract Certificate {
             requestMap[subjectAddr][msg.sender],
             "Subject has not request for a new cert."
         );
+
         requestMap[msg.sender][subjectAddr] = false;
+        requestMap[subjectAddr][msg.sender] = false;
         emit RejectSubjectRequest(msg.sender, subjectAddr);
     }
 
@@ -205,7 +210,7 @@ contract Certificate {
         address subjectAddr,
         string memory _issuerName,
         string memory _nric,
-        string memory _matricNo,
+        string memory _serialNo,
         string memory _title,
         string memory _completionDate
     )
@@ -227,12 +232,13 @@ contract Certificate {
         uint256 _creationDate = block.timestamp;
 
         Cert memory newCert = Cert(
+            newCertId,
             subjectAddr,
             msg.sender,
             _issuerName,
             _creationDate,
             _nric,
-            _matricNo,
+            _serialNo,
             _title,
             _completionDate
         );
@@ -287,18 +293,20 @@ contract Certificate {
         view
         onlyValidRoles("Verifier")
         userExist(subjectAddr, "Subject")
-        returns (uint256[] memory)
+        returns (Cert[] memory)
     {
         require(
             subjectToVerifierMap[subjectAddr][msg.sender],
             "You have no viewing access for the subject certificates."
         );
         uint256[] memory certList = subjectToCertListMap[subjectAddr];
-        uint256[] memory newList = new uint256[](certList.length);
+        Cert[] memory newList = new Cert[](certList.length);
+        uint256 y = 0;
         for (uint256 i = 0; i < certList.length; i++) {
             if (subjectToCertMap[subjectAddr][certList[i]]) {
                 // Get all viewable certs
-                newList[i] = certList[i];
+                newList[y] = certsMap[certList[i]];
+                y ++;
                 // newList.push(certsMap[certList[i]]) // Push entire cert struct
             }
         }
@@ -327,16 +335,17 @@ contract Certificate {
         public
         view
         onlyValidRoles("Issuer")
-        returns (uint256[] memory)
+        returns (Cert[] memory)
     {
         uint256[] memory certList = issuerToCertListMap[msg.sender];
-        uint256[] memory newList = new uint256[](certList.length);
-
+        Cert[] memory newList = new Cert[](certList.length);
+        uint256 y = 0;
         for (uint256 i = 0; i < certList.length; i++) {
             if (issuerToCertMap[msg.sender][certList[i]]) {
                 // Get all viewable certs
-                newList[i] = certList[i];
-                // newList.push(certsMap[certList[i]]) // Push entire cert struct
+                // newList[i] = certList[i];
+                newList[y] = certsMap[certList[i]];
+                y ++;
             }
         }
         return newList;
@@ -377,8 +386,6 @@ contract Certificate {
     function checkRequest(address issuerAddr)
         public
         view
-        onlyValidRoles("Subject")
-        userExist(issuerAddr, "Issuer")
         returns (bool)
     {
         if (
