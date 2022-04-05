@@ -18,11 +18,11 @@ export async function addUser(walletAddress, name, email, password, type, img) {
 
 export async function getUserByAddress(walletAddress) {
 
-  return get(child(ref(db), 'users/${walletAddress}')).then((snapshot) => {
+  return get(child(ref(db), 'users/' + walletAddress)).then((snapshot) => {
     if (snapshot.exists()) {
-      console.log(snapshot.val());
+      return snapshot.val();
     } else {
-      console.log("User not available");
+      return false
     }
   }).catch((error) => {
     console.error(error);

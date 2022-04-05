@@ -25,7 +25,7 @@ function Register({ web3, accounts, certNetworkContract }) {
 
     try {
       const res = await certNetworkContract.methods
-        .register(accounts[0], 'Issuer')
+        .register(accounts[0], role)
         .send({ from: accounts[0] });
 
       addUser(accounts[0], name, email, password, role, "").then(() => {
@@ -69,7 +69,7 @@ function Register({ web3, accounts, certNetworkContract }) {
             rules={[{ required: true, message: "Please select a role" }]}
           >
             <Select placeholder="Please select a role">
-              <Option value="Student">Student</Option>
+              <Option value="Subject">Student</Option>
               <Option value="Issuer">Institution</Option>
               <Option value="Verifier">Employer</Option>
             </Select>

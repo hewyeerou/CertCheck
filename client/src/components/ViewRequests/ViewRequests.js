@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { Table, Popconfirm, PageHeader, Modal, Form, Input, DatePicker, Button, Divider } from 'antd';
 import "./ViewRequests.css";
+import { getUserByAddress } from "../../models/User";
 
-function ViewRequests(certContract) {
+function ViewRequests({certContract}) {
     const [visible, setVisible] = useState(false);
     const [selectedUser, setSelectedUser] = useState();
     const [requestData, setRequestData] = useState();
@@ -11,10 +12,26 @@ function ViewRequests(certContract) {
 
     useEffect(() => {
         console.log(certContract);
-        setRequestData(data);
-        //const retrieveRequests = certContract.methods.getReqList(currentUser.walletAddress).send({ from: currentUser.walletAddress });;
-        //console.log(retrieveRequests);
+        retrieveRequest();
     }, []);
+
+    const retrieveRequest = async () => {
+        const retrieveReq = await certContract.methods.getApprovedReqList().call({from: currentUser.walletAddress});
+       console.log(retrieveReq);
+       var tempArr = [];
+       for(var i = 0; i < retrieveReq.length; i ++) {
+        // const checkReq = await certContract.methods.checkRequest(retrieveReq[i]).call({from: currentUser.walletAddress});
+        // console.log(checkReq);
+            await getUserByAddress(retrieveReq[i]).then((u) => {
+             if(u != false) {
+                 tempArr.push(u);
+                }
+            })
+       }
+       var requestDetail = tempArr.map((r, index) => ({...r, key: index+1}));
+       console.log(requestDetail);
+       setRequestData(requestDetail);
+    }
 
     const tailLayout = {
         wrapperCol: { offset: 8, span: 16 },
@@ -22,10 +39,14 @@ function ViewRequests(certContract) {
 
     const columns = [
         {
+            title: '',
+            dataIndex: 'key',
+            key: 'key'
+        },
+        {
             title: 'Name',
             dataIndex: 'name',
-            key: 'name',
-            render: text => <a>{text}</a>,
+            key: 'name'
         },
         {
             title: 'Email',
@@ -57,56 +78,31 @@ function ViewRequests(certContract) {
         },
     ];
 
-    const data = [
-        {
-            key: '1',
-            name: 'John Brown',
-            email: 32,
-            walletAddress: 'New York No. 1 Lake Park',
-            tags: ['nice', 'developer'],
-        },
-        {
-            key: '2',
-            name: 'Jim Green',
-            email: 42,
-            walletAddress: 'London No. 1 Lake Park',
-            tags: ['loser'],
-        },
-        {
-            key: '3',
-            name: 'Joe Black',
-            email: 32,
-            walletAddress: 'Sidney No. 1 Lake Park',
-            tags: ['cool', 'teacher'],
-        },
-    ];
-
-
     const issueCertificate = (record, x) => {
         setSelectedUser(record);
         setVisible(true);
     }
 
-    const onIssueSubmit = (values) => {
+    const onIssueSubmit = async (values) => {
         console.log(values);
         console.log("## Check user: ", selectedUser);
         //Do issue certificate to student
-        const res = certContract.methods.issueCertificate(
+        const res = await certContract.methods.issueCertificate(
             selectedUser.walletAddress, 
             currentUser.name, 
             values.studentNRIC, 
-            values.studentMatric, 
+            values.serialNo, 
             values.title, 
-            values.completionDate)
-            .send({ from: currentUser.walletAddress });
+            values.completionDate.format('DD-MM-YYYY').toString()
+            ).send({ from: currentUser.walletAddress });
+        setVisible(false);
     }
 
-    const deleteRequest = (record, x) => {
-        console.log(x);
-        data.splice(x, 1);
-        console.log(data);
-        setRequestData(data);
-        //Delete record from contract
+    const deleteRequest = async (record, x) => {
+        console.log(record.walletAddress);
+        console.log(currentUser.walletAddress);
+        const retrieveIss = await certContract.methods.rejectRequest(record.walletAddress).send({from: currentUser.walletAddress});
+        retrieveRequest();
     }
 
     return (
@@ -153,14 +149,6 @@ function ViewRequests(certContract) {
                         <Input />
                     </Form.Item>
 
-                    <Form.Item
-                        label="Student Matric No."
-                        name="studentMatric"
-                        rules={[{ required: true, message: 'Please input student Matric No.!' }]}
-                    >
-                        <Input />
-                    </Form.Item>
-
                     <PageHeader
                         className="form-sub-header"
                         title="Certificate Information"
@@ -180,9 +168,9 @@ function ViewRequests(certContract) {
                         <DatePicker />
                     </Form.Item>
                     <Form.Item
-                        label="Roll Number"
-                        name="rollNumber"
-                        rules={[{ required: true, message: 'Please input Roll Number!' }]}
+                        label="Serial Number"
+                        name="serialNo"
+                        rules={[{ required: true, message: 'Please input Serial Number!' }]}
                     >
                         <Input />
                     </Form.Item>

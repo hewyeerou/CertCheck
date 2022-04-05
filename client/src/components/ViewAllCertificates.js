@@ -2,9 +2,19 @@ import React, { useState, useEffect } from "react";
 import { Card, Button, Row, Col, Typography, Modal, Layout } from "antd";
 import { EyeOutlined } from "@ant-design/icons";
 
-const ViewAllCertificates = ({ user }) => {
+const ViewAllCertificates = ({ certContract, user }) => {
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [content, setContent] = useState({ name: "" });
+
+  useEffect(() => {
+    console.log(certContract);
+    console.log(user);
+    createReq();
+  }, []);
+
+  const createReq = async () => {
+    const req = await certContract.methods.requestCert('0xd48a8D7Cd91B8832d788d9d9b739173de34f6ADD').send({ from: user.walletAddress });
+  }
 
   const certificates = [
     {
@@ -58,7 +68,7 @@ const ViewAllCertificates = ({ user }) => {
 
   return (
     <div>
-      {user.type === "Student" ? (
+      {user.type === "Subject" ? (
         <Typography.Title level={2} style={{ paddingLeft: 20, paddingTop: 20 }}>
           Digital Certificate
         </Typography.Title>
