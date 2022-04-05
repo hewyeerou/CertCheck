@@ -952,12 +952,21 @@
     "5777": {
       "events": {},
       "links": {},
+<<<<<<< HEAD
       "address": "0x41afc55d4761aCCf41188459d756c9bE6017B14c",
       "transactionHash": "0x288a585128a1f119291d19c47b65585cf0180ae3485a5eee134ca37f0cb52ebd"
     }
   },
   "schemaVersion": "3.4.4",
   "updatedAt": "2022-04-05T11:24:00.130Z",
+=======
+      "address": "0xdE1197A4346a8D4d347eA7910Bcc94F18FEd6C27",
+      "transactionHash": "0x4724011c97a514d8d13a4882247167af2c497058ebdeb4d1f7377c0e81ca29a7"
+    }
+  },
+  "schemaVersion": "3.4.4",
+  "updatedAt": "2022-04-04T13:13:34.031Z",
+>>>>>>> f8102d3caf2d689d20e8cf86d403f2922e0e13dd
   "networkType": "ethereum",
   "devdoc": {
     "methods": {}

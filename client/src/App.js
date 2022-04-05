@@ -111,7 +111,7 @@ function App() {
 
         <Route
           path="/verifier/viewStudentCert"
-          element={<Page pageType={"/verifier/viewStudentCert"} certContract={certContract} />}
+          element={<Page pageType={"/verifier/viewStudentCert"}  certContract={certContract} accounts={accounts}  />}
         />
         <Route
           path="/issuer/viewRequests"

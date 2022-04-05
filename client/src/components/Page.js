@@ -65,9 +65,9 @@ const Page = ({ pageType, certContract, accounts }) => {
         } else if (pageType === '/student/viewReq') {
             setPage(<Request />);
         } else if (pageType === '/student/viewVer') {
-            setPage(<Invitation certContract={certContract} accounts={accounts}/>);
+            setPage(<Invitation user={user} certContract={certContract} accounts={accounts}/>);
         } else if (pageType === '/verifier/viewStudentCert') {
-            setPage(<ViewCertVer certContract={certContract} />);
+            setPage(<ViewCertVer user={user} certContract={certContract} accounts={accounts}/>);
         } else if (pageType === "/issuer/viewRequests") {
             setPage(<ViewRequests certContract={certContract} />);
         } else if (pageType === "/issuer/viewIssued") {

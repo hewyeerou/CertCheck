@@ -1,12 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import { Button, Row, Col, Typography, Modal, Table, Form, Select } from 'antd';
-import { getAllUsers } from "../../models/User";
+import { Button, Row, Col, Typography, Modal, Table, Form, Select, message } from 'antd';
+import { getAllUsers, getUserByAddress } from "../../models/User";
 
-const Invitation = ({ certContract, accounts }) => {
+const Invitation = ({ user, certContract, accounts }) => {
     const [isModalVisible, setIsModalVisible] = useState(false);
     const [isRevokeModalVisible, setIsRevokeModalVisible] = useState(false);
-    const [verifier, setVerifier] = useState();
-    const [revoke, setRevoke] = useState(false);
     const [revokeVerifier, setRevokeVerifier] = useState();
 
     const [form] = Form.useForm();
@@ -16,16 +14,15 @@ const Invitation = ({ certContract, accounts }) => {
 
     /* datatable columns */
     const columns = [
-        { title: 'Verifier', dataIndex: 'verifier', key: 'key' },
+        { title: 'Verifier', dataIndex: 'name', key: 'key' },
         {
             title: 'Action',
             key: 'action',
             render: (text, record) => (
                 <Button
                     onClick={() => {
-                        setRevokeVerifier(text.verifier);
+                        setRevokeVerifier(text);
                         showRevokeModal();
-                        console.log(text);
                     }}
                 >
                     Revoke
@@ -36,10 +33,22 @@ const Invitation = ({ certContract, accounts }) => {
 
     /* Get all verifiers and display on table */
     const getApprovedVerifiers = async() => {
-        let verifiers = await certContract.methods.getGrantList().call({ from: accounts[0] })
-        verifiers = verifiers.map((r, index) => ({...r, key: index+1}));
+        let verifiersDetail = [];
+        let verifiers = await certContract.methods.getGrantList().call({ from: accounts[0] });
 
-        setCertificateViewingRight(verifiers);
+        
+        for(let i = 0; i < verifiers.length; i++) {
+            const rights = await certContract.methods.checkVerifier(verifiers[i]).call({ from: accounts[0] });
+
+            if(rights === true) {
+                await getUserByAddress(verifiers[i]).then((user) => {
+                    verifiersDetail.push(user);
+                });
+            }
+        }
+
+        verifiersDetail = verifiersDetail.map((r, index) => ({...r, key: index+1}));
+        setCertificateViewingRight(verifiersDetail);
     };
 
     /* get all verifiers from db */
@@ -50,12 +59,10 @@ const Invitation = ({ certContract, accounts }) => {
         await getAllUsers().then((users) => {
             for(let address in users) {
                 if(users[address].type === "Verifier") {
-                    verifiersList.push(users[address].name);
+                    verifiersList.push({name: users[address].name, value: address});
                 }
             }
         });
-
-        verifiersList = verifiersList.map((verifier) => ({name: verifier, value: verifier}));
         setVerifierList(verifiersList);
     };
 
@@ -64,8 +71,20 @@ const Invitation = ({ certContract, accounts }) => {
         getVerifiers();
     },[]);
 
-    const confirmRevoke = () => {
-        setRevoke(true);
+    useEffect(() => {
+        getVerifiers();
+    }, [verifierList]);
+
+    useEffect(() => {
+        getApprovedVerifiers();
+    }, [isModalVisible, isRevokeModalVisible]);
+
+    /* revoke verifier */
+    const confirmRevoke = async() => {
+        const res = await certContract.methods.denyVerifier(revokeVerifier.walletAddress).send({ from: accounts[0] });
+
+        message.info("Revoked access rights from the verifier");
+
         setIsRevokeModalVisible(false);
     };
 
@@ -93,9 +112,21 @@ const Invitation = ({ certContract, accounts }) => {
         setIsRevokeModalVisible(false);
     };
 
-    const onFinish = (values) => {
-        console.log('onFinish', values);
-        setVerifier(values);
+    const onFinish = async(values) => {
+        const selectedVerifierAddr = values.verifier;
+
+        try{
+            const res = await certContract.methods.grantVerifier(selectedVerifierAddr).send({ from: accounts[0] });
+            console.log("######## Response", res);
+
+            message.info("Granted access rights to the verifier");
+        } catch(err) {
+            let errorMessageInJson = JSON.parse(err.message.slice(58, err.message.length - 2) );
+            let errorMessageToShow = errorMessageInJson.data.data[Object.keys(errorMessageInJson.data.data)[0]].reason;
+
+            message.error(errorMessageToShow);
+        }
+        
         setIsModalVisible(false);
     };
 
@@ -152,7 +183,7 @@ const Invitation = ({ certContract, accounts }) => {
                     onCancel={handleRevokeCancel}
                     footer={null}
                 >
-                    <Typography>Are you sure you want to revoke the viewing right of {revokeVerifier} ?</Typography>
+                    {revokeVerifier && <Typography>Are you sure you want to revoke the viewing right of {revokeVerifier.name} ?</Typography>}
                     <Button type='primary' onClick={confirmRevoke}>
                         Revoke
                     </Button>
