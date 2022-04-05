@@ -4,7 +4,7 @@ import { EyeOutlined } from "@ant-design/icons";
 
 const ViewAllCertificates = ({ certContract, user }) => {
   const [isModalVisible, setIsModalVisible] = useState(false);
-  const [content, setContent] = useState({ name: "" });
+  const [content, setContent] = useState();
 
   useEffect(() => {
     console.log(certContract);
@@ -13,8 +13,10 @@ const ViewAllCertificates = ({ certContract, user }) => {
   }, []);
 
   const createReq = async () => {
-    const req = await certContract.methods.requestCert('0xd48a8D7Cd91B8832d788d9d9b739173de34f6ADD').send({ from: user.walletAddress });
-  }
+    const req = await certContract.methods
+      .requestCert("0xa5E94AD6f779d1624e06A2bb04b5a397b06C43dC")
+      .send({ from: user.walletAddress });
+  };
 
   const certificates = [
     {
@@ -63,18 +65,14 @@ const ViewAllCertificates = ({ certContract, user }) => {
 
   const handleCancel = () => {
     setIsModalVisible(false);
-    setContent({ name: "" });
+    setContent();
   };
 
   return (
     <div>
-      {user.type === "Subject" ? (
-        <Typography.Title level={2} style={{ paddingLeft: 20, paddingTop: 20 }}>
-          Digital Certificate
-        </Typography.Title>
-      ) : (
-        ""
-      )}
+      <Typography.Title level={2} style={{ paddingLeft: 20, paddingTop: 20 }}>
+        Digital Certificate
+      </Typography.Title>
 
       <Row type="flex" justify="space-around" align="middle">
         {certificates.map((certificate) => (
@@ -100,44 +98,52 @@ const ViewAllCertificates = ({ certContract, user }) => {
                 onCancel={handleCancel}
                 bodyStyle={{ height: 550 }}
               >
-                <Row
-                  style={{
-                    height: 150,
-                    textAlign: "center",
-                  }}
-                  align="middle"
-                >
-                  <Typography.Title>{content.issuerName}</Typography.Title>
-                </Row>
-                <Row
-                  style={{
-                    height: 50,
-                    textAlign: "center",
-                  }}
-                  align="middle"
-                >
-                  <Typography>This is to confirm that</Typography>
-                </Row>
-                <Row style={{ height: 50, textAlign: "center" }}>
-                  <Typography.Title level={3}>{content.name}</Typography.Title>
-                </Row>
-                <Row style={{ height: 50, textAlign: "center" }}>
-                  <Typography>
-                    has successfully completed the program:
-                  </Typography>
-                </Row>
-                <Row style={{ height: 50, textAlign: "center" }}>
-                  <Typography.Title level={3}>{content.title}</Typography.Title>
-                </Row>
-                <Row style={{ height: 50, textAlign: "center" }}>
-                  <Typography>{content.completionDate}</Typography>
-                </Row>
-                <Row style={{ height: 50, textAlign: "center" }}>
-                  <Typography>{content.matricNo}</Typography>
-                </Row>
-                <Row style={{ height: 50, textAlign: "center" }}>
-                  <Typography>Roll Number: {content.rollNumber}</Typography>
-                </Row>
+                {content && (
+                  <div>
+                    <Row
+                      style={{
+                        height: 150,
+                        textAlign: "center",
+                      }}
+                      align="middle"
+                    >
+                      <Typography.Title>{content.issuerName}</Typography.Title>
+                    </Row>
+                    <Row
+                      style={{
+                        height: 50,
+                        textAlign: "center",
+                      }}
+                      align="middle"
+                    >
+                      <Typography>This is to confirm that</Typography>
+                    </Row>
+                    <Row style={{ height: 50, textAlign: "center" }}>
+                      <Typography.Title level={3}>
+                        {content.name}
+                      </Typography.Title>
+                    </Row>
+                    <Row style={{ height: 50, textAlign: "center" }}>
+                      <Typography>
+                        has successfully completed the program:
+                      </Typography>
+                    </Row>
+                    <Row style={{ height: 50, textAlign: "center" }}>
+                      <Typography.Title level={3}>
+                        {content.title}
+                      </Typography.Title>
+                    </Row>
+                    <Row style={{ height: 50, textAlign: "center" }}>
+                      <Typography>{content.completionDate}</Typography>
+                    </Row>
+                    <Row style={{ height: 50, textAlign: "center" }}>
+                      <Typography>{content.matricNo}</Typography>
+                    </Row>
+                    <Row style={{ height: 50, textAlign: "center" }}>
+                      <Typography>Roll Number: {content.rollNumber}</Typography>
+                    </Row>
+                  </div>
+                )}
               </Modal>
             </Card>
           </Col>

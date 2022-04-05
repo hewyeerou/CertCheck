@@ -38,7 +38,7 @@
   "sourceMap": "27:176:3:-;;;;8:9:-1;5:2;;;30:1;27;20:12;5:2;27:176:3;;;;;;;",
   "deployedSourceMap": "27:176:3:-;;;;8:9:-1;5:2;;;30:1;27;20:12;5:2;27:176:3;;;;;;;;;;;;;;;;;;;;;;;;74:53;;;;;;13:2:-1;8:3;5:11;2:2;;;29:1;26;19:12;2:2;74:53:3;;;;;;;;;;;;;;;;;:::i;:::-;;131:70;;;:::i;:::-;;;;;;;;;;;;;;;;;;;74:53;121:1;108:10;:14;;;;74:53;:::o;131:70::-;167:4;186:10;;179:17;;131:70;:::o",
   "source": "pragma solidity >= 0.5.0;\n\ncontract SimpleStorage {\n  uint storedData;\n\n  function set(uint x) public {\n    storedData = x;\n  }\n\n  function get() public view returns (uint) {\n    return storedData;\n  }\n}\n",
-  "sourcePath": "/Users/stellaang/Desktop/NUS/Y3S2/IS4302/Project/IS4302_Project/contracts/SimpleStorage.sol",
+  "sourcePath": "/Users/yeerouhew/Downloads/IS4302/IS4302_GrpProject/contracts/SimpleStorage.sol",
   "ast": {
     "absolutePath": "project:/contracts/SimpleStorage.sol",
     "exportedSymbols": {
@@ -595,12 +595,12 @@
     "5777": {
       "events": {},
       "links": {},
-      "address": "0x3985618a1c723785a3FAa3a366c37C8a9ca58194",
-      "transactionHash": "0x1b97a9cffe0da976990405666ab67c6f0bf08bc4fe3a9281862392f2846b2ad7"
+      "address": "0x57386190ca13Fb1d9d640b5332Fa0A481cD6f5eD",
+      "transactionHash": "0x54b7beb9b7fceb9833c76e7f96b1b03afaea360a030332985b703cff40d61722"
     }
   },
   "schemaVersion": "3.4.4",
-  "updatedAt": "2022-04-04T13:13:33.979Z",
+  "updatedAt": "2022-04-05T13:18:59.900Z",
   "networkType": "ethereum",
   "devdoc": {
     "methods": {}
