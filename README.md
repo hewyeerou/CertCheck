@@ -1,11 +1,5 @@
 # IS4302_Project - CertCheck
 
-Create Metamask here:
-https://asifwaquar.com/connect-metamask-to-localhost/
-
-Following guides here:
-https://trufflesuite.com/boxes/react/index.html
-
 ## Configurations
 1. Ensure that `node`, `npm` and `truffle` are installed in your computer.
 2. Run `npm install` at the root directory.
