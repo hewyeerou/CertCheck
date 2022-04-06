@@ -20,7 +20,8 @@ https://trufflesuite.com/boxes/react/index.html
    a. Import one private key for Subject Account
    b. Import another private key for Issuer Account
    c. Import another private key for Verifier Account
-9.`cd client` and run `npm start` to run the front-end application
+   
+9. `cd client` and run `npm start` to run the front-end application
 10. Open http://localhost:3000.
 
 
