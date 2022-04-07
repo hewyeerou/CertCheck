@@ -2,24 +2,29 @@ pragma solidity >=0.5.0;
 pragma experimental ABIEncoderV2;
 
 import "./CertificateNetwork.sol";
-import "./Certificate.sol";
 
 contract CertificateStore {
     CertificateNetwork certNetwork;
 
     // S>I: Student can make many request
     // I>S: Issuer can receive many request
-    mapping(address => address[]) private reqHistMap; // History of Request
+    mapping(address => address[]) private reqHistMap; // History of Unique Requests
 
-    // Request map for S <=> I.
+    // Request map for S <=> I.T > Issue Pass F > Wont issue
     mapping(address => mapping(address => bool)) private requestMap;
+
+    // Check if S request to I before (S>I)
+    mapping(address => mapping(address => bool)) private requestExistMap;
 
     // S>V: Student can grant multiple Verifier to view their cert.
     // V>S: Verifier can view multiple subject Cert
-    mapping(address => address[]) private grantHistMap; // History of Grants
+    mapping(address => address[]) private grantHistMap; // History of Unique Grants
 
     // Grant map for S <=> V.
     mapping(address => mapping(address => bool)) private grantMap;
+
+    // Check if S has granted V before (S>V)
+    mapping(address => mapping(address => bool)) private grantExistMap;
 
     // REMOVED mappings:
     // Replaced with certHistMap
@@ -67,18 +72,14 @@ contract CertificateStore {
     modifier userExist(address addr, string memory role) {
         require(
             certNetwork.checkUserExist(addr, role),
-            "This action can only be performed by user in our network."
+            "The action can only be performed on valid users."
         );
         _;
     }
     modifier onlyIssuerSubject() {
         require(
-            keccak256(abi.encodePacked(certNetwork.getUserRole(msg.sender))) ==
-                keccak256(abi.encodePacked("Subject")) ||
-                keccak256(
-                    abi.encodePacked(certNetwork.getUserRole(msg.sender))
-                ) ==
-                keccak256(abi.encodePacked("Issuer")),
+            certNetwork.checkUserExist(msg.sender, "Subject") ||
+                certNetwork.checkUserExist(msg.sender, "Issuer"),
             "This action can only be performed by authorized roles."
         );
         _;
@@ -103,9 +104,14 @@ contract CertificateStore {
         requestMap[msg.sender][issuerAddr] = true; // subject request
         requestMap[issuerAddr][msg.sender] = true; // issuer to approve
 
-        reqHistMap[msg.sender].push(issuerAddr);
-        reqHistMap[issuerAddr].push(msg.sender);
+        // add only new unique request
+        if (!requestExistMap[msg.sender][issuerAddr]) {
+            reqHistMap[msg.sender].push(issuerAddr);
+            reqHistMap[issuerAddr].push(msg.sender);
+        }
 
+        // Record user requested before
+        requestExistMap[msg.sender][issuerAddr] = true;
         emit RequestCertificate(msg.sender, issuerAddr);
     }
 
@@ -123,12 +129,8 @@ contract CertificateStore {
             "The action has already been performed."
         ); // I>S
 
-        delete requestMap[msg.sender][subjectAddr];
-        delete requestMap[subjectAddr][msg.sender];
-
-        // REMOVED:essentially the same
-        // requestMap[msg.sender][subjectAddr] = false;
-        // requestMap[subjectAddr][msg.sender] = false;
+        requestMap[msg.sender][subjectAddr] = false;
+        requestMap[subjectAddr][msg.sender] = false;
         emit RejectSubjectRequest(msg.sender, subjectAddr);
     }
 
@@ -139,7 +141,7 @@ contract CertificateStore {
         returns (address[] memory)
     {
         address[] memory reqHist = reqHistMap[msg.sender];
-        address[] memory newList = new address[](reqHist.length);
+        address[] memory tempList = new address[](reqHist.length);
         uint256 y = 0;
         for (uint256 i = 0; i < reqHist.length; i++) {
             // check if issuer approve subject and student make req to issuer
@@ -148,9 +150,13 @@ contract CertificateStore {
                 requestMap[reqHist[i]][msg.sender]
             ) {
                 // Get all valid request
-                newList[y] = reqHist[i];
+                tempList[y] = reqHist[i];
                 y++;
             }
+        }
+        address[] memory newList = new address[](y);
+        for (uint256 i = 0; i < y; i++) {
+            newList[i] = tempList[i];
         }
         return newList;
     }
@@ -162,24 +168,28 @@ contract CertificateStore {
         returns (address[] memory)
     {
         address[] memory reqHist = reqHistMap[msg.sender];
-        address[] memory newList = new address[](reqHist.length);
+        address[] memory tempList = new address[](reqHist.length);
         uint256 y = 0;
         for (uint256 i = 0; i < reqHist.length; i++) {
             // check if issuer approve subject and student make req to issuer
             if (
-                !(requestMap[msg.sender][reqHist[i]] &&
-                    requestMap[reqHist[i]][msg.sender])
+                !requestMap[msg.sender][reqHist[i]] &&
+                !requestMap[reqHist[i]][msg.sender]
             ) {
                 // Get all valid request
-                newList[y] = reqHist[i];
+                tempList[y] = reqHist[i];
                 y++;
             }
+        }
+        address[] memory newList = new address[](y);
+        for (uint256 i = 0; i < y; i++) {
+            newList[i] = tempList[i];
         }
         return newList;
     }
 
-    // Get all request history regardless of approve/deny
-    function getReqList()
+    // Get all unique request history regardless of approve/deny
+    function getReqHist()
         public
         view
         onlyIssuerSubject
@@ -201,6 +211,10 @@ contract CertificateStore {
                 keccak256(abi.encodePacked("Issuer")),
             "User address with specified role does not exist."
         );
+        require(
+            !(msg.sender == addr),
+            "Action cannot be performed on the same address."
+        );
         if (requestMap[addr][msg.sender] && requestMap[msg.sender][addr]) {
             return true;
         }
@@ -208,36 +222,36 @@ contract CertificateStore {
     }
 
     // for I>S, check user requested
-    function getRequestStatus(address subjectAddr)
+    function getRequestStatus(address issuerAddr, address subjectAddr)
         public
         view
-        onlyValidRoles("Issuer")
+        userExist(issuerAddr, "Issuer")
         userExist(subjectAddr, "Subject")
         returns (bool)
     {
-        return requestMap[subjectAddr][msg.sender];
+        return requestMap[subjectAddr][issuerAddr];
     }
 
     // for I>S, check if issuer have deny before
-    function getIssueStatus(address subjectAddr)
+    function getIssueStatus(address issuerAddr, address subjectAddr)
         public
         view
-        onlyValidRoles("Issuer")
+        userExist(issuerAddr, "Issuer")
         userExist(subjectAddr, "Subject")
         returns (bool)
     {
-        return requestMap[msg.sender][subjectAddr];
+        return requestMap[issuerAddr][subjectAddr];
     }
 
     // for V>S, check grant list
-    function getAccessStatus(address subjectAddr)
+    function getAccessStatus(address verifierAddr, address subjectAddr)
         public
         view
-        onlyValidRoles("Verifier")
+        userExist(verifierAddr, "Verifier")
         userExist(subjectAddr, "Subject")
         returns (bool)
     {
-        return grantMap[subjectAddr][msg.sender];
+        return grantMap[subjectAddr][verifierAddr];
     }
 
     // Grant access to a verifier to viewing all subject certs.(SUBJECT -> VERIFIER)
@@ -251,14 +265,16 @@ contract CertificateStore {
             "Verifier has already been given access."
         );
 
-        // record grant given by Subject
+        // record grant: S<=>V
         grantMap[msg.sender][verifierAddr] = true;
-        grantHistMap[msg.sender].push(verifierAddr);
-
-        // record grant given to Verifier
         grantMap[verifierAddr][msg.sender] = true;
-        grantHistMap[verifierAddr].push(msg.sender);
 
+        // record uniqiue grant history
+        if (!grantExistMap[msg.sender][verifierAddr]) {
+            grantHistMap[msg.sender].push(verifierAddr);
+            grantHistMap[verifierAddr].push(msg.sender);
+        }
+        grantExistMap[msg.sender][verifierAddr] = true;
         emit GiveAccessViewing(msg.sender, verifierAddr);
     }
 
@@ -273,38 +289,35 @@ contract CertificateStore {
             "Verifier already has no access."
         );
 
-        delete grantMap[verifierAddr][msg.sender]; // remove access for verifier
-        delete grantMap[msg.sender][verifierAddr]; // remove access given by S>V
+        grantMap[verifierAddr][msg.sender] = false; // remove access for verifier
+        grantMap[msg.sender][verifierAddr] = false; // remove access given by S>V
 
         emit DenyAccessViewing(msg.sender, verifierAddr);
     }
 
     // Getters and Setters
-
-    // S>V
+    // S>V, check Subject approved verifier
     //Frontend[subject]: loop thr all verifier addresses to display the list of verifiers approved by the subject.
     function checkVerifier(address verifier)
         public
+        view
         onlyValidRoles("Subject")
         userExist(verifier, "Verifier")
         returns (bool)
     {
-        bool status = grantMap[msg.sender][verifier];
-        emit ViewVerifierStatus(msg.sender, status);
-        return status;
+        return grantMap[msg.sender][verifier];
     }
 
-    // V>S
+    // V>S, check if verifier is approved by subject
     //Frontend[verifier]: loop thr all subject addresses to display the list of subjects viewable by the verifier.
     function checkSubject(address subject)
         public
+        view
         onlyValidRoles("Verifier")
         userExist(subject, "Subject")
         returns (bool)
     {
-        bool status = grantMap[subject][msg.sender];
-        emit ViewSubjectStatus(msg.sender, status);
-        return status;
+        return grantMap[subject][msg.sender];
     }
 
     // S>V: Subject can view verifier they given access to.
@@ -320,18 +333,22 @@ contract CertificateStore {
             "Only authorized roles can perform this action."
         );
         address[] memory grantList = grantHistMap[msg.sender];
-        address[] memory newList = new address[](grantList.length);
+        address[] memory tempList = new address[](grantList.length);
         uint256 y = 0;
         for (uint256 i = 0; i < grantList.length; i++) {
             if (
                 grantMap[msg.sender][grantList[i]] &&
                 grantMap[grantList[i]][msg.sender]
             ) {
-                newList[y] = grantList[i];
+                tempList[y] = grantList[i];
                 y++;
             }
         }
-        return grantHistMap[msg.sender];
+        address[] memory newList = new address[](y);
+        for (uint256 i = 0; i < y; i++) {
+            newList[i] = tempList[i];
+        }
+        return newList;
     }
 
     // S>V: Subject can view verifier they given access to.
@@ -347,29 +364,21 @@ contract CertificateStore {
             "Only authorized roles can perform this action."
         );
         address[] memory grantList = grantHistMap[msg.sender];
-        address[] memory newList = new address[](grantList.length);
+        address[] memory tempList = new address[](grantList.length);
         uint256 y = 0;
         for (uint256 i = 0; i < grantList.length; i++) {
             if (
                 !(grantMap[msg.sender][grantList[i]] &&
                     grantMap[grantList[i]][msg.sender])
             ) {
-                newList[y] = grantList[i];
+                tempList[y] = grantList[i];
                 y++;
             }
         }
-        return grantHistMap[msg.sender];
-    }
-
-    // For testing gasCost for any inefficiency
-    function GasCost(function() internal returns (string memory) fun)
-        internal
-        returns (uint256)
-    {
-        uint256 u0 = gasleft();
-        string memory sm = fun();
-        uint256 u1 = gasleft();
-        uint256 diff = u0 - u1;
-        return diff;
+        address[] memory newList = new address[](y);
+        for (uint256 i = 0; i < y; i++) {
+            newList[i] = tempList[i];
+        }
+        return newList;
     }
 }

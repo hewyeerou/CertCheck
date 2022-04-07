@@ -52,8 +52,8 @@ contract Certificate {
     // Modifiers
     modifier validCertId(uint256 certId) {
         require(
-            certId < totalCert && certExistMap[certId],
-            "The certificate not validd."
+            certId < totalCert && certExistMap[certId] == true,
+            "The certificate not valid."
         );
         _;
     }
@@ -111,14 +111,14 @@ contract Certificate {
         public
         onlyValidRoles("Issuer")
         userExist(subjectAddr, "Subject")
-        returns (bool Status)
+        returns (uint256)
     {
         require(
-            certStore.getRequestStatus(subjectAddr),
+            certStore.getRequestStatus(msg.sender, subjectAddr),
             "Subject has not made any request."
         );
         require(
-            certStore.getIssueStatus(subjectAddr),
+            certStore.getIssueStatus(msg.sender, subjectAddr),
             "Subject is not authorized."
         );
 
@@ -138,6 +138,7 @@ contract Certificate {
         );
         // add to cert mapping
         certsMap[newCertId] = newCert;
+        certExistMap[newCertId] = true;
 
         // record subject received cert
         certHistMap[subjectAddr].push(newCertId);
@@ -156,7 +157,7 @@ contract Certificate {
 
         emit IssuedCertificate(newCertId, msg.sender, subjectAddr); // Log event
 
-        return true;
+        return newCertId;
     }
 
     // Delete cert in case of wrong issue or revoked.
@@ -187,28 +188,36 @@ contract Certificate {
         returns (uint256[] memory)
     {
         uint256[] memory certList = certHistMap[msg.sender];
-        uint256[] memory newList = new uint256[](certList.length);
+        uint256[] memory tempList = new uint256[](certList.length);
         uint256 y = 0;
         for (uint256 i = 0; i < certList.length; i++) {
             if (addrToCertMap[msg.sender][certList[i]]) {
-                newList[y] = certList[i]; // Get all viewable certs
-                // newList[y] = certsMap[certList[i]];// Push entire cert struct
+                tempList[y] = certList[i]; // Get all viewable certs
+                // tempList[y] = certsMap[certList[i]];// Push entire cert struct
                 y++;
             }
+        }
+        uint256[] memory newList = new uint256[](y);
+        for (uint256 i = 0; i < y; i++) {
+            newList[i] = tempList[i];
         }
         return newList;
     }
 
     function getCerts() public view onlyIssuerSubject returns (Cert[] memory) {
         uint256[] memory certList = certHistMap[msg.sender];
-        Cert[] memory newList = new Cert[](certList.length);
+        Cert[] memory tempList = new Cert[](certList.length);
         uint256 y = 0;
         for (uint256 i = 0; i < certList.length; i++) {
             if (addrToCertMap[msg.sender][certList[i]]) {
-                // newList[i] = certList[i]; // Get all viewable certs
-                newList[y] = certsMap[certList[i]];
+                // tempList[i] = certList[i]; // Get all viewable certs
+                tempList[y] = certsMap[certList[i]];
                 y++;
             }
+        }
+        Cert[] memory newList = new Cert[](y);
+        for (uint256 i = 0; i < y; i++) {
+            newList[i] = tempList[i];
         }
         return newList;
     }
@@ -216,18 +225,22 @@ contract Certificate {
     function getCertsRevokedList()
         public
         view
-        onlyValidRoles("Subject")
+        onlyIssuerSubject
         returns (uint256[] memory)
     {
         uint256[] memory certList = certHistMap[msg.sender];
-        uint256[] memory newList = new uint256[](certList.length);
+        uint256[] memory tempList = new uint256[](certList.length);
         uint256 y = 0;
         for (uint256 i = 0; i < certList.length; i++) {
             if (!addrToCertMap[msg.sender][certList[i]]) {
-                newList[y] = certList[i]; // Get all viewable certs
-                // newList[y] = certsMap[certList[i]];// Push entire cert struct
+                tempList[y] = certList[i]; // Get all viewable certs
+                // tempList[y] = certsMap[certList[i]];// Push entire cert struct
                 y++;
             }
+        }
+        uint256[] memory newList = new uint256[](y);
+        for (uint256 i = 0; i < y; i++) {
+            newList[i] = tempList[i];
         }
         return newList;
     }
@@ -240,17 +253,21 @@ contract Certificate {
         returns (Cert[] memory)
     {
         require(
-            certStore.getAccessStatus(subjectAddr),
+            certStore.getAccessStatus(msg.sender, subjectAddr),
             "You have no viewing access for the subject certificates."
         );
         uint256[] memory certList = certHistMap[subjectAddr];
-        Cert[] memory newList = new Cert[](certList.length);
+        Cert[] memory tempList = new Cert[](certList.length);
         uint256 y = 0;
         for (uint256 i = 0; i < certList.length; i++) {
             if (addrToCertMap[subjectAddr][certList[i]]) {
-                newList[y] = certsMap[certList[i]];
+                tempList[y] = certsMap[certList[i]];
                 y++;
             }
+        }
+        Cert[] memory newList = new Cert[](y);
+        for (uint256 i = 0; i < y; i++) {
+            newList[i] = tempList[i];
         }
         return newList;
     }
