@@ -3,7 +3,7 @@ import { getUserByAddress } from "../../models/User";
 import { Card, Button, Row, Col, Typography, Modal, Table } from "antd";
 import { EyeOutlined } from "@ant-design/icons";
 
-function ViewCertVer({ user, certContract, accounts }) {
+function ViewCertVer({ user, certStoreContract, certContract, accounts }) {
   const [isViewCertModalVisible, setIsViewCertModalVisible] = useState(false);
   const [certificateViewingRight, setCertificateViewingRight] = useState();
   const [isModalVisible, setIsModalVisible] = useState(false);
@@ -30,14 +30,10 @@ function ViewCertVer({ user, certContract, accounts }) {
 
   const getStudents = async () => {
     let studentsDetail = [];
-    let students = await certContract.methods
-      .getGrantList()
-      .call({ from: accounts[0] });
+    let students = await certStoreContract.methods.getGrantList().call({ from: accounts[0] });
 
     for (let i = 0; i < students.length; i++) {
-      const rights = await certContract.methods
-        .checkSubject(students[i])
-        .call({ from: accounts[0] });
+      const rights = await certStoreContract.methods.checkSubject(students[i]).call({ from: accounts[0] });
 
       if (rights === true) {
         await getUserByAddress(students[i]).then((user) => {
@@ -46,18 +42,13 @@ function ViewCertVer({ user, certContract, accounts }) {
       }
     }
 
-    studentsDetail = studentsDetail.map((r, index) => ({
-      ...r,
-      key: index + 1,
-    }));
+    studentsDetail = studentsDetail.map((r, index) => ({...r,key: index + 1,}));
     setCertificateViewingRight(studentsDetail);
   };
 
   /* get all student certs */
   const getStudentCerts = async (student) => {
-    const allStudentCerts = await certContract.methods
-      .getCertListVerifiers(student.walletAddress)
-      .call({ from: accounts[0] });
+    const allStudentCerts = await certContract.methods.getCertListVerifiers(student.walletAddress).call({ from: accounts[0] });
     let studentCertsDetail = [];
 
     for (var i = 0; i < allStudentCerts.length; i++) {
@@ -80,7 +71,6 @@ function ViewCertVer({ user, certContract, accounts }) {
     }
 
     setCertificates(studentCertsDetail);
-    console.log(studentCertsDetail);
   };
 
   useEffect(() => {
@@ -134,7 +124,7 @@ function ViewCertVer({ user, certContract, accounts }) {
               >
                 <Typography>{certificate.title}</Typography>
                 <Typography>Issuer : {certificate.issuerName}</Typography>
-                <Typography>Roll number : {certificate.serialNo}</Typography>
+                <Typography>Serial number : {certificate.serialNo}</Typography>
                 <Modal
                   centered={true}
                   visible={isModalVisible}

@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Table, Tag, Space, Popconfirm, PageHeader} from 'antd';
 import { getUserByAddress } from "../../models/User";
 
-function ViewIssued({certContract}) {
+function ViewIssued({ certStoreContract, certContract}) {
     const [issuedData, setIssuedData] = useState();
 
     const currentUser = JSON.parse(localStorage.getItem('user'));
