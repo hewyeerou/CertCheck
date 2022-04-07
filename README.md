@@ -10,11 +10,11 @@ https://trufflesuite.com/boxes/react/index.html
 
 # Remix Test run
 
-## Deployment phase
+### Deployment phase
 
 - Deploy CertNetwork.sol w admin account (acc1)
 - Deploy CertStore.sol w CertNetwork contract addr
-- Deploy Cert.sol with CertNetwork contract addr
+- Deploy Cert.sol with CertNetwork contract addr + CertStore contract addr
 - Create user+role accounts w CertNetwork contract
   - subject (acc2) : 0xAb8483F64d9C6d1EcF9b849Ae677dD3315835cb2
   - subject (acc3) : 0x4B20993Bc481177ec7E8f571ceCaE8A9e22C02db
@@ -26,11 +26,17 @@ https://trufflesuite.com/boxes/react/index.html
 
 ---
 
-## Request Phase
+### Request Phase
+### Description
+- CertStore.sol: Subject > Issuer, request for certificate
 
-CertStore.sol: Subject > Issuer, request for certificate
+### Test Case:
+1. Test Authorized users with valid roles can use specifc functions 
+2. Test if Subject can make a request twice in a row.
+3. Test that Issuer can only reject a Subject that requested only.
+4. Test if approve and reject request tally with reqHistMap for each user.
 
-### prerequisite:
+### Prerequisite:
 
 1. All 3 contract have been deployed
 2. User accounts created
@@ -50,9 +56,14 @@ CertStore.sol: Subject > Issuer, request for certificate
 
 ---
 
-## Issue Phase
+### Issue Phase
+### Description
+- Issuer>Subject, issuer starts issuing certs.
 
-Issuer>Subject
+### Test Case:
+1. Test Authorized users with valid roles can use specifc functions. 
+2. Test if Subject/Verifier can issue cert to themselves.
+3. Test if Issuer can only issue cert to a subject whom has made a request.
 
 ### prerequisite:
 
@@ -76,6 +87,11 @@ Issuer>Subject
 
 ## Revoke cert
 
+### Test Case:
+1. Test Authorized users with valid roles can use specifc functions. 
+2. Test if only cert issuer can revoke cert.
+3. Test if verifier/subject/any other issuer cannot revoke cert.
+
 ### prerequisite:
 
 1. acc2 have certs issued(certid: 1,2,3) by issuer
@@ -92,21 +108,30 @@ Issuer>Subject
 ---
 
 ## Grant access
-
+### Description
 Student>Verifier, Grant access
+### Test Case:
+1. Test Authorized users with valid roles can use specifc functions. 
+2. Test if only subject can give access to only verifiers and not issuers.
+3. Test if verifier can view all cert even after newly issued cert.
 
 ### prerequisite: acc2 have certs issued(certid: 1,3,5) by issuer after revoking(certid: 2,4)
 
 - Using acc2, Grant verifier (acc4)
   - [ ] TEST: verifier can give himself access addr(acc4) to grant> FALSE, by authorised roles
   - [ ] TEST: using another random addr(acc5) to grant > FALSE, only authorised roles
-  - [ ] TEST: using another subject addr(acc3) to grant > TRUE, you are granting that verifier to view ur cert
+  - [ ] TEST: using another subject addr(acc3) to grant > TRUE, you are granting that verifier to view ur certs
 - check if verifier(acc4) have access getCertListVerifiers(acc2) > uint256[]: 1,3,5
   - [ ] TEST: check if verifier(acc5) have access getCertListVerifiers(acc2) > no viewing access for the subject certificates
 
 ## Deny Acess
 
-Student>Verifier, deny access
+### Description
+Student>Verifier, Deny access
+### Test Case:
+1. Test Authorized users with valid roles can use specifc functions. 
+2. Test if only subject can deny access to only verifiers and not issuers.
+3. Test if verifier can still view certs even after deny.
 
 ### prerequisite:
 
