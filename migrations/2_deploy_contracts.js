@@ -1,6 +1,14 @@
 var SimpleStorage = artifacts.require("./SimpleStorage.sol");
+const CertificateNetwork = artifacts.require("CertificateNetwork");
+const CertificateStore = artifacts.require("CertificateStore");
+const Certificate = artifacts.require("Certificate");
 
-// to be replaced during development
-module.exports = function(deployer) {
+
+module.exports = function(deployer, network, accounts) {
   deployer.deploy(SimpleStorage);
+  deployer.deploy(CertificateNetwork).then(function() {
+    return deployer.deploy(CertificateStore, CertificateNetwork.address);
+  }).then(function() {
+    return deployer.deploy(Certificate, CertificateNetwork.address, CertificateStore.address);
+  });
 };

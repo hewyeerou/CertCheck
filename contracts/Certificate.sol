@@ -253,7 +253,7 @@ contract Certificate {
         returns (Cert[] memory)
     {
         require(
-            certStore.getAccessStatus(msg.sender, subjectAddr),
+            certStore.getAccessStatus(msg.sender,subjectAddr),
             "You have no viewing access for the subject certificates."
         );
         uint256[] memory certList = certHistMap[subjectAddr];

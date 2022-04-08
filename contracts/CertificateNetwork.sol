@@ -66,7 +66,7 @@ contract CertificateNetwork {
         ) {
             return true;
         } else {
-            return false;
+            return false;//registered address, wrong role
         }
     }
 

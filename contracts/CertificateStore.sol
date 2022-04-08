@@ -49,11 +49,11 @@ contract CertificateStore {
     event RequestCertificate(address subjectAddr, address issuerAddr);
     event AcceptSubjectRequest(address issuerAddr, address subjectAddr);
     event RejectSubjectRequest(address issuerAddr, address subjectAddr);
-    event GiveAccessViewing(address subjectAddr, address verifierAddr);
-    event DenyAccessViewing(address subjectAddr, address verifierAddr);
-    event ViewSubjectCerts(address verifierAddr, address subjectAddr);
-    event ViewVerifierStatus(address subjectAddr, bool status);
-    event ViewSubjectStatus(address verifierAddr, bool status);
+
+    event VerifierGranted(address subjectAddr, address verifierAddr);
+    event VerifierDenied(address subjectAddr, address verifierAddr);
+    //event ViewVerifierStatus(address subjectAddr, bool status);
+    //event ViewSubjectStatus(address verifierAddr, bool status);
 
     constructor(CertificateNetwork cn) public {
         certNetwork = cn;
@@ -80,6 +80,16 @@ contract CertificateStore {
         require(
             certNetwork.checkUserExist(msg.sender, "Subject") ||
                 certNetwork.checkUserExist(msg.sender, "Issuer"),
+            "This action can only be performed by authorized roles."
+        );
+        _;
+    }
+
+    //test later
+    modifier onlyVerifierSubject() {
+        require(
+            certNetwork.checkUserExist(msg.sender, "Subject") ||
+                certNetwork.checkUserExist(msg.sender, "Verifier"),
             "This action can only be performed by authorized roles."
         );
         _;
@@ -243,6 +253,11 @@ contract CertificateStore {
         return requestMap[issuerAddr][subjectAddr];
     }
 
+
+
+    //Xie Ran's tests covering the following methods
+    //Between Subjects and Verifiers
+
     // for V>S, check grant list
     function getAccessStatus(address verifierAddr, address subjectAddr)
         public
@@ -253,6 +268,7 @@ contract CertificateStore {
     {
         return grantMap[subjectAddr][verifierAddr];
     }
+    
 
     // Grant access to a verifier to viewing all subject certs.(SUBJECT -> VERIFIER)
     function grantVerifier(address verifierAddr)
@@ -275,7 +291,7 @@ contract CertificateStore {
             grantHistMap[verifierAddr].push(msg.sender);
         }
         grantExistMap[msg.sender][verifierAddr] = true;
-        emit GiveAccessViewing(msg.sender, verifierAddr);
+        emit VerifierGranted(msg.sender, verifierAddr);
     }
 
     // Deny access to a verifier to viewing all subject certs.(SUBJECT -> VERIFIER)
@@ -292,46 +308,32 @@ contract CertificateStore {
         grantMap[verifierAddr][msg.sender] = false; // remove access for verifier
         grantMap[msg.sender][verifierAddr] = false; // remove access given by S>V
 
-        emit DenyAccessViewing(msg.sender, verifierAddr);
+        emit VerifierDenied(msg.sender, verifierAddr);
     }
 
-    // Getters and Setters
-    // S>V, check Subject approved verifier
-    //Frontend[subject]: loop thr all verifier addresses to display the list of verifiers approved by the subject.
-    function checkVerifier(address verifier)
+    // S>V: Subject can view the status of a verifier
+    // V>S: Verifier can view the status of a subject
+    function checkGrantStatus (address add)
         public
         view
-        onlyValidRoles("Subject")
-        userExist(verifier, "Verifier")
+        onlyVerifierSubject
         returns (bool)
     {
-        return grantMap[msg.sender][verifier];
-    }
-
-    // V>S, check if verifier is approved by subject
-    //Frontend[verifier]: loop thr all subject addresses to display the list of subjects viewable by the verifier.
-    function checkSubject(address subject)
-        public
-        view
-        onlyValidRoles("Verifier")
-        userExist(subject, "Subject")
-        returns (bool)
-    {
-        return grantMap[subject][msg.sender];
+        
+        if (
+                grantMap[msg.sender][add] &&
+                grantMap[add][msg.sender]
+            ) {
+                return true;
+            }
+        return false;
     }
 
     // S>V: Subject can view verifier they given access to.
     // V>S: Verifier can view subject they given access from.
-    function getGrantList() public view returns (address[] memory) {
-        require(
-            keccak256(abi.encodePacked(certNetwork.getUserRole(msg.sender))) ==
-                keccak256(abi.encodePacked("Subject")) ||
-                keccak256(
-                    abi.encodePacked(certNetwork.getUserRole(msg.sender))
-                ) ==
-                keccak256(abi.encodePacked("Verifier")),
-            "Only authorized roles can perform this action."
-        );
+    // this list updates automatically
+    function getGrantList() public view onlyVerifierSubject returns (address[] memory) {
+
         address[] memory grantList = grantHistMap[msg.sender];
         address[] memory tempList = new address[](grantList.length);
         uint256 y = 0;
@@ -351,18 +353,11 @@ contract CertificateStore {
         return newList;
     }
 
-    // S>V: Subject can view verifier they given access to.
-    // V>S: Verifier can view subject they given access from.
-    function getDenyList() public view returns (address[] memory) {
-        require(
-            keccak256(abi.encodePacked(certNetwork.getUserRole(msg.sender))) ==
-                keccak256(abi.encodePacked("Subject")) ||
-                keccak256(
-                    abi.encodePacked(certNetwork.getUserRole(msg.sender))
-                ) ==
-                keccak256(abi.encodePacked("Verifier")),
-            "Only authorized roles can perform this action."
-        );
+    // S>V: Subject can view verifier they have denied access to.
+    // V>S: Verifier can view subject they have been denied access to.
+    // this list updates automatically
+    function getDenyList() public view onlyVerifierSubject returns (address[] memory) {
+
         address[] memory grantList = grantHistMap[msg.sender];
         address[] memory tempList = new address[](grantList.length);
         uint256 y = 0;
