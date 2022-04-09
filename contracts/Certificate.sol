@@ -170,9 +170,10 @@ contract Certificate {
         validCertId(certId)
     {
         address subjectAddr = certsMap[certId].owner; // get owner of cert
-        delete certsMap[certId];
-        delete addrToCertMap[subjectAddr][certId]; // remove cert for subject
-        delete addrToCertMap[msg.sender][certId]; // remove cert for issuer
+        //delete certsMap[certId];
+        certExistMap[certId] = false;
+        addrToCertMap[subjectAddr][certId] = false; // remove cert for subject
+        addrToCertMap[msg.sender][certId] = false; // remove cert for issuer
 
         // REMOVED:
         // certExistMap[certId] = false; // for cert exist modifier
@@ -226,19 +227,19 @@ contract Certificate {
         public
         view
         onlyIssuerSubject
-        returns (uint256[] memory)
+        returns (Cert[] memory)
     {
         uint256[] memory certList = certHistMap[msg.sender];
-        uint256[] memory tempList = new uint256[](certList.length);
+        Cert[] memory tempList = new Cert[](certList.length);
         uint256 y = 0;
         for (uint256 i = 0; i < certList.length; i++) {
             if (!addrToCertMap[msg.sender][certList[i]]) {
-                tempList[y] = certList[i]; // Get all viewable certs
-                // tempList[y] = certsMap[certList[i]];// Push entire cert struct
+                //tempList[y] = certList[i]; // Get all viewable certs
+                tempList[y] = certsMap[certList[i]]; // Push entire cert struct
                 y++;
             }
         }
-        uint256[] memory newList = new uint256[](y);
+        Cert[] memory newList = new Cert[](y);
         for (uint256 i = 0; i < y; i++) {
             newList[i] = tempList[i];
         }
@@ -253,7 +254,7 @@ contract Certificate {
         returns (Cert[] memory)
     {
         require(
-            certStore.getAccessStatus(msg.sender,subjectAddr),
+            certStore.getAccessStatus(msg.sender, subjectAddr),
             "You have no viewing access for the subject certificates."
         );
         uint256[] memory certList = certHistMap[subjectAddr];
