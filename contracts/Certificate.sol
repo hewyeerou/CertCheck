@@ -1,23 +1,26 @@
 pragma solidity >=0.5.0;
-import "./CertificateNetwork.sol";
 pragma experimental ABIEncoderV2;
+
+import "./CertificateNetwork.sol";
+import "./CertificateStore.sol";
 
 contract Certificate {
     CertificateNetwork certNetwork;
-    uint256 internal totalCert; // Total Counter Added CertNo + track certId
+    CertificateStore certStore;
 
-    mapping(uint256 => Cert) private certsMap; // all created certs
-    mapping(uint256 => bool) private certExistMap; // T - cert is valid , F - cert is revoked, got record means created before
-    mapping(address => uint256[]) private subjectToCertListMap; // map subject to issued certs(by certId) by issuers
-    mapping(address => uint256[]) private issuerToCertListMap; // map issuer to issued certs(by certId)
+    uint256 internal totalCert;
 
-    mapping(address => mapping(address => bool)) private subjectToVerifierMap; // S>(V>bool), map subject to all approved verifiers to view all certs
-    mapping(address => mapping(uint256 => bool)) private subjectToCertMap;
-    mapping(address => mapping(uint256 => bool)) private issuerToCertMap;
-    mapping(address => mapping(address => bool)) private requestMap;
+    // Mapping to all created certificates
+    mapping(uint256 => Cert) private certsMap;
+    mapping(uint256 => bool) private certExistMap;
 
-    mapping(address => address[]) private reqListMap;
-    mapping(address => address[]) private grantListMap;
+    // S>C: Valid certs, all issued officially and after denys
+    // I>C: Valid certs, all issued officially and after denys
+    mapping(address => mapping(uint256 => bool)) private addrToCertMap;
+
+    // S>C: Map subject to all issued certs(by certId) received by issuers
+    // I>C: Map issuer to all issued certs(by certId)
+    mapping(address => uint256[]) private certHistMap;
 
     // Events
     event IssuedCertificate(
@@ -26,14 +29,6 @@ contract Certificate {
         address subjectAddr
     );
     event RevokeCertificate(address issuer, uint256 certId);
-    event RequestCertificate(address subjectAddr, address issuerAddr);
-    event AcceptSubjectRequest(address issuerAddr, address subjectAddr);
-    event RejectSubjectRequest(address issuerAddr, address subjectAddr);
-    event GiveAccessViewing(address subjectAddr, address verifierAddr);
-    event DenyAccessViewing(address subjectAddr, address verifierAddr);
-    event ViewSubjectCerts(address verifierAddr, address subjectAddr);
-    event ViewVerifierStatus(address subjectAddr, bool status);
-    event ViewSubjectStatus(address verifierAddr, bool status);
 
     // Structs
     struct Cert {
@@ -46,40 +41,20 @@ contract Certificate {
         string serialNo; //https://www.ibm.com/docs/en/ibm-mq/7.5?topic=certificates-what-is-in-digital-certificate
         string title; // cert title
         string completionDate; // date which subject completed the cert requirements
-        // remove variables:
-        // string studName; // subject name
-        // string rollNumber; //unique identification number that can be assigned to a SUBJECT during admission.
-        // string details; // modules taken, etc.
     }
 
-    constructor(CertificateNetwork cn) public {
+    constructor(CertificateNetwork cn, CertificateStore cs) public {
         certNetwork = cn;
+        certStore = cs;
         totalCert = 1;
     }
 
     // Modifiers
-
-    // Used for functions with specific roles
-    modifier onlyValidRoles(string memory role) {
-        require(
-            certNetwork.checkUserExist(msg.sender, role),
-            "This action can only be performed by authorized roles."
-        );
-        _;
-    }
-
-    // Used to check if a user exist, i.e. issue cert to subject, check if that subject exist in our system.
-    modifier userExist(address addr, string memory role) {
-        require(
-            certNetwork.checkUserExist(addr, role),
-            "This action can only be performed by user in our network."
-        );
-        _;
-    }
-
-    // Used this for determining valid cert
     modifier validCertId(uint256 certId) {
-        require(certId < totalCert);
+        require(
+            certId < totalCert && certExistMap[certId] == true,
+            "The certificate not valid."
+        );
         _;
     }
     modifier onlyCertOwner(uint256 certId) {
@@ -96,116 +71,35 @@ contract Certificate {
         );
         _;
     }
-
-    // TODO: JAOKUEAN
-    // Request cert from issuer. (SUBJECT -> ISSUER)
-    // Issue: subject can spam request for each issuer without being a subject
-    // Assumptions:
-    // 1. Subject know school block addr
-    // 2. Subject belongs to the school and is legitamite.
-    // 3. Subject only needs to request from the sch once for a sch to send all the subjects cert.
-    function requestCert(address issuerAddr)
-        public
-        onlyValidRoles("Subject")
-        userExist(issuerAddr, "Issuer")
-    {
+    // Modifiers
+    modifier onlyValidRoles(string memory role) {
         require(
-            !requestMap[msg.sender][issuerAddr],
-            "You have already requested for a cert."
+            certNetwork.checkUserExist(msg.sender, role),
+            "This action can only be performed by authorized roles."
         );
-
-        requestMap[msg.sender][issuerAddr] = true; // subject request
-        requestMap[issuerAddr][msg.sender] = true; // issuer to approve
-
-        
-        reqListMap[msg.sender].push(issuerAddr);
-        reqListMap[issuerAddr].push(msg.sender);
-
-        emit RequestCertificate(msg.sender, issuerAddr);
+        _;
+    }
+    // Used to check if a user exist, i.e. issue cert to subject, check if that subject exist in our system.
+    modifier userExist(address addr, string memory role) {
+        require(
+            certNetwork.checkUserExist(addr, role),
+            "This action can only be performed by user in our network."
+        );
+        _;
+    }
+    modifier onlyIssuerSubject() {
+        require(
+            keccak256(abi.encodePacked(certNetwork.getUserRole(msg.sender))) ==
+                keccak256(abi.encodePacked("Subject")) ||
+                keccak256(
+                    abi.encodePacked(certNetwork.getUserRole(msg.sender))
+                ) ==
+                keccak256(abi.encodePacked("Issuer")),
+            "This action can only be performed by authorized roles."
+        );
+        _;
     }
 
-    // Approve student request before you can issue cert
-    function acceptRequest(address subjectAddr)
-        public
-        onlyValidRoles("Issuer")
-        userExist(subjectAddr, "Subject")
-    {
-        require(
-            requestMap[subjectAddr][msg.sender],
-            "Subject has not made a request."
-        );
-        require(
-            !requestMap[msg.sender][subjectAddr],
-            "Subject has already been approved."
-        );
-        requestMap[msg.sender][subjectAddr] = true;
-
-        emit AcceptSubjectRequest(msg.sender, subjectAddr);
-    }
-
-    function rejectRequest(address subjectAddr)
-        public
-        onlyValidRoles("Issuer")
-        userExist(subjectAddr, "Subject")
-    {
-        require(
-            requestMap[subjectAddr][msg.sender],
-            "Subject has not request for a new cert."
-        );
-
-        requestMap[msg.sender][subjectAddr] = false;
-        requestMap[subjectAddr][msg.sender] = false;
-        emit RejectSubjectRequest(msg.sender, subjectAddr);
-    }
-
-    // TODO: Xie Ran
-    // Grant access to a verifier to viewing all subject certs.(SUBJECT -> VERIFIER)
-    function grantVerifier(address verifierAddr)
-        public
-        onlyValidRoles("Subject")
-        userExist(verifierAddr, "Verifier")
-    {
-        require(
-            !subjectToVerifierMap[msg.sender][verifierAddr],
-            "Verifier has already been given access."
-        );
-
-        subjectToVerifierMap[msg.sender][verifierAddr] = true;
-        subjectToVerifierMap[verifierAddr][msg.sender] = true;
-
-        grantListMap[msg.sender].push(verifierAddr);
-        grantListMap[verifierAddr].push(msg.sender);
-
-        emit GiveAccessViewing(msg.sender, verifierAddr);
-    }
-
-    // TODO:Xie Ran
-    // Deny access to a verifier to viewing all subject certs.(SUBJECT -> VERIFIER)
-    function denyVerifier(address verifierAddr)
-        public
-        onlyValidRoles("Subject")
-        userExist(verifierAddr, "Verifier")
-    {
-        require(
-            subjectToVerifierMap[msg.sender][verifierAddr],
-            "Verifier has already been denied access."
-        );
-
-        subjectToVerifierMap[msg.sender][verifierAddr] = false;
-        subjectToVerifierMap[verifierAddr][msg.sender] = false;
-
-        emit DenyAccessViewing(msg.sender, verifierAddr);
-    }
-
-    // TODO: ShiKai
-    // address owner; // Subject address
-    // address issuerAddr; // Issuer address
-    // string issuerName; // (NUS,NTU,Coursera,LinkedIn)
-    // string creationDate; // cert creation date
-    // string nric; // s9673333A
-    // string matricNo; //subject admin no, e.g A0200100X
-    // string title; // cert title
-    // string completionDate; // date which subject completed the cert requirements
     function issueCertificate(
         address subjectAddr,
         string memory _issuerName,
@@ -217,18 +111,18 @@ contract Certificate {
         public
         onlyValidRoles("Issuer")
         userExist(subjectAddr, "Subject")
-        returns (bool Status)
+        returns (uint256)
     {
         require(
-            requestMap[subjectAddr][msg.sender],
-            "Subject has not request for a new cert."
+            certStore.getRequestStatus(msg.sender, subjectAddr),
+            "Subject has not made any request."
         );
         require(
-            requestMap[msg.sender][subjectAddr],
-            "Student has not been approve."
+            certStore.getIssueStatus(msg.sender, subjectAddr),
+            "Subject is not authorized."
         );
 
-        uint256 newCertId = totalCert++; // new cert id before transfer to subject
+        uint256 newCertId = totalCert++;
         uint256 _creationDate = block.timestamp;
 
         Cert memory newCert = Cert(
@@ -242,52 +136,116 @@ contract Certificate {
             _title,
             _completionDate
         );
+        // add to cert mapping
+        certsMap[newCertId] = newCert;
+        certExistMap[newCertId] = true;
 
-        //TODO: Check for duplicate cert details?
-        certsMap[newCertId] = newCert; // add to cert mapping
-        certExistMap[newCertId] = true; // for cert exist modifier
+        // record subject received cert
+        certHistMap[subjectAddr].push(newCertId);
+        addrToCertMap[subjectAddr][newCertId] = true;
 
-        subjectToCertListMap[subjectAddr].push(newCertId); // add to subject list of certs
-        subjectToCertMap[subjectAddr][newCertId] = true;
+        // record issuer issued cert
+        certHistMap[msg.sender].push(newCertId);
+        addrToCertMap[msg.sender][newCertId] = true;
 
-        issuerToCertListMap[msg.sender].push(newCertId); // add to issuer list of certs
-        issuerToCertMap[msg.sender][newCertId] = true;
+        // REMOVED: similar data structure thus use one mapping overall.
+        // certExistMap[newCertId] = true; // for cert exist modifier
+        // addrToCertMap[subjectAddr].push(newCertId); // add to subject list of certs
+        // addrToCertMap[subjectAddr][newCertId] = true;
+        // addrToCertMap[msg.sender].push(newCertId); // add to issuer list of certs
+        // addrToCertMap[msg.sender][newCertId] = true;
 
         emit IssuedCertificate(newCertId, msg.sender, subjectAddr); // Log event
 
-        return true;
+        return newCertId;
     }
 
-    // TODO: JK
     // Delete cert in case of wrong issue or revoked.
     // Assumption:
     // 1. we do not delete the cert block, but set the existence to false to indicate it was deleted
-    // Question - Do we keep the certExist or just erase from existence?
     function revokeCert(uint256 certId)
         public
         onlyValidRoles("Issuer")
         onlyCertIssuer(certId)
         validCertId(certId)
     {
-        require(
-            certExistMap[certId],
-            "The certificate has already been revoked."
-        );
-
         address subjectAddr = certsMap[certId].owner; // get owner of cert
-        certExistMap[certId] = false; // for cert exist modifier
-        subjectToCertMap[subjectAddr][certId] = false; // remove mapping
-        issuerToCertMap[msg.sender][certId] = false; // remove mapping
+        // delete certsMap[certId];
+        certExistMap[certId] = false;
+        addrToCertMap[subjectAddr][certId] = false; // remove cert for subject
+        addrToCertMap[msg.sender][certId] = false; // remove cert for issuer
 
-        delete certsMap[certId]; // Remove from mapping, cert does not exist anymore
-
+        // REMOVED:
+        // certExistMap[certId] = false; // for cert exist modifier
+        // addrToCertMap[subjectAddr][certId] = false; // remove mapping
+        // addrToCertMap[msg.sender][certId] = false; // remove mapping
         emit RevokeCertificate(msg.sender, certId);
     }
 
-    // Alternate code to retrieve all certs from a subject
-    // Verifiers > Subject
-    // return all viewable certIDs
-    // can be extended to retrieve all struct info.
+    function getCertListById()
+        public
+        view
+        onlyIssuerSubject
+        returns (uint256[] memory)
+    {
+        uint256[] memory certList = certHistMap[msg.sender];
+        uint256[] memory tempList = new uint256[](certList.length);
+        uint256 y = 0;
+        for (uint256 i = 0; i < certList.length; i++) {
+            if (addrToCertMap[msg.sender][certList[i]]) {
+                tempList[y] = certList[i]; // Get all viewable certs
+                // tempList[y] = certsMap[certList[i]];// Push entire cert struct
+                y++;
+            }
+        }
+        uint256[] memory newList = new uint256[](y);
+        for (uint256 i = 0; i < y; i++) {
+            newList[i] = tempList[i];
+        }
+        return newList;
+    }
+
+    function getCerts() public view onlyIssuerSubject returns (Cert[] memory) {
+        uint256[] memory certList = certHistMap[msg.sender];
+        Cert[] memory tempList = new Cert[](certList.length);
+        uint256 y = 0;
+        for (uint256 i = 0; i < certList.length; i++) {
+            if (addrToCertMap[msg.sender][certList[i]]) {
+                // tempList[i] = certList[i]; // Get all viewable certs
+                tempList[y] = certsMap[certList[i]];
+                y++;
+            }
+        }
+        Cert[] memory newList = new Cert[](y);
+        for (uint256 i = 0; i < y; i++) {
+            newList[i] = tempList[i];
+        }
+        return newList;
+    }
+
+    function getCertsRevokedList()
+        public
+        view
+        onlyIssuerSubject
+        returns (Cert[] memory)
+    {
+        uint256[] memory certList = certHistMap[msg.sender];
+        Cert[] memory tempList = new Cert[](certList.length);
+        uint256 y = 0;
+        for (uint256 i = 0; i < certList.length; i++) {
+            if (!addrToCertMap[msg.sender][certList[i]]) {
+                // tempList[y] = certList[i]; // Get all viewable certs
+                tempList[y] = certsMap[certList[i]];// Push entire cert struct
+                y++;
+            }
+        }
+        Cert[] memory newList = new Cert[](y);
+        for (uint256 i = 0; i < y; i++) {
+            newList[i] = tempList[i];
+        }
+        return newList;
+    }
+
     function getCertListVerifiers(address subjectAddr)
         public
         view
@@ -296,158 +254,31 @@ contract Certificate {
         returns (Cert[] memory)
     {
         require(
-            subjectToVerifierMap[subjectAddr][msg.sender],
+            certStore.getAccessStatus(msg.sender, subjectAddr),
             "You have no viewing access for the subject certificates."
         );
-        uint256[] memory certList = subjectToCertListMap[subjectAddr];
-        Cert[] memory newList = new Cert[](certList.length);
+        uint256[] memory certList = certHistMap[subjectAddr];
+        Cert[] memory tempList = new Cert[](certList.length);
         uint256 y = 0;
         for (uint256 i = 0; i < certList.length; i++) {
-            if (subjectToCertMap[subjectAddr][certList[i]]) {
-                // Get all viewable certs
-                newList[y] = certsMap[certList[i]];
-                y ++;
-                // newList.push(certsMap[certList[i]]) // Push entire cert struct
+            if (addrToCertMap[subjectAddr][certList[i]]) {
+                tempList[y] = certsMap[certList[i]];
+                y++;
             }
+        }
+        Cert[] memory newList = new Cert[](y);
+        for (uint256 i = 0; i < y; i++) {
+            newList[i] = tempList[i];
         }
         return newList;
     }
 
-    function getCertListSubjects()
+    function checkCertExist(uint256 certId)
         public
         view
-        onlyValidRoles("Subject")
-        returns (uint256[] memory)
-    {
-        uint256[] memory certList = subjectToCertListMap[msg.sender];
-        uint256[] memory newList = new uint256[](certList.length);
-        for (uint256 i = 0; i < certList.length; i++) {
-            if (subjectToCertMap[msg.sender][certList[i]]) {
-                // Get all viewable certs
-                newList[i] = certList[i];
-                // newList.push(certsMap[certList[i]]) // Push entire cert struct
-            }
-        }
-        return newList;
-    }
-
-    function getCertListIssuers()
-        public
-        view
-        onlyValidRoles("Issuer")
-        returns (Cert[] memory)
-    {
-        uint256[] memory certList = issuerToCertListMap[msg.sender];
-        Cert[] memory newList = new Cert[](certList.length);
-        uint256 y = 0;
-        for (uint256 i = 0; i < certList.length; i++) {
-            if (issuerToCertMap[msg.sender][certList[i]]) {
-                // Get all viewable certs
-                // newList[i] = certList[i];
-                newList[y] = certsMap[certList[i]];
-                y ++;
-            }
-        }
-        return newList;
-    }
-
-    // Getters and Setters
-
-    //getters by XR:
-    //for a subject to check the viewing rights of a verifier
-    function checkVerifier(address verifier)
-        public
-        onlyValidRoles("Subject")
-        userExist(verifier, "Verifier")
+        validCertId(certId)
         returns (bool)
     {
-        bool status = subjectToVerifierMap[msg.sender][verifier];
-        emit ViewVerifierStatus(msg.sender, status);
-        return status;
-    }
-
-    //Frontend[subject]: loop thr all verifier addresses to display the list of verifiers approved by the subject.
-
-    //for a verifier to check whether he/she can view a subject's certs
-    function checkSubject(address subject)
-        public
-        onlyValidRoles("Verifier")
-        userExist(subject, "Subject")
-        returns (bool)
-    {
-        bool status = subjectToVerifierMap[subject][msg.sender];
-        emit ViewSubjectStatus(msg.sender, status);
-        return status;
-    }
-
-    //Frontend[verifier]: loop thr all subject addresses to display the list of subjects viewable by the verifier.
-
-    //function to check a request from a subject
-    function checkRequest(address issuerAddr)
-        public
-        view
-        returns (bool)
-    {
-        if (
-            requestMap[issuerAddr][msg.sender] &&
-            requestMap[msg.sender][issuerAddr]
-        ) {
-            return true;
-        }
-        return false;
-    }
-
-    // function for subject/issuer to see all request to issuer/subject
-    function getApprovedReqList() public view returns (address[] memory) {
-        address[] memory reqList = reqListMap[msg.sender];
-        address[] memory newList = new address[](reqList.length);
-
-        for (uint256 i = 0; i < reqList.length; i++) {
-            // check if issuer approve subject and student make req to issuer
-            if (requestMap[msg.sender][reqList[i]]) {
-                // Get all viewable certs
-                newList[i] = reqList[i];
-            }
-        }
-        return newList;
-    }
-
-    // Subject request to Issuer list
-    // Issuer request from Subject List
-    function getReqList() public view returns (address[] memory) {
-        return reqListMap[msg.sender];
-    }
-
-    // function for subject/issuer to see all request to issuer/subject
-    function getGrantList() public view returns (address[] memory) {
-        // address[] memory grantList = grantListMap[msg.sender];
-        // address[] memory newList = new address[](grantList.length);
-
-        // for (uint256 i = 0; i < grantList.length; i++) {
-        //     // check if issuer approve subject and student make req to issuer
-        //     if (subjectToVerifierMap[msg.sender][grantList[i]]) {
-        //         // Get all viewable certs
-        //         newList[i] = grantList[i];
-        //     }
-        // }
-        return grantListMap[msg.sender];
-    }
-
-    function checkCertExist(uint256 certId) public view returns (bool) {
         return certExistMap[certId];
     }
-
-    // For testing gasCost for any inefficiency
-    function GasCost(function() internal returns (string memory) fun)
-        internal
-        returns (uint256)
-    {
-        uint256 u0 = gasleft();
-        string memory sm = fun();
-        uint256 u1 = gasleft();
-        uint256 diff = u0 - u1;
-        return diff;
-    }
-
-    //TODO: getGrantList with actual grant
 }

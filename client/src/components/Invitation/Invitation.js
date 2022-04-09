@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { Button, Row, Col, Typography, Modal, Table, Form, Select, message } from 'antd';
+import { Button, Row, Col, Typography, Modal, Table, Form, Select, message, Tag } from 'antd';
 import { getAllUsers, getUserByAddress } from "../../models/User";
 
-const Invitation = ({ user, certContract, accounts }) => {
+const Invitation = ({ user, certStoreContract, certContract, accounts }) => {
     const [isModalVisible, setIsModalVisible] = useState(false);
     const [isRevokeModalVisible, setIsRevokeModalVisible] = useState(false);
     const [revokeVerifier, setRevokeVerifier] = useState();
@@ -12,21 +12,34 @@ const Invitation = ({ user, certContract, accounts }) => {
     const [certificateViewingRight, setCertificateViewingRight] = useState();
     const [verifierList, setVerifierList] = useState();
 
+    const [studCerts, setStudCerts] = useState();
+
     /* datatable columns */
     const columns = [
         { title: 'Verifier', dataIndex: 'name', key: 'key' },
+        { title: 'Status', dataIndex: 'status', key: 'key', render: (status) => (
+            <>
+                {status === 'Invited' && <Tag color="cyan">{status}</Tag>}
+                {status === 'Revoked' && <Tag color="red">{status}</Tag>}
+            </>
+        )},
         {
             title: 'Action',
             key: 'action',
             render: (text, record) => (
-                <Button
-                    onClick={() => {
-                        setRevokeVerifier(text);
-                        showRevokeModal();
-                    }}
-                >
-                    Revoke
-                </Button>
+                <> 
+                    {text.status === "Invited" && (
+                        <Button
+                            onClick={() => {
+                                setRevokeVerifier(text);
+                                showRevokeModal();
+                            }}
+                        >
+                            Revoke
+                        </Button>
+                    )}
+                </>
+               
             ),
         },
     ];
@@ -34,11 +47,13 @@ const Invitation = ({ user, certContract, accounts }) => {
     /* Get all verifiers and display on table */
     const getApprovedVerifiers = async() => {
         let verifiersDetail = [];
-        let verifiers = await certContract.methods.getGrantList().call({ from: accounts[0] });
+        let deniedVerifiersDetail = [];
+        const verifiers = await certStoreContract.methods.getGrantList().call({ from: accounts[0] });
+        
 
         
         for(let i = 0; i < verifiers.length; i++) {
-            const rights = await certContract.methods.checkVerifier(verifiers[i]).call({ from: accounts[0] });
+            const rights = await certStoreContract.methods.checkVerifier(verifiers[i]).call({ from: accounts[0] });
 
             if(rights === true) {
                 await getUserByAddress(verifiers[i]).then((user) => {
@@ -46,8 +61,19 @@ const Invitation = ({ user, certContract, accounts }) => {
                 });
             }
         }
+        verifiersDetail = verifiersDetail.map((v) => ({...v, status: 'Invited'}));
 
-        verifiersDetail = verifiersDetail.map((r, index) => ({...r, key: index+1}));
+        const deniedVerifier = await certStoreContract.methods.getDenyList().call({ from: accounts[0] });
+        for(let j = 0; j < deniedVerifier.length; j++) {
+            await getUserByAddress(deniedVerifier[j]).then((user) => {
+                deniedVerifiersDetail.push(user);
+            });
+        }
+        deniedVerifiersDetail = deniedVerifiersDetail.map((dv) => ({...dv, status: 'Revoked'}));
+
+        verifiersDetail.push(...deniedVerifiersDetail);
+        verifiersDetail = verifiersDetail.map((v, index) => ({...v, key: index+1}));
+
         setCertificateViewingRight(verifiersDetail);
     };
 
@@ -66,9 +92,17 @@ const Invitation = ({ user, certContract, accounts }) => {
         setVerifierList(verifiersList);
     };
 
+    /* Check if student has certificate to issue */
+    const getAllStudentCerts = async() => {
+        const studentCerts = await certContract.methods.getCerts().call({ from: accounts[0] });
+
+        setStudCerts(studentCerts);
+    }
+
     useEffect(() => {
         getApprovedVerifiers();
         getVerifiers();
+        getAllStudentCerts();
     },[]);
 
     useEffect(() => {
@@ -81,7 +115,7 @@ const Invitation = ({ user, certContract, accounts }) => {
 
     /* revoke verifier */
     const confirmRevoke = async() => {
-        const res = await certContract.methods.denyVerifier(revokeVerifier.walletAddress).send({ from: accounts[0] });
+        const res = await certStoreContract.methods.denyVerifier(revokeVerifier.walletAddress).send({ from: accounts[0] });
 
         message.info("Revoked access rights from the verifier");
 
@@ -89,7 +123,12 @@ const Invitation = ({ user, certContract, accounts }) => {
     };
 
     const showModal = () => {
-        setIsModalVisible(true);
+        if(studCerts.length !== 0) {
+            setIsModalVisible(true);
+        } else {
+            setIsModalVisible(false);
+            message.error("You do not have any certificate. Please request one from the institution.");
+        }
     };
 
     const showRevokeModal = () => {
@@ -116,7 +155,7 @@ const Invitation = ({ user, certContract, accounts }) => {
         const selectedVerifierAddr = values.verifier;
 
         try{
-            const res = await certContract.methods.grantVerifier(selectedVerifierAddr).send({ from: accounts[0] });
+            const res = await certStoreContract.methods.grantVerifier(selectedVerifierAddr).send({ from: accounts[0] });
             console.log("######## Response", res);
 
             message.info("Granted access rights to the verifier");

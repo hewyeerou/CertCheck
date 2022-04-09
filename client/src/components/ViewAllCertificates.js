@@ -2,19 +2,18 @@ import React, { useState, useEffect } from "react";
 import { Card, Button, Row, Col, Typography, Modal, Layout } from "antd";
 import { EyeOutlined } from "@ant-design/icons";
 
-const ViewAllCertificates = ({ certContract, user }) => {
+const ViewAllCertificates = ({ certStoreContract, certContract, user }) => {
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [content, setContent] = useState();
 
   useEffect(() => {
-    console.log(certContract);
-    console.log(user);
+    console.log(certStoreContract);
     createReq();
   }, []);
 
   const createReq = async () => {
-    const req = await certContract.methods
-      .requestCert("0xd48a8D7Cd91B8832d788d9d9b739173de34f6ADD")
+    const req = await certStoreContract.methods
+      .requestCert("0xD3570FC765d397b63dEEf89d389c3344dA18ca52")
       .send({ from: user.walletAddress });
   };
 
