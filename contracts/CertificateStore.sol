@@ -52,6 +52,7 @@ contract CertificateStore {
 
     event VerifierGranted(address subjectAddr, address verifierAddr);
     event VerifierDenied(address subjectAddr, address verifierAddr);
+
     //event ViewVerifierStatus(address subjectAddr, bool status);
     //event ViewSubjectStatus(address verifierAddr, bool status);
 
@@ -253,8 +254,6 @@ contract CertificateStore {
         return requestMap[issuerAddr][subjectAddr];
     }
 
-
-
     //Xie Ran's tests covering the following methods
     //Between Subjects and Verifiers
 
@@ -268,7 +267,6 @@ contract CertificateStore {
     {
         return grantMap[subjectAddr][verifierAddr];
     }
-    
 
     // Grant access to a verifier to viewing all subject certs.(SUBJECT -> VERIFIER)
     function grantVerifier(address verifierAddr)
@@ -313,27 +311,27 @@ contract CertificateStore {
 
     // S>V: Subject can view the status of a verifier
     // V>S: Verifier can view the status of a subject
-    function checkGrantStatus (address add)
+    function checkGrantStatus(address add)
         public
         view
         onlyVerifierSubject
         returns (bool)
     {
-        
-        if (
-                grantMap[msg.sender][add] &&
-                grantMap[add][msg.sender]
-            ) {
-                return true;
-            }
+        if (grantMap[msg.sender][add] && grantMap[add][msg.sender]) {
+            return true;
+        }
         return false;
     }
 
     // S>V: Subject can view verifier they given access to.
     // V>S: Verifier can view subject they given access from.
     // this list updates automatically
-    function getGrantList() public view onlyVerifierSubject returns (address[] memory) {
-
+    function getGrantList()
+        public
+        view
+        onlyVerifierSubject
+        returns (address[] memory)
+    {
         address[] memory grantList = grantHistMap[msg.sender];
         address[] memory tempList = new address[](grantList.length);
         uint256 y = 0;
@@ -356,8 +354,12 @@ contract CertificateStore {
     // S>V: Subject can view verifier they have denied access to.
     // V>S: Verifier can view subject they have been denied access to.
     // this list updates automatically
-    function getDenyList() public view onlyVerifierSubject returns (address[] memory) {
-
+    function getDenyList()
+        public
+        view
+        onlyVerifierSubject
+        returns (address[] memory)
+    {
         address[] memory grantList = grantHistMap[msg.sender];
         address[] memory tempList = new address[](grantList.length);
         uint256 y = 0;
