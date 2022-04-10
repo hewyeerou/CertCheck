@@ -3,7 +3,7 @@ import { Table, Popconfirm, PageHeader, Modal, Form, Input, DatePicker, Button, 
 import "./ViewRequests.css";
 import { getUserByAddress } from "../../models/User";
 
-function ViewRequests({certContract}) {
+function ViewRequests({ certStoreContract, certContract}) {
     const [visible, setVisible] = useState(false);
     const [selectedUser, setSelectedUser] = useState();
     const [requestData, setRequestData] = useState();
@@ -16,7 +16,7 @@ function ViewRequests({certContract}) {
     }, []);
 
     const retrieveRequest = async () => {
-        const retrieveReq = await certContract.methods.getApprovedReqList().call({from: currentUser.walletAddress});
+        const retrieveReq = await certStoreContract.methods.getApprovedReqList().call({from: currentUser.walletAddress});
        console.log(retrieveReq);
        var tempArr = [];
        for(var i = 0; i < retrieveReq.length; i ++) {
@@ -101,7 +101,7 @@ function ViewRequests({certContract}) {
     const deleteRequest = async (record, x) => {
         console.log(record.walletAddress);
         console.log(currentUser.walletAddress);
-        const retrieveIss = await certContract.methods.rejectRequest(record.walletAddress).send({from: currentUser.walletAddress});
+        const retrieveIss = await certStoreContract.methods.rejectRequest(record.walletAddress).send({from: currentUser.walletAddress});
         retrieveRequest();
     }
 

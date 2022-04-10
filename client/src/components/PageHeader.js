@@ -11,7 +11,7 @@ const PageHeader = () => {
 
   const onClickLogout = () => {
     localStorage.clear();
-    navigate("")
+    navigate("/logout")
   };
 
   return (
