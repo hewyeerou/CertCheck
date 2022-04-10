@@ -33,7 +33,7 @@ function ViewCertVer({ user, certStoreContract, certContract, accounts }) {
     let students = await certStoreContract.methods.getGrantList().call({ from: accounts[0] });
 
     for (let i = 0; i < students.length; i++) {
-      const rights = await certStoreContract.methods.checkSubject(students[i]).call({ from: accounts[0] });
+      const rights = await certStoreContract.methods.checkGrantStatus(students[i]).call({ from: accounts[0] });
 
       if (rights === true) {
         await getUserByAddress(students[i]).then((user) => {

@@ -53,7 +53,7 @@ const Invitation = ({ user, certStoreContract, certContract, accounts }) => {
 
         
         for(let i = 0; i < verifiers.length; i++) {
-            const rights = await certStoreContract.methods.checkVerifier(verifiers[i]).call({ from: accounts[0] });
+            const rights = await certStoreContract.methods.checkGrantStatus(verifiers[i]).call({ from: accounts[0] });
 
             if(rights === true) {
                 await getUserByAddress(verifiers[i]).then((user) => {
