@@ -32,6 +32,7 @@ function ViewCertVer({ user, certStoreContract, certContract, accounts }) {
     let studentsDetail = [];
     let students = await certStoreContract.methods.getGrantList().call({ from: accounts[0] });
 
+    // check the status of grant
     for (let i = 0; i < students.length; i++) {
       const rights = await certStoreContract.methods.checkGrantStatus(students[i]).call({ from: accounts[0] });
 
