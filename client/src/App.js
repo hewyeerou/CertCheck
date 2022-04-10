@@ -19,6 +19,7 @@ import Certificate from './contracts/Certificate.json';
 
 import { Spin } from 'antd';
 import { LoadingOutlined } from '@ant-design/icons';
+import ReloadLogin from "./components/ReloadLogin";
 
 function App() {
   // initialize the state variables of the application
@@ -133,6 +134,10 @@ function App() {
         <Route
           path="/issuer/viewIssued"
           element={<Page pageType={"/issuer/viewIssued"} certStoreContract={certStoreContract} certContract={certContract} />}
+        />
+        <Route
+          path="/logout"
+          element={<ReloadLogin />}
         />
       </Routes>
     </BrowserRouter>

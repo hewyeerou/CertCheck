@@ -369,7 +369,7 @@ contract CertificateStore {
         for (uint256 i = 0; i < grantList.length; i++) {
             if (
                 !(grantMap[msg.sender][grantList[i]] &&
-                    !grantMap[grantList[i]][msg.sender])
+                    grantMap[grantList[i]][msg.sender])
             ) {
                 tempList[y] = grantList[i];
                 y++;
