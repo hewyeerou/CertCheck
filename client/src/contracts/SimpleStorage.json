@@ -32,15 +32,15 @@
       "type": "function"
     }
   ],
-  "metadata": "{\"compiler\":{\"version\":\"0.5.16+commit.9c3226ce\"},\"language\":\"Solidity\",\"output\":{\"abi\":[{\"constant\":true,\"inputs\":[],\"name\":\"get\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"payable\":false,\"stateMutability\":\"view\",\"type\":\"function\"},{\"constant\":false,\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"x\",\"type\":\"uint256\"}],\"name\":\"set\",\"outputs\":[],\"payable\":false,\"stateMutability\":\"nonpayable\",\"type\":\"function\"}],\"devdoc\":{\"methods\":{}},\"userdoc\":{\"methods\":{}}},\"settings\":{\"compilationTarget\":{\"project:/contracts/SimpleStorage.sol\":\"SimpleStorage\"},\"evmVersion\":\"istanbul\",\"libraries\":{},\"optimizer\":{\"enabled\":false,\"runs\":200},\"remappings\":[]},\"sources\":{\"project:/contracts/SimpleStorage.sol\":{\"keccak256\":\"0x027066369bce26e318e9f8a1fa2b87adb8c8acab099c7c4efdb12c58ff725056\",\"urls\":[\"bzz-raw://a4a085d00d4a173db4a256b06b2341244269394c5d423c28ae0356b942362315\",\"dweb:/ipfs/Qmetugur1G9tB2EdnTqPE664QELc15GqzHqn9hJNecmCxi\"]}},\"version\":1}",
-  "bytecode": "0x608060405234801561001057600080fd5b5060c68061001f6000396000f3fe6080604052348015600f57600080fd5b506004361060325760003560e01c806360fe47b11460375780636d4ce63c146062575b600080fd5b606060048036036020811015604b57600080fd5b8101908080359060200190929190505050607e565b005b60686088565b6040518082815260200191505060405180910390f35b8060008190555050565b6000805490509056fea265627a7a7231582035de3d6ecbe7ac5db6d597b7b1a544790bb08ff8eec38a4b3655973d45062fa064736f6c63430005100032",
-  "deployedBytecode": "0x6080604052348015600f57600080fd5b506004361060325760003560e01c806360fe47b11460375780636d4ce63c146062575b600080fd5b606060048036036020811015604b57600080fd5b8101908080359060200190929190505050607e565b005b60686088565b6040518082815260200191505060405180910390f35b8060008190555050565b6000805490509056fea265627a7a7231582035de3d6ecbe7ac5db6d597b7b1a544790bb08ff8eec38a4b3655973d45062fa064736f6c63430005100032",
+  "metadata": "{\"compiler\":{\"version\":\"0.5.16+commit.9c3226ce\"},\"language\":\"Solidity\",\"output\":{\"abi\":[{\"constant\":true,\"inputs\":[],\"name\":\"get\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"payable\":false,\"stateMutability\":\"view\",\"type\":\"function\"},{\"constant\":false,\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"x\",\"type\":\"uint256\"}],\"name\":\"set\",\"outputs\":[],\"payable\":false,\"stateMutability\":\"nonpayable\",\"type\":\"function\"}],\"devdoc\":{\"methods\":{}},\"userdoc\":{\"methods\":{}}},\"settings\":{\"compilationTarget\":{\"/Users/xieran/Documents/GitHub/IS4302_Project/contracts/SimpleStorage.sol\":\"SimpleStorage\"},\"evmVersion\":\"istanbul\",\"libraries\":{},\"optimizer\":{\"enabled\":false,\"runs\":200},\"remappings\":[]},\"sources\":{\"/Users/xieran/Documents/GitHub/IS4302_Project/contracts/SimpleStorage.sol\":{\"keccak256\":\"0x027066369bce26e318e9f8a1fa2b87adb8c8acab099c7c4efdb12c58ff725056\",\"urls\":[\"bzz-raw://a4a085d00d4a173db4a256b06b2341244269394c5d423c28ae0356b942362315\",\"dweb:/ipfs/Qmetugur1G9tB2EdnTqPE664QELc15GqzHqn9hJNecmCxi\"]}},\"version\":1}",
+  "bytecode": "0x608060405234801561001057600080fd5b5060c68061001f6000396000f3fe6080604052348015600f57600080fd5b506004361060325760003560e01c806360fe47b11460375780636d4ce63c146062575b600080fd5b606060048036036020811015604b57600080fd5b8101908080359060200190929190505050607e565b005b60686088565b6040518082815260200191505060405180910390f35b8060008190555050565b6000805490509056fea265627a7a72315820f0e6b3bea52792ce67ee45384e4af26e0ada342d88ec4493a0ef84a54405f78e64736f6c63430005100032",
+  "deployedBytecode": "0x6080604052348015600f57600080fd5b506004361060325760003560e01c806360fe47b11460375780636d4ce63c146062575b600080fd5b606060048036036020811015604b57600080fd5b8101908080359060200190929190505050607e565b005b60686088565b6040518082815260200191505060405180910390f35b8060008190555050565b6000805490509056fea265627a7a72315820f0e6b3bea52792ce67ee45384e4af26e0ada342d88ec4493a0ef84a54405f78e64736f6c63430005100032",
   "sourceMap": "27:176:4:-;;;;8:9:-1;5:2;;;30:1;27;20:12;5:2;27:176:4;;;;;;;",
   "deployedSourceMap": "27:176:4:-;;;;8:9:-1;5:2;;;30:1;27;20:12;5:2;27:176:4;;;;;;;;;;;;;;;;;;;;;;;;74:53;;;;;;13:2:-1;8:3;5:11;2:2;;;29:1;26;19:12;2:2;74:53:4;;;;;;;;;;;;;;;;;:::i;:::-;;131:70;;;:::i;:::-;;;;;;;;;;;;;;;;;;;74:53;121:1;108:10;:14;;;;74:53;:::o;131:70::-;167:4;186:10;;179:17;;131:70;:::o",
   "source": "pragma solidity >= 0.5.0;\n\ncontract SimpleStorage {\n  uint storedData;\n\n  function set(uint x) public {\n    storedData = x;\n  }\n\n  function get() public view returns (uint) {\n    return storedData;\n  }\n}\n",
-  "sourcePath": "/home/shikai/IS4302_Project/contracts/SimpleStorage.sol",
+  "sourcePath": "/Users/xieran/Documents/GitHub/IS4302_Project/contracts/SimpleStorage.sol",
   "ast": {
-    "absolutePath": "project:/contracts/SimpleStorage.sol",
+    "absolutePath": "/Users/xieran/Documents/GitHub/IS4302_Project/contracts/SimpleStorage.sol",
     "exportedSymbols": {
       "SimpleStorage": [
         2183
@@ -293,7 +293,7 @@
   },
   "legacyAST": {
     "attributes": {
-      "absolutePath": "project:/contracts/SimpleStorage.sol",
+      "absolutePath": "/Users/xieran/Documents/GitHub/IS4302_Project/contracts/SimpleStorage.sol",
       "exportedSymbols": {
         "SimpleStorage": [
           2183
@@ -595,12 +595,12 @@
     "5777": {
       "events": {},
       "links": {},
-      "address": "0x78556754f1AB8a879f8C73a455ad246FC6F2033f",
-      "transactionHash": "0x1ef2fe23e905c21f51a544a065298893de405ee0c961951f91adbd7785d27bcb"
+      "address": "0x06846685fd4D4db531605Ba80deB96A9cE4e04A5",
+      "transactionHash": "0x746f53dbd6d20759e45194434fff3b374607420a6c81ccef54e224b340a98a21"
     }
   },
-  "schemaVersion": "3.4.4",
-  "updatedAt": "2022-04-10T06:39:10.868Z",
+  "schemaVersion": "3.3.3",
+  "updatedAt": "2022-04-11T11:37:36.688Z",
   "networkType": "ethereum",
   "devdoc": {
     "methods": {}
