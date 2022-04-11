@@ -151,16 +151,10 @@ contract('CertificateStore', function(accounts) {
         );
     });
 
-    it('Only authorised roles can reject request from subjectes', async() => {
+    it('Only issuers can reject request from subjects', async() => {
         // V>S
         await truffleAssert.reverts(
             CertStoreInstance.rejectRequest(accounts[2], { from: accounts[4] }),
-            "This action can only be performed by authorized roles."
-        );
-
-        // S>S
-        await truffleAssert.reverts(
-            CertStoreInstance.rejectRequest(accounts[2], { from: accounts[3] }),
             "This action can only be performed by authorized roles."
         );
 
@@ -258,7 +252,7 @@ contract('CertificateStore', function(accounts) {
         );
     });
 
-    it('Request history corresponds to all unique request made.', async() => {
+    it('Check request history record all unique request made.', async() => {
         let arr12 = await CertStoreInstance.getReqHist({ from: accounts[2] });
         let arr13 = await CertStoreInstance.getReqHist({ from: accounts[3] });
         let arr14 = await CertStoreInstance.getReqHist({ from: accounts[6] });
@@ -282,7 +276,45 @@ contract('CertificateStore', function(accounts) {
         );
     });
 
-    it('Subject can grant access', async() => {
+    it('Only subjects can grant access to valid verifiers', async() => {
+        // V>V
+        await truffleAssert.reverts(
+            CertStoreInstance.grantVerifier(accounts[4], { from: accounts[4] }),
+            "This action can only be performed by authorized roles."
+        );
+
+        // I>V
+        await truffleAssert.reverts(
+            CertStoreInstance.grantVerifier(accounts[4], { from: accounts[6] }),
+            "This action can only be performed by authorized roles."
+        );
+
+        // U>V
+        await truffleAssert.reverts(
+            CertStoreInstance.grantVerifier(accounts[4], { from: accounts[8] }),
+            "User not registered in system."
+        );
+    });
+
+    it('Subjects cannot give grants to invalid address', async() => {
+        // S>I
+        await truffleAssert.reverts(
+            CertStoreInstance.grantVerifier(accounts[6], { from: accounts[2] }),
+            "The action can only be performed on valid users."
+        );
+        // S>S
+        await truffleAssert.reverts(
+            CertStoreInstance.grantVerifier(accounts[3], { from: accounts[2] }),
+            "The action can only be performed on valid users."
+        );
+        // S>U
+        await truffleAssert.reverts(
+            CertStoreInstance.grantVerifier(accounts[8], { from: accounts[2] }),
+            "User not registered in system."
+        );
+    });
+
+    it('Subjects can grant access', async() => {
         let grant0 = await CertStoreInstance.grantVerifier(accounts[4], { from: accounts[2] });
         let grant1 = await CertStoreInstance.grantVerifier(accounts[5], { from: accounts[2] });
         let grant2 = await CertStoreInstance.grantVerifier(accounts[4], { from: accounts[3] });
@@ -292,121 +324,6 @@ contract('CertificateStore', function(accounts) {
         truffleAssert.eventEmitted(grant2, 'VerifierGranted');
     });
 
-    it('Subject can check the status of the verifier', async() => {
-        let check1 = await CertStoreInstance.checkGrantStatus(accounts[4], { from: accounts[2] });
-        let check2 = await CertStoreInstance.checkGrantStatus(accounts[4], { from: accounts[3] });
-
-        assert.equal(
-            check1,
-            true,
-            "Failed to view status"
-        );
-
-        assert.equal(
-            check2,
-            true,
-            "Failed to view status"
-        );
-    });
-
-    it('Verifier can check the status of the subject', async() => {
-        let check3 = await CertStoreInstance.checkGrantStatus(accounts[2], { from: accounts[4] });
-        let check4 = await CertStoreInstance.checkGrantStatus(accounts[2], { from: accounts[5] });
-
-        assert.equal(
-            check3,
-            true,
-            "Failed to view status"
-        );
-
-        assert.equal(
-            check4,
-            true,
-            "Failed to view status"
-        );
-    });
-
-    it('Subject can deny access', async() => {
-        let deny1 = await CertStoreInstance.denyVerifier(accounts[4], { from: accounts[2] });
-        let deny2 = await CertStoreInstance.denyVerifier(accounts[5], { from: accounts[2] });
-
-        truffleAssert.eventEmitted(deny1, 'VerifierDenied');
-        truffleAssert.eventEmitted(deny2, 'VerifierDenied');
-    });
-
-    it('Subject can view the list of denied verifiers', async() => {
-        let l5 = await CertStoreInstance.getDenyList({ from: accounts[2] });
-        var l6 = [accounts[4], accounts[5]];
-
-        assert.deepEqual(
-            l5,
-            l6,
-            "Failed to view list"
-        );
-    });
-
-    it('Verifier can view the list of subjects denied by', async() => {
-        let l7 = await CertStoreInstance.getDenyList({ from: accounts[4] });
-        var l8 = [accounts[2]];
-
-        assert.deepEqual(
-            l7,
-            l8,
-            "Failed to view list"
-        );
-    });
-
-    it('Verifier can view list of subjects granted by', async() => {
-        let grant3 = await CertStoreInstance.grantVerifier(accounts[4], { from: accounts[2] });
-        let grant4 = await CertStoreInstance.grantVerifier(accounts[5], { from: accounts[2] });
-        truffleAssert.eventEmitted(grant3, 'VerifierGranted');
-        truffleAssert.eventEmitted(grant4, 'VerifierGranted');
-
-        let l3 = await CertStoreInstance.getGrantList({ from: accounts[4] });
-        var l4 = [accounts[2], accounts[3]];
-
-        assert.deepEqual(
-            l3,
-            l4,
-            "Failed to view list"
-        );
-    });
-
-    it('Subject can view list of verifiers granted', async() => {
-        let l1 = await CertStoreInstance.getGrantList({ from: accounts[2] });
-        var l2 = [accounts[4], accounts[5]];
-
-        assert.deepEqual(
-            l1,
-            l2,
-            "Failed to view list"
-        );
-    });
-
-    it('The DenyList updates after granting again', async() => {
-        let l5 = await CertStoreInstance.getDenyList({ from: accounts[2] });
-
-        assert.deepEqual(
-            l5, [],
-            "Failed to update."
-        );
-    });
-
-
-    it('Verifier cannot grant himself', async() => {
-        await truffleAssert.reverts(
-            CertStoreInstance.grantVerifier(accounts[4], { from: accounts[4] }),
-            "This action can only be performed by authorized roles."
-        );
-    });
-
-    it('Verifier cannot deny subjects', async() => {
-        await truffleAssert.reverts(
-            CertStoreInstance.denyVerifier(accounts[2], { from: accounts[4] }),
-            "This action can only be performed by authorized roles."
-        );
-    });
-
     it('Double grant verifier', async() => {
         await truffleAssert.reverts(
             CertStoreInstance.grantVerifier(accounts[4], { from: accounts[2] }),
@@ -414,28 +331,182 @@ contract('CertificateStore', function(accounts) {
         );
     });
 
-    it('Subject cannot deny a subject', async() => {
+    it('Only subjects and verifiers can check request', async() => {
+        // I>S
         await truffleAssert.reverts(
-            CertStoreInstance.denyVerifier(accounts[3], { from: accounts[2] }),
-            "The action can only be performed on valid users."
+            CertStoreInstance.checkGrantStatus(accounts[4], { from: accounts[6] }),
+            "This action can only be performed by authorized roles."
+        );
+
+        // I>S
+        await truffleAssert.reverts(
+            CertStoreInstance.checkGrantStatus(accounts[2], { from: accounts[6] }),
+            "This action can only be performed by authorized roles."
+        );
+
+        // U>S/V
+        await truffleAssert.reverts(
+            CertStoreInstance.checkGrantStatus(accounts[2], { from: accounts[8] }),
+            "User not registered in system."
         );
     });
 
-    it('Subject cannot deny a verifier with no access', async() => {
-        let deny2 = await CertStoreInstance.denyVerifier(accounts[5], { from: accounts[2] });
-        truffleAssert.eventEmitted(deny2, 'VerifierDenied');
+    it('Subjects can check the status of the verifier', async() => {
+        let check1 = await CertStoreInstance.checkGrantStatus(accounts[4], { from: accounts[2] });
+        let check2 = await CertStoreInstance.checkGrantStatus(accounts[5], { from: accounts[2] });
+        let check3 = await CertStoreInstance.checkGrantStatus(accounts[4], { from: accounts[3] });
 
+        assert.equal(
+            check1,
+            true,
+            "Failed to view status"
+        );
+        assert.equal(
+            check2,
+            true,
+            "Failed to view status"
+        );
+        assert.equal(
+            check3,
+            true,
+            "Failed to view status"
+        );
+    });
+
+    it('Verifier can check the status of the subject', async() => {
+        let check4 = await CertStoreInstance.checkGrantStatus(accounts[2], { from: accounts[4] });
+        let check5 = await CertStoreInstance.checkGrantStatus(accounts[3], { from: accounts[4] });
+        let check6 = await CertStoreInstance.checkGrantStatus(accounts[2], { from: accounts[5] });
+
+        assert.equal(
+            check4,
+            true,
+            "Failed to view status"
+        );
+
+        assert.equal(
+            check5,
+            true,
+            "Failed to view status"
+        );
+
+        assert.equal(
+            check6,
+            true,
+            "Failed to view status"
+        );
+    });
+
+    it('Only subjects can deny access from verifiers', async() => {
+        // V>V
         await truffleAssert.reverts(
-            CertStoreInstance.denyVerifier(accounts[5], { from: accounts[2] }),
+            CertStoreInstance.denyVerifier(accounts[4], { from: accounts[4] }),
+            "This action can only be performed by authorized roles."
+        );
+
+        // I>V
+        await truffleAssert.reverts(
+            CertStoreInstance.denyVerifier(accounts[4], { from: accounts[6] }),
+            "This action can only be performed by authorized roles."
+        );
+
+        // U>V
+        await truffleAssert.reverts(
+            CertStoreInstance.denyVerifier(accounts[4], { from: accounts[8] }),
+            "User not registered in system."
+        );
+    });
+
+    it('Subjects can deny access', async() => {
+        let deny1 = await CertStoreInstance.denyVerifier(accounts[4], { from: accounts[2] });
+        let deny2 = await CertStoreInstance.denyVerifier(accounts[4], { from: accounts[3] });
+
+        truffleAssert.eventEmitted(deny1, 'VerifierDenied');
+        truffleAssert.eventEmitted(deny2, 'VerifierDenied');
+    });
+
+    it('Double deny access', async() => {
+        await truffleAssert.reverts(
+            CertStoreInstance.denyVerifier(accounts[4], { from: accounts[2] }),
             "Verifier already has no access."
         );
     });
 
-    it('Subject cannot grant random address', async() => {
-        await truffleAssert.reverts(
-            CertStoreInstance.denyVerifier(accounts[6], { from: accounts[2] }),
-            "The action can only be performed on valid users."
+    it('Subjects can view the list of denied verifiers', async() => {
+        let list1 = await CertStoreInstance.getDenyList({ from: accounts[2] });
+        let list2 = await CertStoreInstance.getDenyList({ from: accounts[3] });
+
+        assert.deepEqual(
+            list1, [accounts[4]],
+            "Failed to view list"
+        );
+        assert.deepEqual(
+            list2, [accounts[4]],
+            "Failed to view list"
         );
     });
 
+    it('Verifier can view the list of denied access by subjects ', async() => {
+        let list3 = await CertStoreInstance.getDenyList({ from: accounts[4] });
+        let list4 = await CertStoreInstance.getDenyList({ from: accounts[5] });
+
+        assert.deepEqual(
+            list3, [accounts[2], accounts[3]],
+            "Failed to view list"
+        );
+        assert.deepEqual(
+            list4, [],
+            "Failed to view list"
+        );
+    });
+
+    it('Verifier can be given grant again by subject', async() => {
+        let grant3 = await CertStoreInstance.grantVerifier(accounts[4], { from: accounts[2] });
+        truffleAssert.eventEmitted(grant3, 'VerifierGranted');
+
+        let list5 = await CertStoreInstance.getGrantList({ from: accounts[2] });
+        let list6 = await CertStoreInstance.getGrantList({ from: accounts[4] });
+
+        assert.deepEqual(
+            list5, [accounts[4], accounts[5]], // acc5 prev added, acc4 newly added
+            "Failed to view list"
+        );
+        assert.deepEqual(
+            list6, [accounts[2]],
+            "Failed to view list"
+        );
+    });
+
+    it('The DenyList updates after granting again', async() => {
+        let list7 = await CertStoreInstance.getDenyList({ from: accounts[2] });
+
+        assert.deepEqual(
+            list7, [],
+            "Failed to update."
+        );
+    });
+
+    it('Check grant history record all unique grants made.', async() => {
+        let arr16 = await CertStoreInstance.getGrantHist({ from: accounts[2] });
+        let arr17 = await CertStoreInstance.getGrantHist({ from: accounts[3] });
+        let arr18 = await CertStoreInstance.getGrantHist({ from: accounts[4] });
+        let arr19 = await CertStoreInstance.getGrantHist({ from: accounts[5] });
+
+        assert.deepEqual(
+            arr16, [accounts[4], accounts[5]],
+            "Invalid history records"
+        );
+        assert.deepEqual(
+            arr17, [accounts[4]],
+            "Invalid history records"
+        );
+        assert.deepEqual(
+            arr18, [accounts[2], accounts[3]],
+            "Invalid history records"
+        );
+        assert.deepEqual(
+            arr19, [accounts[2]],
+            "Invalid history records"
+        );
+    });
 });

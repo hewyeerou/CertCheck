@@ -357,4 +357,14 @@ contract CertificateStore {
         }
         return newList;
     }
+
+    // Get all unique grant history regardless of approve/deny
+    function getGrantHist()
+        public
+        view
+        onlyVerifierSubject
+        returns (address[] memory)
+    {
+        return grantHistMap[msg.sender];
+    }
 }
