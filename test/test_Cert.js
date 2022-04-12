@@ -53,9 +53,11 @@ contract('Certificate', function(accounts) {
 
     it('issue: no auth', async() => {
         await CertStoreInstance.requestCert(accounts[6], {from: accounts[2]});
-        await CertificateStore.rejectRequest(accounts[2], {from: accounts[6]});
-        await truffleAssert.reverts( CertInstance.issueCertificate(accounts[2], "name", "nric", "no", "title", "date", {from: accounts[6]}),
-        "Subject is not authorized.")
+        await CertStoreInstance.rejectRequest(accounts[2], {from: accounts[6]});
+        await truffleAssert.reverts( CertInstance.issueCertificate(
+            accounts[2],
+            "name", "nric", "no", "title", "date",
+            {from: accounts[6]}),)
     });
 
 
@@ -74,32 +76,49 @@ contract('Certificate', function(accounts) {
     })
 
     it('get Cert using ID', async() => {
-        var certs = await CertInstance.getCertListById({from: accounts[3]});
-        assert.deepEqual(
-            certs,
-            [1]
-        );
+        let certs = await CertInstance.getCertListById({from: accounts[3]});
+        assert.equal(
+            certs.length,
+            1
+        )
+    });
+
+    it('unapproved verifier gets cert', async ()=> {
+        await truffleAssert.reverts(
+        CertInstance.getCertListVerifiers(accounts[3], {from: accounts[4]}),
+        )
+    });
+
+    it('approved verifier gets cert', async() => {
+        await CertStoreInstance.grantVerifier(accounts[4], {from: accounts[3]});
+        let list = await CertInstance.getCertListVerifiers(accounts[3], {from: accounts[4]});
+        assert.equal(
+            list.length,
+            1
+        )
     });
 
     it('revoke Cert from another issuer', async() => {
         await truffleAssert.reverts(
             CertInstance.revokeCert(1, {from: accounts[7]})
-            
         )
     });
 
     it('revoke Cert', async() => {
-        await truffleAssert.eventEmitted(
-            CertInstance.revokeCert(1, {from: accounts[6]}),
+        let result = await CertInstance.revokeCert(1, {from: accounts[6]});
+        truffleAssert.eventEmitted(
+            result,
             'RevokeCertificate'
         )
     });
 
     it('get certs revoked list', async() => {
-        var list = await CertInstance.getCertrsRevokedList({from: accounts[3]});
+        let list = await CertInstance.getCertsRevokedList({from: accounts[3]});
         assert.deepEqual(
-            list,
-            [1]
+            list.length,
+            1
         )
-    })
+    });
+
+    
 })
