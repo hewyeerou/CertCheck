@@ -103,7 +103,7 @@ const CertificateRequest = ({ certStoreContract, certContract, user,accounts }) 
               allRequest.push(user);
         })
     }
-    allRequest = allRequest.map((v) => ({...v, status: 'Issued'}));
+    allRequest = allRequest.map((v) => ({...v, status: 'Requested'}));
 
 
     const deniedIssuers = await certStoreContract.methods.getRejectedReqList().call({ from: accounts[0] });
