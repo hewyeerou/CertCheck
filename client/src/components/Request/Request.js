@@ -32,6 +32,10 @@ const CertificateRequest = ({ certStoreContract, certContract, user,accounts }) 
     getRequestList();
   },[])
 
+  useEffect(() => {
+    getRequestList();
+  }, [isModalVisible]);
+
   const onFinish = async (values) => {
     const selectedIssuerAddress = values.institution;
 
