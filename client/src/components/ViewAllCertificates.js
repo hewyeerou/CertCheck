@@ -92,7 +92,7 @@ const ViewAllCertificates = ({ certStoreContract, certContract, user,accounts })
                       <Typography>{cert.nric}</Typography>
                     </Space>
                     <Space direction="horizontal" style={{height: 50,width: '100%', justifyContent: 'center'}}>
-                      <Typography>Roll Number: {cert.serialNo}</Typography>
+                      <Typography>Serial Number: {cert.serialNo}</Typography>
                     </Space>
                   </div>
               </Modal>

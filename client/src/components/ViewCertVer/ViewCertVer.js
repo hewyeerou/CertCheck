@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { getUserByAddress } from "../../models/User";
-import { Card, Button, Row, Col, Typography, Modal, Table } from "antd";
+import { Card, Button, Row, Col, Typography, Modal, Table, Space } from "antd";
 import { EyeOutlined } from "@ant-design/icons";
 
 function ViewCertVer({ user, certStoreContract, certContract, accounts }) {
@@ -139,52 +139,38 @@ function ViewCertVer({ user, certStoreContract, certContract, accounts }) {
                 >
                   {content && (
                     <div>
-                      <Row
-                        style={{
-                          height: 150,
-                          textAlign: "center",
-                        }}
-                        align="middle"
-                      >
+                      <Space direction="horizontal" style={{height: 100,width: '100%', justifyContent: 'center'}}>
                         <Typography.Title>
                           {content.issuerName}
                         </Typography.Title>
-                      </Row>
-                      <Row
-                        style={{
-                          height: 50,
-                          textAlign: "center",
-                        }}
-                        align="middle"
-                      >
+                      </Space>
+                      <Space direction="horizontal" style={{height: 50,width: '100%', justifyContent: 'center'}}>
                         <Typography>This is to confirm that</Typography>
-                      </Row>
-                      <Row style={{ height: 50, textAlign: "center" }}>
-                        <Typography.Title level={3}>
-                          {content.name}
-                        </Typography.Title>
-                      </Row>
-                      <Row style={{ height: 50, textAlign: "center" }}>
-                        <Typography>
-                          has successfully completed the program:
-                        </Typography>
-                      </Row>
-                      <Row style={{ height: 50, textAlign: "center" }}>
-                        <Typography.Title level={3}>
-                          {content.title}
-                        </Typography.Title>
-                      </Row>
-                      <Row style={{ height: 50, textAlign: "center" }}>
-                        <Typography>{content.completionDate}</Typography>
-                      </Row>
-                      <Row style={{ height: 50, textAlign: "center" }}>
-                        <Typography>{content.nric}</Typography>
-                      </Row>
-                      <Row style={{ height: 50, textAlign: "center" }}>
-                        <Typography>
-                          Serial Number: {content.serialNo}
-                        </Typography>
-                      </Row>
+                      </Space>           
+                    <Space direction="horizontal" style={{height: 50,width: '100%', justifyContent: 'center'}}>
+                      <Typography.Title level={3}>
+                        {content.name}
+                      </Typography.Title>
+                    </Space>
+                    <Space direction="horizontal" style={{height: 50,width: '100%', justifyContent: 'center'}}>
+                      <Typography>
+                        has successfully completed the program:
+                      </Typography>
+                    </Space>
+                    <Space direction="horizontal" style={{height: 50,width: '100%', justifyContent: 'center'}}>
+                      <Typography.Title level={3}>
+                        {content.title}
+                      </Typography.Title>
+                    </Space>
+                    <Space direction="horizontal" style={{height: 50,width: '100%', justifyContent: 'center'}}>
+                      <Typography>{content.completionDate}</Typography>
+                    </Space>
+                    <Space direction="horizontal" style={{height: 50,width: '100%', justifyContent: 'center'}}>
+                      <Typography>{content.nric}</Typography>
+                    </Space>
+                    <Space direction="horizontal" style={{height: 50,width: '100%', justifyContent: 'center'}}>
+                      <Typography>Serial Number: {content.serialNo}</Typography>
+                    </Space>
                     </div>
                   )}
                 </Modal>
