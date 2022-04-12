@@ -34,6 +34,7 @@
 12. Verifier views the certificate if he/she is granted viewing rights by Subject.
 13. After some times, subject revokes the viewing rights of the verifier. 
 14. Verifier will not be able to view the certificate of the subject.
+=======
 
 ---
 
@@ -171,3 +172,17 @@ Student>Verifier, Deny access
   - [ ] TEST: using another random addr(acc3) to deny > FALSE, only authorised roles
   - [ ] TEST: using another subject addr(acc3) to deny > TRUE, no viewing access for the subject certificates
 - check if verifier(acc4) have access getCertListVerifiers(acc4) > no viewing access for the subject certificates
+=======
+## Process of interacting with CertCheck
+1. Connect to Subject Account in Metamask.
+2. User will be required to fill up a register form if he/she does not have an account with CertCheck.
+3. Repeat step 1 & 2 for Issuer and Verifier
+4. Upon registering an account, subject submits a certificate request to issuer (institution).
+5. Connect to Issuer Account.
+6. Issuer views certificate requests
+7. Issuer rejects the request or issues certificates to the subject who submits the request. 
+8. Subject views the certificate requested.
+9. Subject invites a verifier to view the certificate.
+10. Verifier views the certificate if he/she is granted viewing rights.
+11. After some times, subject revokes the viewing rights of the verifier. 
+12. Verifier will not be able to view the certificate of the subject.
