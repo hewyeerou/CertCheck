@@ -1,70 +1,34 @@
 import React, { useState, useEffect } from "react";
-import { Card, Button, Row, Col, Typography, Modal, Layout } from "antd";
+import { Card, Button, Row, Col, Typography, Modal, Layout, Space } from "antd";
 import { EyeOutlined } from "@ant-design/icons";
 
-const ViewAllCertificates = ({ certStoreContract, certContract, user }) => {
+const ViewAllCertificates = ({ certStoreContract, certContract, user,accounts }) => {
+
   const [isModalVisible, setIsModalVisible] = useState(false);
-  const [content, setContent] = useState();
+  const [certificates, setCertificates] = useState([]);
+  const [certificate, setCertificate] = useState({issueName:'',title:'', completionDate:'',nric:'',serialNo:''
+});
 
   useEffect(() => {
-    console.log(certStoreContract);
-    createReq();
+    getCertificate();
   }, []);
 
-  const createReq = async () => {
-    const req = await certStoreContract.methods
-      .requestCert("0x1abF1D237654051661b5b79463CfA4885CAb6834")
-      .send({ from: user.walletAddress });
+  const getCertificate = async () => {
+    const cert = await certContract.methods.getCerts().call({ from: accounts[0] });
+      setCertificates(cert);
+      console.log(cert);
   };
 
-  const certificates = [
-    {
-      name: "Puah Jia Qi",
-      nric: "G1788294R",
-      matricNo: "A0185811A",
-      title: "Bachelor’s Degree in Information Systems",
-      rollNumber: "123ggtsds8hd",
-      completionDate: "20/6/2022",
-      issuerName: "National University of Singapore",
-    },
-    {
-      name: "Puah Jia Qi",
-      nric: "G1788294R",
-      matricNo: "A0185811A",
-      title: "Bachelor’s Degree in Information Systems",
-      rollNumber: "123ggtsds8hd",
-      completionDate: "20/6/2022",
-      issuerName: "National University of Singapore",
-    },
-    {
-      name: "Puah Jia Qi",
-      nric: "G1788294R",
-      matricNo: "A0185811A",
-      title: "Diploma in Computer Engineering",
-      rollNumber: "12dhdwedied8j32",
-      completionDate: "20/6/2017",
-      issuerName: "Singapore Polytechnic",
-    },
-    {
-      name: "Puah Jia Qi",
-      nric: "G1788294R",
-      matricNo: "A0185811A",
-      title: "Master of Business Administration",
-      rollNumber: "cndjk123kbhjqw",
-      completionDate: "20/6/2026",
-      issuerName: "Nanyang Technological Unversity",
-    },
-  ];
 
-  const showModal = (certificate) => {
-    console.log(certificate);
+  const showModal = (cert) => {
     setIsModalVisible(true);
-    setContent(certificate);
+    setCertificate(cert);
   };
 
   const handleCancel = () => {
     setIsModalVisible(false);
-    setContent();
+    setCertificate({issueName:'',title:'',completionDate:'',nric:'',serialNo:''
+  });
   };
 
   return (
@@ -74,22 +38,22 @@ const ViewAllCertificates = ({ certStoreContract, certContract, user }) => {
       </Typography.Title>
 
       <Row type="flex" justify="space-around" align="middle">
-        {certificates.map((certificate) => (
+        {certificates.map((cert) => (
           <Col style={{ paddingTop: "10px" }}>
             <Card
               style={{ width: "350px" }}
               actions={[
                 <Button
-                  onClick={() => showModal(certificate)}
+                  onClick={() => showModal(cert)}
                   icon={<EyeOutlined />}
                 >
                   View Certificate
                 </Button>,
               ]}
             >
-              <Typography>{certificate.title}</Typography>
-              <Typography>Issuer : {certificate.issuerName}</Typography>
-              <Typography>Roll number : {certificate.rollNumber}</Typography>
+              <Typography>{cert.title}</Typography>
+              <Typography>Issuer : {cert.issuerName}</Typography>
+              <Typography>Roll number : {cert.serialNo}</Typography>
               <Modal
                 centered={true}
                 visible={isModalVisible}
@@ -97,52 +61,40 @@ const ViewAllCertificates = ({ certStoreContract, certContract, user }) => {
                 onCancel={handleCancel}
                 bodyStyle={{ height: 550 }}
               >
-                {content && (
                   <div>
-                    <Row
-                      style={{
-                        height: 150,
-                        textAlign: "center",
-                      }}
-                      align="middle"
-                    >
-                      <Typography.Title>{content.issuerName}</Typography.Title>
-                    </Row>
-                    <Row
-                      style={{
-                        height: 50,
-                        textAlign: "center",
-                      }}
-                      align="middle"
-                    >
-                      <Typography>This is to confirm that</Typography>
-                    </Row>
-                    <Row style={{ height: 50, textAlign: "center" }}>
+                      <Space direction="horizontal" style={{height: 100,width: '100%', justifyContent: 'center'}}>
+                        <Typography.Title>
+                          {certificate.issuerName}
+                        </Typography.Title>
+                      </Space>
+                      <Space direction="horizontal" style={{height: 50,width: '100%', justifyContent: 'center'}}>
+                        <Typography>This is to confirm that</Typography>
+                      </Space>           
+                    <Space direction="horizontal" style={{height: 50,width: '100%', justifyContent: 'center'}}>
                       <Typography.Title level={3}>
-                        {content.name}
+                        {user.name}
                       </Typography.Title>
-                    </Row>
-                    <Row style={{ height: 50, textAlign: "center" }}>
+                    </Space>
+                    <Space direction="horizontal" style={{height: 50,width: '100%', justifyContent: 'center'}}>
                       <Typography>
                         has successfully completed the program:
                       </Typography>
-                    </Row>
-                    <Row style={{ height: 50, textAlign: "center" }}>
+                    </Space>
+                    <Space direction="horizontal" style={{height: 50,width: '100%', justifyContent: 'center'}}>
                       <Typography.Title level={3}>
-                        {content.title}
+                        {certificate.title}
                       </Typography.Title>
-                    </Row>
-                    <Row style={{ height: 50, textAlign: "center" }}>
-                      <Typography>{content.completionDate}</Typography>
-                    </Row>
-                    <Row style={{ height: 50, textAlign: "center" }}>
-                      <Typography>{content.matricNo}</Typography>
-                    </Row>
-                    <Row style={{ height: 50, textAlign: "center" }}>
-                      <Typography>Roll Number: {content.rollNumber}</Typography>
-                    </Row>
+                    </Space>
+                    <Space direction="horizontal" style={{height: 50,width: '100%', justifyContent: 'center'}}>
+                      <Typography>{cert.completionDate}</Typography>
+                    </Space>
+                    <Space direction="horizontal" style={{height: 50,width: '100%', justifyContent: 'center'}}>
+                      <Typography>{cert.nric}</Typography>
+                    </Space>
+                    <Space direction="horizontal" style={{height: 50,width: '100%', justifyContent: 'center'}}>
+                      <Typography>Roll Number: {cert.serialNo}</Typography>
+                    </Space>
                   </div>
-                )}
               </Modal>
             </Card>
           </Col>

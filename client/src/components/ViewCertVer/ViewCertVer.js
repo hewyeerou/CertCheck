@@ -4,6 +4,10 @@ import { Card, Button, Row, Col, Typography, Modal, Table } from "antd";
 import { EyeOutlined } from "@ant-design/icons";
 
 function ViewCertVer({ user, certStoreContract, certContract, accounts }) {
+  console.log(certStoreContract);
+  console.log(certContract);
+  console.log(user);
+  console.log(accounts)
   const [isViewCertModalVisible, setIsViewCertModalVisible] = useState(false);
   const [certificateViewingRight, setCertificateViewingRight] = useState();
   const [isModalVisible, setIsModalVisible] = useState(false);
