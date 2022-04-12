@@ -18,22 +18,22 @@
 9. `cd client` and run `npm start` to run the front-end application
 10. Open http://localhost:3000.
 
-
-## Process of interacting with CertCheck
+---
+## Process of interacting with Front-End Application
 1. Connect to Subject Account in Metamask.
 2. User will be required to fill up a register form if he/she does not have an account with CertCheck.
-3. Repeat step 1 & 2 for Issuer and Verifier
+3. Repeat step 1 & 2 for Issuer and Verifier.
 4. Upon registering an account, subject submits a certificate request to issuer (institution).
 5. Connect to Issuer Account.
-6. Issuer views certificate requests
+6. Issuer views certificate requests.
 7. Issuer rejects the request or issues certificates to the subject who submits the request. 
-8. Subject views the certificate requested.
-9. Subject invites a verifier to view the certificate.
-10. Verifier views the certificate if he/she is granted viewing rights.
-11. After some times, subject revokes the viewing rights of the verifier. 
-12. Verifier will not be able to view the certificate of the subject.
-
-
+8. Connect to Subject Account.
+9. Subject views the certificates issued.
+10. Subject invites a verifier to view the certificate.
+11. Connect to Verifier Account.
+12. Verifier views the certificate if he/she is granted viewing rights by Subject.
+13. After some times, subject revokes the viewing rights of the verifier. 
+14. Verifier will not be able to view the certificate of the subject.
 
 ---
 
