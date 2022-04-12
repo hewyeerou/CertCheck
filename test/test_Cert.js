@@ -86,7 +86,7 @@ contract('Certificate', function(accounts) {
     it('unapproved verifier gets cert', async ()=> {
         await truffleAssert.reverts(
         CertInstance.getCertListVerifiers(accounts[3], {from: accounts[4]}),
-        )
+        "You have no viewing access for the subject certificates.")
     });
 
     it('approved verifier gets cert', async() => {
@@ -104,6 +104,12 @@ contract('Certificate', function(accounts) {
         )
     });
 
+    it('revoke invalid Cert', async() => {
+        await truffleAssert.reverts(
+            CertInstance.revokeCert(100, {from: accounts[7]})
+        )
+    });
+
     it('revoke Cert', async() => {
         let result = await CertInstance.revokeCert(1, {from: accounts[6]});
         truffleAssert.eventEmitted(
@@ -112,7 +118,15 @@ contract('Certificate', function(accounts) {
         )
     });
 
-    it('get certs revoked list', async() => {
+    it('get certs revoked list: no revoked certs', async() => {
+        let list = await CertInstance.getCertsRevokedList({from: accounts[2]});
+        assert.deepEqual(
+            list.length,
+            0
+        )
+    });
+
+    it('get certs revoked list: with revoked certs', async() => {
         let list = await CertInstance.getCertsRevokedList({from: accounts[3]});
         assert.deepEqual(
             list.length,
