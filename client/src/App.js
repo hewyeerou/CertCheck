@@ -111,11 +111,11 @@ function App() {
         />
         <Route
           path="/student/viewCert"
-          element={<Page pageType={"/student/viewCert"} certStoreContract={certStoreContract} certContract={certContract} />}
+          element={<Page pageType={"/student/viewCert"} certStoreContract={certStoreContract} certContract={certContract}  accounts={accounts}/>}
         />
         <Route
           path="/student/viewReq"
-          element={<Page pageType={"/student/viewReq"} certStoreContract={certStoreContract} certContract={certContract} />}
+          element={<Page pageType={"/student/viewReq"} certStoreContract={certStoreContract} certContract={certContract}  accounts={accounts}/>}
         />
         <Route
           path="/student/viewVer"
