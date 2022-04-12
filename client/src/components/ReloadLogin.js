@@ -6,9 +6,9 @@ function ReloadLogin() {
     <div style={{textAlign:'center'}}>
         <span>Changing to other Metamask account?</span>
         <br/>
-        <Link to="/">
+        <a href="/">
             <span>Please click here to login</span>
-        </Link>
+        </a>
     </div>
   )
 }

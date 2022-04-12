@@ -13,7 +13,7 @@ const ViewAllCertificates = ({ certStoreContract, certContract, user }) => {
 
   const createReq = async () => {
     const req = await certStoreContract.methods
-      .requestCert("0x1e93C2aD7ACEDF3d597b3453f26b718760404786")
+      .requestCert("0xf7cC8924e4B1DdD186182AE232B6308B89797EDf")
       .send({ from: user.walletAddress });
   };
 
