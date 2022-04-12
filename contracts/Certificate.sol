@@ -38,7 +38,7 @@ contract Certificate {
         string issuerName; // (NUS,NTU,Coursera,LinkedIn)
         uint256 creationDate; // cert creation date
         string nric; // s9673333A
-        string serialNo; //https://www.ibm.com/docs/en/ibm-mq/7.5?topic=certificates-what-is-in-digital-certificate
+        string serialNo; // Issuer unique cert serial no.
         string title; // cert title
         string completionDate; // date which subject completed the cert requirements
     }
@@ -71,7 +71,7 @@ contract Certificate {
         );
         _;
     }
-    // Modifiers
+
     modifier onlyValidRoles(string memory role) {
         require(
             certNetwork.checkUserExist(msg.sender, role),
@@ -79,22 +79,18 @@ contract Certificate {
         );
         _;
     }
-    // Used to check if a user exist, i.e. issue cert to subject, check if that subject exist in our system.
+
     modifier userExist(address addr, string memory role) {
         require(
             certNetwork.checkUserExist(addr, role),
-            "This action can only be performed by user in our network."
+            "The action can only be performed on valid users."
         );
         _;
     }
     modifier onlyIssuerSubject() {
         require(
-            keccak256(abi.encodePacked(certNetwork.getUserRole(msg.sender))) ==
-                keccak256(abi.encodePacked("Subject")) ||
-                keccak256(
-                    abi.encodePacked(certNetwork.getUserRole(msg.sender))
-                ) ==
-                keccak256(abi.encodePacked("Issuer")),
+            certNetwork.checkUserExist(msg.sender, "Subject") ||
+                certNetwork.checkUserExist(msg.sender, "Issuer"),
             "This action can only be performed by authorized roles."
         );
         _;
@@ -148,13 +144,6 @@ contract Certificate {
         certHistMap[msg.sender].push(newCertId);
         addrToCertMap[msg.sender][newCertId] = true;
 
-        // REMOVED: similar data structure thus use one mapping overall.
-        // certExistMap[newCertId] = true; // for cert exist modifier
-        // addrToCertMap[subjectAddr].push(newCertId); // add to subject list of certs
-        // addrToCertMap[subjectAddr][newCertId] = true;
-        // addrToCertMap[msg.sender].push(newCertId); // add to issuer list of certs
-        // addrToCertMap[msg.sender][newCertId] = true;
-
         emit IssuedCertificate(newCertId, msg.sender, subjectAddr); // Log event
 
         return newCertId;
@@ -170,15 +159,9 @@ contract Certificate {
         validCertId(certId)
     {
         address subjectAddr = certsMap[certId].owner; // get owner of cert
-        //delete certsMap[certId];
-        certExistMap[certId] = false;
+        certExistMap[certId] = false; // record cert revoke
         addrToCertMap[subjectAddr][certId] = false; // remove cert for subject
         addrToCertMap[msg.sender][certId] = false; // remove cert for issuer
-
-        // REMOVED:
-        // certExistMap[certId] = false; // for cert exist modifier
-        // addrToCertMap[subjectAddr][certId] = false; // remove mapping
-        // addrToCertMap[msg.sender][certId] = false; // remove mapping
         emit RevokeCertificate(msg.sender, certId);
     }
 
@@ -194,7 +177,6 @@ contract Certificate {
         for (uint256 i = 0; i < certList.length; i++) {
             if (addrToCertMap[msg.sender][certList[i]]) {
                 tempList[y] = certList[i]; // Get all viewable certs
-                // tempList[y] = certsMap[certList[i]];// Push entire cert struct
                 y++;
             }
         }
@@ -211,7 +193,6 @@ contract Certificate {
         uint256 y = 0;
         for (uint256 i = 0; i < certList.length; i++) {
             if (addrToCertMap[msg.sender][certList[i]]) {
-                // tempList[i] = certList[i]; // Get all viewable certs
                 tempList[y] = certsMap[certList[i]];
                 y++;
             }
@@ -234,7 +215,6 @@ contract Certificate {
         uint256 y = 0;
         for (uint256 i = 0; i < certList.length; i++) {
             if (!addrToCertMap[msg.sender][certList[i]]) {
-                //tempList[y] = certList[i]; // Get all viewable certs
                 tempList[y] = certsMap[certList[i]]; // Push entire cert struct
                 y++;
             }

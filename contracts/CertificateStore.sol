@@ -26,19 +26,6 @@ contract CertificateStore {
     // Check if S has granted V before (S>V)
     mapping(address => mapping(address => bool)) private grantExistMap;
 
-    // REMOVED mappings:
-    // Replaced with certHistMap
-    // mapping(address => uint256[]) private subjectToCertListMap; // map subject to issued certs(by certId) by issuers
-    // mapping(address => uint256[]) private issuerToCertListMap; // map issuer to issued certs(by certId)
-
-    // Replaced with addrToCertMap
-    // mapping(address => mapping(uint256 => bool)) private subjectToCertMap;
-    // mapping(address => mapping(uint256 => bool)) private issuerToCertMap;
-    // mapping(address => mapping(address => bool)) private requestMap;
-
-    // Replaced with grantMap
-    // mapping(address => mapping(address => bool)) private subjectToVerifierMap; // S>(V>bool), map subject to all approved verifiers to view all certs
-
     // Events
     event IssuedCertificate(
         uint256 certId,
@@ -49,18 +36,13 @@ contract CertificateStore {
     event RequestCertificate(address subjectAddr, address issuerAddr);
     event AcceptSubjectRequest(address issuerAddr, address subjectAddr);
     event RejectSubjectRequest(address issuerAddr, address subjectAddr);
-
     event VerifierGranted(address subjectAddr, address verifierAddr);
     event VerifierDenied(address subjectAddr, address verifierAddr);
-
-    //event ViewVerifierStatus(address subjectAddr, bool status);
-    //event ViewSubjectStatus(address verifierAddr, bool status);
 
     constructor(CertificateNetwork cn) public {
         certNetwork = cn;
     }
 
-    // Modifiers
     modifier onlyValidRoles(string memory role) {
         require(
             certNetwork.checkUserExist(msg.sender, role),
@@ -69,7 +51,6 @@ contract CertificateStore {
         _;
     }
 
-    // Used to check if a user exist, i.e. issue cert to subject, check if that subject exist in our system.
     modifier userExist(address addr, string memory role) {
         require(
             certNetwork.checkUserExist(addr, role),
@@ -160,7 +141,6 @@ contract CertificateStore {
                 requestMap[msg.sender][reqHist[i]] &&
                 requestMap[reqHist[i]][msg.sender]
             ) {
-                // Get all valid request
                 tempList[y] = reqHist[i];
                 y++;
             }
@@ -187,7 +167,6 @@ contract CertificateStore {
                 !requestMap[msg.sender][reqHist[i]] &&
                 !requestMap[reqHist[i]][msg.sender]
             ) {
-                // Get all valid request
                 tempList[y] = reqHist[i];
                 y++;
             }
@@ -377,5 +356,15 @@ contract CertificateStore {
             newList[i] = tempList[i];
         }
         return newList;
+    }
+
+    // Get all unique grant history regardless of approve/deny
+    function getGrantHist()
+        public
+        view
+        onlyVerifierSubject
+        returns (address[] memory)
+    {
+        return grantHistMap[msg.sender];
     }
 }

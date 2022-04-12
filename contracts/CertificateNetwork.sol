@@ -1,12 +1,8 @@
 pragma solidity >=0.5.0;
 
-// Ref: https://github.com/TruSet/bitmask-rbac
-
 contract CertificateNetwork {
     struct user {
         string role;
-        // can add more variables
-        // name
     }
 
     mapping(address => user) private userMap;
@@ -14,7 +10,6 @@ contract CertificateNetwork {
     mapping(string => uint256) userCountsByRole;
 
     event Register(address newAddress, string role);
-    event RoleRemoved(address addr, string role);
 
     constructor() public {}
 
@@ -66,7 +61,7 @@ contract CertificateNetwork {
         ) {
             return true;
         } else {
-            return false;//registered address, wrong role
+            return false; // registered address, wrong role
         }
     }
 
