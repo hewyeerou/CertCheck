@@ -1,0 +1,33 @@
+body {
+    background-color:aliceblue;
+}
+
+.ccLogo {
+    width: 12rem;
+    height: 10rem;
+}
+
+.loginForm {
+    background-color: white;
+    margin: auto; 
+    border: 1px solid lightgray;
+    border-radius: 5%;
+    padding: 1rem 4rem;
+    width: 30%;
+    margin-top: 15rem;
+    text-align: center;
+}
+
+.site-form-item-icon {
+    color: lightgrey;
+}
+
+.role {
+    text-align: left;
+    color: lightgray;
+}
+
+.submitBtn {
+    width: 100%;
+    background-color: #475186;
+}
