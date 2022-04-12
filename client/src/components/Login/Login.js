@@ -1,67 +1,71 @@
-import React, { Fragment } from "react";
+import React, { Fragment, useState, useEffect } from "react";
 import "antd/dist/antd.css";
 import "./Login.css";
-import { Form, Input, Button, Select } from "antd";
+import { Form, Input, Button, Select, Alert } from "antd";
+import SimpleStorageContract from "../../contracts/SimpleStorage.json";
 import {
   UserOutlined,
   LockOutlined,
   UserSwitchOutlined,
 } from "@ant-design/icons";
+import { useNavigate } from "react-router-dom";
+import { checkAddressExist } from "../../models/User";
+import { Spin } from 'antd';
+import { LoadingOutlined } from '@ant-design/icons';
 
-function Login() {
+
+function Login({ web3, accounts }) {
   const { Option } = Select;
+  const antIcon = <LoadingOutlined style={{ fontSize: 24 }} spin />;
+  let navigate = useNavigate();
+
+  useEffect(() => {
+    const init = async () => {
+      try {
+        if (accounts) {
+          checkAddressExist(accounts[0])
+            .then((result) => {
+
+              // *** stella, can remove this if you have another way to do it
+              if (result) {
+                localStorage.setItem("user", JSON.stringify(result));
+                
+                if(result.type === "Subject") {
+                  navigate("/student/viewCert");
+                } else if (result.type === "Issuer") {
+                  navigate("/issuer/viewRequests");
+                } else {
+                  navigate("/verifier/viewStudentCert");
+                }
+              } else {
+                navigate("/register", {
+                  state: {
+                    walletAddress: accounts[0],
+                  },
+                });
+              }
+            })
+            .catch((err) => {
+              console.log(err);
+            });
+        }
+      } catch (error) {
+        // Catch any errors for any of the above operations
+        alert(
+          `Failed to load web3, accounts, or contract. Did you migrate the contract or install MetaMask? Check console for details.`
+        );
+        console.error(error);
+      }
+    };
+    init();
+  }, [accounts]);
 
   return (
-    <Fragment>
-      <Form
-        name="loginForm"
-        className="loginForm"
-      >
-        <img src="cc-logo.png" className="ccLogo"/>
-        <Form.Item
-          name="email"
-          className="email"
-          rules={[{ required: true, message: "Please input your email" }]}
-        >
-          <Input
-            prefix={<UserOutlined className="site-form-item-icon" />}
-            placeholder="Email"
-          />
-        </Form.Item>
-        <Form.Item
-          name="password"
-          className="password"
-          rules={[{ required: true, message: "Please input your password!" }]}
-        >
-          <Input
-            prefix={<LockOutlined className="site-form-item-icon" />}
-            type="password"
-            placeholder="Password"
-          />
-        </Form.Item>
-        <Form.Item name="role" className="role">
-          <Select
-            placeholder={
-              <React.Fragment>
-                <UserSwitchOutlined/>
-                &nbsp; Please select a role
-              </React.Fragment>
-            }
-            // onChange={handleChange}
-          >
-            <Option value="student">Student</Option>
-            <Option value="institution">Institution</Option>
-            <Option value="employer">Employer</Option>
-          </Select>
-        </Form.Item>
-        <Form.Item>
-          <Button type="primary" htmlType="submit" className="submitBtn">
-            Login
-          </Button>
-          Or <a href=""> Register now!</a>
-        </Form.Item>
-      </Form>
-    </Fragment>
+    <div className="container">
+      <Spin indicator={antIcon} />
+      {/* <h1>Hello, World!</h1> */}
+      {/* <p>Your account: {accounts[0]}</p> */}
+    </div>
   );
 }
 

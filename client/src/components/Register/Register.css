@@ -1,0 +1,30 @@
+.registerForm {
+    background-color: white;
+    margin: auto; 
+    border: 1px solid lightgray;
+    border-radius: 5%;
+    padding: 1rem 4rem;
+    width: 40%;
+    text-align: center;
+}
+
+.ccLogo {
+    width: 12rem;
+    height: 10rem;
+}
+
+.registerContainer {
+    text-align: center;
+    display: block;
+    margin-top: 8rem;
+}
+
+.registerBtn {
+    width: 100%;
+    background-color: #475186;
+}
+
+.role, .walletAddress, .name, .email, .password, .confirm {
+    text-align: left;
+    color: lightgray;
+}

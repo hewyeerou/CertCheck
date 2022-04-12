@@ -18,32 +18,77 @@ export async function addUser(walletAddress, name, email, password, type, img) {
 
 export async function getUserByAddress(walletAddress) {
 
-    get(child(ref(db), 'users/${walletAddress}')).then((snapshot) => {
-        if (snapshot.exists()) {
-          console.log(snapshot.val());
-        } else {
-          console.log("User not available");
-        }
-      }).catch((error) => {
-        console.error(error);
-      });
+  return get(child(ref(db), `users/${walletAddress}`)).then((snapshot) => {
+    if (snapshot.exists()) {
+      return snapshot.val();
+    } else {
+      return false
+    }
+  }).catch((error) => {
+    console.error(error);
+  });
 
 }
 
 export async function updateUser(user) {
 
-    const updates = {};
+  const updates = {};
 
-    updates['/users/' + user.walletAddress] = user;
+  updates['/users/' + user.walletAddress] = user;
 
-    return update(ref(db), updates).catch((error) => {
-        console.log(error);
-    });
+  return update(ref(db), updates).catch((error) => {
+    console.log(error);
+  });
 }
 
 export async function deleteUser(user) {
 
-    remove(ref(db), 'users/' + user.walletAddress).catch((error) => {
-        console.log(error);
-    });
+  remove(ref(db), 'users/' + user.walletAddress).catch((error) => {
+    console.log(error);
+  });
+}
+
+export async function loginWithEmailAndPassword(loginDetails) {
+  return get(child(ref(db), 'users')).then((snapshot) => {
+    // Find user in db
+    if (snapshot.exists()) {
+      var loggedInUser;
+      var ifExist = false;
+      snapshot.forEach((user) => {
+        if (loginDetails.email === user.val().email && loginDetails.password === user.val().password
+          && loginDetails.role === user.val().type) {
+          loggedInUser = user.val();
+          ifExist = true;
+        }
+      })
+    // IF exist user in db
+      if(ifExist) {
+        return loggedInUser;
+      }
+    }
+    throw "User not available";
+  });
+}
+
+export async function checkAddressExist(walletAddress) {
+  return get(child(ref(db), 'users/' + walletAddress)).then((snapshot) => {
+    // Find user in db
+    if (snapshot.exists()) {
+      return snapshot.val();
+    }
+    return false;
+  });
+}
+
+export async function getAllUsers() {
+  return get(child(ref(db), 'users')).then((snapshot) => {
+    if (snapshot.exists()) {
+      return snapshot.val();
+    } else {
+      console.log("User not available");
+    }
+  }).catch((error) => {
+    console.error(error);
+  });
+
 }
