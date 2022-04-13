@@ -331,7 +331,7 @@ contract('CertificateStore', function(accounts) {
         );
     });
 
-    it('Only subjects and verifiers can check request', async() => {
+    it('Only subjects and verifiers can check status', async() => {
         // I>S
         await truffleAssert.reverts(
             CertStoreInstance.checkGrantStatus(accounts[4], { from: accounts[6] }),
@@ -460,17 +460,25 @@ contract('CertificateStore', function(accounts) {
         );
     });
 
-    it('Verifier can be given grant again by subject', async() => {
+    it('Subject can view the list of verifier granted', async() => {
         let grant3 = await CertStoreInstance.grantVerifier(accounts[4], { from: accounts[2] });
-        truffleAssert.eventEmitted(grant3, 'VerifierGranted');
 
         let list5 = await CertStoreInstance.getGrantList({ from: accounts[2] });
-        let list6 = await CertStoreInstance.getGrantList({ from: accounts[4] });
+
+        truffleAssert.eventEmitted(grant3, 'VerifierGranted');
 
         assert.deepEqual(
             list5, [accounts[4], accounts[5]], // acc5 prev added, acc4 newly added
             "Failed to view list"
         );
+
+    });
+
+    it('Verifier can view the list of subjects granted him/her', async() => {
+
+        let list6 = await CertStoreInstance.getGrantList({ from: accounts[4] });
+
+
         assert.deepEqual(
             list6, [accounts[2]],
             "Failed to view list"
