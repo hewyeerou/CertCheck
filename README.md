@@ -33,7 +33,6 @@
 12. Verifier views the certificate if he/she is granted viewing rights by Subject.
 13. After some times, subject revokes the viewing rights of the verifier. 
 14. Verifier will not be able to view the certificate of the subject.
-=======
 
 ---
 
