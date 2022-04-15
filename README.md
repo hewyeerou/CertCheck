@@ -1,4 +1,4 @@
-# IS4302_Project - CertCheck
+# IS4302 Project - CertCheck
 
 ## Configurations
 1. Ensure that `node`, `npm` and `truffle` are installed in your computer.
