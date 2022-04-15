@@ -4,7 +4,6 @@
 1. Ensure that `node`, `npm` and `truffle` are installed in your computer.
 2. Run `npm install` at the root directory.
 3. Ensure that Metamask extention is added to your browser.
-4. Configure 
 5. Run `truffle compile` > `truffle migrate`.
 6. Ensure Ganache GUI is installed and start your server at http://localhost:7545. Ensure that the settings are updated in the truffle.config
 7. Create a private network in Metamask
